@@ -1,0 +1,90 @@
+.header {
+    display: grid;
+    grid-template-columns: 2fr 4fr 1fr 1fr;
+    align-items: center;
+    justify-items: center;
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    left: 0;
+    background-color: #fff;
+    z-index: 1000;
+}
+
+@media (min-width: 900px) {
+    .header {
+        grid-template-columns: 0.4fr 1fr 1fr 1fr 4fr 1fr 1.6fr 1fr;
+    }
+}
+
+.icon {
+    font-size: 15px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 50px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.icon1 {
+    font-size: 15px;
+    background-color: #fff;
+    color: #333;
+    border-radius: 50px;
+    padding: 5px;
+    cursor: pointer;
+    border: 5px solid #333;
+}
+
+.icon2 {
+    font-size: 35px;
+    cursor: pointer;
+}
+
+.cart {
+    padding: 10px 20px;
+    background: #333;
+    color: #fff;
+    border-radius: 20px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.logo {
+    height: 60px;
+    padding: 10px;
+}
+
+.menuItem {
+    display: flex;
+    align-items: center;
+    padding:  14px;
+    border-radius: 8px;
+    transition: all 0.1s;
+    cursor: pointer;
+    color: #333;
+}
+
+.menuItem:hover {
+    background-color: #f0f0f0;
+}
+
+.menuItem span {
+    font-weight: 500;
+    margin-left: 20px;
+}
+
+.menuItem,
+.icon,
+.cart {
+    display: none;
+}
+
+@media (min-width: 900px) {
+    .menuItem,
+    .icon,
+    .cart {
+        display: inline-block !important;
+    }
+}

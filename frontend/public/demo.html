@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StyleHub - Thời Trang Hiện Đại</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+        }
+        .luxury-gradient { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .premium-shadow {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+        .floating { 
+            animation: floating 6s ease-in-out infinite; 
+        }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-10px) rotate(1deg); }
+            66% { transform: translateY(-5px) rotate(-1deg); }
+        }
+        .product-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .product-hover:hover { 
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.3);
+        }
+        .cart-count { animation: bounce 0.5s; }
+        @keyframes bounce {
+            0%, 20%, 60%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            80% { transform: translateY(-5px); }
+        }
+        .luxury-text {
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5), 0 0 40px rgba(118, 75, 162, 0.3);
+        }
+        .morphism {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .fade-up {
+            animation: fadeUp 1s ease-out;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .premium-border {
+            border: 2px solid;
+            border-image: linear-gradient(45deg, #667eea, #764ba2, #f093fb) 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="glass-effect sticky top-0 z-50 premium-shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center slide-in">
+                    <div class="text-3xl font-bold luxury-text">
+                        ✨ LUXE FASHION
+                    </div>
+                </div>
+                <div class="hidden md:flex space-x-10">
+                    <a href="#new" class="text-white hover:text-yellow-300 transition-all duration-300 font-medium text-lg relative group">
+                        Hàng Mới
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-yellow-300 transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="#women" class="text-white hover:text-yellow-300 transition-all duration-300 font-medium text-lg relative group">
+                        Nữ
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-yellow-300 transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="#men" class="text-white hover:text-yellow-300 transition-all duration-300 font-medium text-lg relative group">
+                        Nam
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-yellow-300 transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="#sale" class="text-yellow-300 font-bold text-lg neon-glow px-3 py-1 rounded-full">💎 VIP SALE</a>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="relative">
+                        <input type="text" placeholder="Tìm kiếm luxury..." class="pl-12 pr-4 py-3 glass-effect text-white placeholder-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-300 w-64">
+                        <div class="absolute left-4 top-3.5 text-yellow-300 text-xl">🔍</div>
+                    </div>
+                    <button class="relative text-white hover:text-yellow-300 transition-all duration-300 text-2xl">
+                        🛒
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold neon-glow">0</span>
+                    </button>
+                    <button class="luxury-gradient text-white px-6 py-3 rounded-full hover:scale-105 transition-all duration-300 font-semibold neon-glow">
+                        VIP Login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 luxury-gradient opacity-90"></div>
+        <div class="absolute inset-0">
+            <div class="floating absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+            <div class="floating absolute top-40 right-20 w-24 h-24 bg-yellow-300/20 rounded-full blur-lg" style="animation-delay: -2s;"></div>
+            <div class="floating absolute bottom-32 left-1/4 w-40 h-40 bg-pink-300/10 rounded-full blur-2xl" style="animation-delay: -4s;"></div>
+        </div>
+        
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div class="fade-up">
+                    <div class="mb-6">
+                        <span class="luxury-gradient text-white px-4 py-2 rounded-full text-sm font-semibold neon-glow">
+                            ✨ EXCLUSIVE COLLECTION 2024
+                        </span>
+                    </div>
+                    <h1 class="text-7xl font-bold mb-8 leading-tight">
+                        <span class="text-white">LUXURY</span>
+                        <span class="block luxury-text text-8xl">REDEFINED</span>
+                    </h1>
+                    <p class="text-2xl mb-10 text-gray-200 leading-relaxed">
+                        Trải nghiệm thời trang đỉnh cao với công nghệ AI tiên tiến. 
+                        <span class="text-yellow-300 font-semibold">Độc quyền cho giới thượng lưu.</span>
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-6">
+                        <button class="luxury-gradient text-white px-10 py-5 rounded-full font-bold text-lg hover:scale-105 transition-all duration-300 neon-glow">
+                            🛍️ SHOP LUXURY
+                        </button>
+                        <button class="glass-effect text-white px-10 py-5 rounded-full font-semibold text-lg hover:scale-105 transition-all duration-300 border border-white/30">
+                            👑 VIP PREVIEW
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="relative floating">
+                    <div class="glass-effect rounded-3xl p-8 premium-shadow">
+                        <div class="luxury-gradient text-white px-4 py-2 rounded-full text-sm font-bold mb-6 inline-block neon-glow">
+                            🤖 AI LUXURY CONCIERGE
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-6">Personal Style AI</h3>
+                        <div class="space-y-4">
+                            <div class="morphism rounded-2xl p-4 flex items-center space-x-4">
+                                <div class="w-12 h-12 luxury-gradient rounded-full flex items-center justify-center text-white font-bold text-xl">✨</div>
+                                <div>
+                                    <div class="text-white font-semibold">Phân tích phong cách cá nhân</div>
+                                    <div class="text-gray-300 text-sm">Độ chính xác 99.8%</div>
+                                </div>
+                            </div>
+                            <div class="morphism rounded-2xl p-4 flex items-center space-x-4">
+                                <div class="w-12 h-12 luxury-gradient rounded-full flex items-center justify-center text-white font-bold text-xl">👗</div>
+                                <div>
+                                    <div class="text-white font-semibold">Thử đồ ảo 3D</div>
+                                    <div class="text-gray-300 text-sm">Công nghệ AR tiên tiến</div>
+                                </div>
+                            </div>
+                            <div class="morphism rounded-2xl p-4 flex items-center space-x-4">
+                                <div class="w-12 h-12 luxury-gradient rounded-full flex items-center justify-center text-white font-bold text-xl">💎</div>
+                                <div>
+                                    <div class="text-white font-semibold">Tư vấn VIP 24/7</div>
+                                    <div class="text-gray-300 text-sm">Stylist chuyên nghiệp</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 p-4 luxury-gradient rounded-2xl">
+                            <div class="text-center text-white">
+                                <div class="text-3xl font-bold">2,847</div>
+                                <div class="text-sm opacity-90">VIP Members Active</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Categories -->
+    <section class="py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="text-center group cursor-pointer">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-pink-100 rounded-full flex items-center justify-center text-3xl group-hover:bg-pink-200 transition-colors">
+                        👚
+                    </div>
+                    <h3 class="font-semibold text-gray-900">Áo Sơ Mi</h3>
+                    <p class="text-sm text-gray-600">250+ sản phẩm</p>
+                </div>
+                <div class="text-center group cursor-pointer">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center text-3xl group-hover:bg-blue-200 transition-colors">
+                        👗
+                    </div>
+                    <h3 class="font-semibold text-gray-900">Váy Đầm</h3>
+                    <p class="text-sm text-gray-600">180+ sản phẩm</p>
+                </div>
+                <div class="text-center group cursor-pointer">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center text-3xl group-hover:bg-green-200 transition-colors">
+                        👖
+                    </div>
+                    <h3 class="font-semibold text-gray-900">Quần Jeans</h3>
+                    <p class="text-sm text-gray-600">320+ sản phẩm</p>
+                </div>
+                <div class="text-center group cursor-pointer">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-yellow-100 rounded-full flex items-center justify-center text-3xl group-hover:bg-yellow-200 transition-colors">
+                        🧥
+                    </div>
+                    <h3 class="font-semibold text-gray-900">Áo Khoác</h3>
+                    <p class="text-sm text-gray-600">150+ sản phẩm</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section id="new" class="py-24 relative">
+        <div class="absolute inset-0 bg-black/20"></div>
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 fade-up">
+                <div class="luxury-gradient text-white px-6 py-3 rounded-full text-sm font-bold mb-6 inline-block neon-glow">
+                    💎 CURATED BY AI
+                </div>
+                <h2 class="text-5xl font-bold text-white mb-4">EXCLUSIVE COLLECTION</h2>
+                <p class="text-xl text-gray-300">Được tuyển chọn bởi AI dựa trên xu hướng thời trang toàn cầu</p>
+            </div>
+            
+            <div class="grid md:grid-cols-4 gap-8">
+                <!-- Product 1 -->
+                <div class="glass-effect rounded-3xl overflow-hidden premium-shadow product-hover group">
+                    <div class="relative">
+                        <div class="h-80 bg-gradient-to-br from-pink-200 via-purple-200 to-indigo-200 flex items-center justify-center relative overflow-hidden">
+                            <div class="text-8xl group-hover:scale-110 transition-all duration-500">👚</div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                        </div>
+                        <div class="absolute top-4 left-4 luxury-gradient text-white px-3 py-1 rounded-full text-sm font-bold neon-glow">
+                            💎 LUXURY
+                        </div>
+                        <div class="absolute top-4 right-4 glass-effect text-white px-3 py-1 rounded-full text-xs font-semibold">
+                            🤖 AI FIT
+                        </div>
+                        <button class="absolute bottom-4 right-4 glass-effect rounded-full p-3 hover:scale-110 transition-all duration-300 neon-glow">
+                            <span class="text-xl">💖</span>
+                        </button>
+                    </div>
+                    <div class="p-6 text-white">
+                        <h3 class="font-bold text-xl mb-2">Silk Blouse Premium</h3>
+                        <p class="text-gray-300 text-sm mb-4">100% Mulberry Silk, Handcrafted in Italy</p>
+                        <div class="flex items-center mb-4">
+                            <div class="flex text-yellow-400 text-lg">⭐⭐⭐⭐⭐</div>
+                            <span class="text-gray-400 text-sm ml-2">(247 reviews)</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <span class="text-3xl font-bold luxury-text">2.890K</span>
+                                <span class="text-gray-500 line-through ml-2">4.200K</span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-3 mb-6">
+                            <button class="w-10 h-10 rounded-full bg-gradient-to-r from-red-400 to-pink-500 border-2 border-white/30 hover:scale-110 transition-all"></button>
+                            <button class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 border-2 border-white/30 hover:scale-110 transition-all"></button>
+                            <button class="w-10 h-10 rounded-full bg-gradient-to-r from-gray-700 to-black border-2 border-white/30 hover:scale-110 transition-all"></button>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button class="flex-1 luxury-gradient text-white py-3 rounded-full hover:scale-105 transition-all duration-300 font-bold neon-glow add-to-cart">
+                                ADD TO CART
+                            </button>
+                            <button class="px-6 py-3 glass-effect text-white rounded-full hover:scale-105 transition-all duration-300 font-semibold try-on-btn">
+                                👁️ TRY
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="glass-effect rounded-3xl overflow-hidden premium-shadow product-hover group">
+                    <div class="relative">
+                        <div class="h-80 bg-gradient-to-br from-emerald-200 via-teal-200 to-cyan-200 flex items-center justify-center relative overflow-hidden">
+                            <div class="text-8xl group-hover:scale-110 transition-all duration-500">👗</div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                        </div>
+                        <div class="absolute top-4 left-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1 rounded-full text-sm font-bold neon-glow">
+                            ✨ NEW
+                        </div>
+                        <div class="absolute top-4 right-4 glass-effect text-white px-3 py-1 rounded-full text-xs font-semibold">
+                            🤖 AI STYLE
+                        </div>
+                        <button class="absolute bottom-4 right-4 glass-effect rounded-full p-3 hover:scale-110 transition-all duration-300 neon-glow">
+                            <span class="text-xl">💖</span>
+                        </button>
+                    </div>
+                    <div class="p-6 text-white">
+                        <h3 class="font-bold text-xl mb-2">Bohemian Maxi Dress</h3>
+                        <p class="text-gray-300 text-sm mb-4">Exclusive Design, Limited Edition</p>
+                        <div class="flex items-center mb-4">
+                            <div class="flex text-yellow-400 text-lg">⭐⭐⭐⭐⭐</div>
+                            <span class="text-gray-400 text-sm ml-2">(189 reviews)</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <span class="text-3xl font-bold luxury-text">3.299K</span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-3 mb-6">
+                            <button class="w-10 h-10 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 border-2 border-white/30 hover:scale-110 transition-all"></button>
+                            <button class="w-10 h-10 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 border-2 border-white/30 hover:scale-110 transition-all"></button>
+                            <button class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-pink-500 border-2 border-white/30 hover:scale-110 transition-all"></button>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button class="flex-1 luxury-gradient text-white py-3 rounded-full hover:scale-105 transition-all duration-300 font-bold neon-glow add-to-cart">
+                                ADD TO CART
+                            </button>
+                            <button class="px-6 py-3 glass-effect text-white rounded-full hover:scale-105 transition-all duration-300 font-semibold try-on-btn">
+                                👁️ TRY
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="glass-effect rounded-3xl overflow-hidden premium-shadow product-hover group">
+                    <div class="relative">
+                        <div class="h-80 bg-gradient-to-br from-indigo-200 via-blue-200 to-purple-200 flex items-center justify-center relative overflow-hidden">
+                            <div class="text-8xl group-hover:scale-110 transition-all duration-500">👖</div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                        </div>
+                        <div class="absolute top-4 left-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-3 py-1 rounded-full text-sm font-bold neon-glow">
+                            🔥 BESTSELLER
+                        </div>
+                        <div class="absolute top-4 right-4 glass-effect text-white px-3 py-1 rounded-full text-xs font-semibold">
+                            🤖 AI FIT
+                        </div>
+                        <button class="absolute bottom-4 right-4 glass-effect rounded-full p-3 hover:scale-110 transition-all duration-300 neon-glow">
+                            <span class="text-xl">💖</span>
+                        </button>
+                    </div>
+                    <div class="p-6 text-white">
+                        <h3 class="font-bold text-xl mb-2">Premium Skinny Jeans</h3>
+                        <p class="text-gray-300 text-sm mb-4">4-Way Stretch, Perfect Fit Technology</p>
+                        <div class="flex items-center mb-4">
+                            <div class="flex text-yellow-400 text-lg">⭐⭐⭐⭐⭐</div>
+                            <span class="text-gray-400 text-sm ml-2">(456 reviews)</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <span class="text-3xl font-bold luxury-text">1.899K</span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-3 mb-6">
+                            <button class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 border-2 border-white/30 hover:scale-110 transition-all"></button>
+                            <button class="w-10 h-10 rounded-full bg-gradient-to-r from-gray-800 to-black border-2 border-white/30 hover:scale-110 transition-all"></button>
+                            <button class="w-10 h-10 rounded-full bg-gradient-to-r from-gray-500 to-gray-700 border-2 border-white/30 hover:scale-110 transition-all"></button>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button class="flex-1 luxury-gradient text-white py-3 rounded-full hover:scale-105 transition-all duration-300 font-bold neon-glow add-to-cart">
+                                ADD TO CART
+                            </button>
+                            <button class="px-6 py-3 glass-effect text-white rounded-full hover:scale-105 transition-all duration-300 font-semibold try-on-btn">
+                                👁️ TRY
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 4 -->
+                <div class="glass-effect rounded-3xl overflow-hidden premium-shadow product-hover group">
+                    <div class="relative">
+                        <div class="h-80 bg-gradient-to-br from-amber-200 via-orange-200 to-red-200 flex items-center justify-center relative overflow-hidden">
+                            <div class="text-8xl group-hover:scale-110 transition-all duration-500">🧥</div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                        </div>
+                        <div class="absolute top-4 left-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold neon-glow">
+                            👑 LIMITED
+                        </div>
+                        <div class="absolute top-4 right-4 glass-effect text-white px-3 py-1 rounded-full text-xs font-semibold">
+                            🤖 AI MATCH
+                        </div>
+                        <button class="absolute bottom-4 right-4 glass-effect rounded-full p-3 hover:scale-110 transition-all duration-300 neon-glow">
+                            <span class="text-xl">💖</span>
+                        </button>
+                    </div>
+                    <div class="p-6 text-white">
+                        <h3 class="font-bold text-xl mb-2">Executive Blazer</h3>
+                        <p class="text-gray-300 text-sm mb-4">Tailored Perfection, Professional Elite</p>
+                        <div class="flex items-center mb-4">
+                            <div class="flex text-yellow-400 text-lg">⭐⭐⭐⭐⭐</div>
+                            <span class="text-gray-400 text-sm ml-2">(194 reviews)</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <span class="text-3xl font-bold luxury-text">4.599K</span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-3 mb-6">
+                            <button class="w-10 h-10 rounded-full bg-gradient-to-r from-gray-900 to-black border-2 border-white/30 hover:scale-110 transition-all"></button>
+                            <button class="w-10 h-10 rounded-full bg-gradient-to-r from-gray-700 to-gray-900 border-2 border-white/30 hover:scale-110 transition-all"></button>
+                            <button class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-800 to-blue-900 border-2 border-white/30 hover:scale-110 transition-all"></button>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button class="flex-1 luxury-gradient text-white py-3 rounded-full hover:scale-105 transition-all duration-300 font-bold neon-glow add-to-cart">
+                                ADD TO CART
+                            </button>
+                            <button class="px-6 py-3 glass-effect text-white rounded-full hover:scale-105 transition-all duration-300 font-semibold try-on-btn">
+                                👁️ TRY
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Features Banner -->
+    <section class="py-16 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-3 gap-8 text-center">
+                <div>
+                    <div class="text-4xl mb-4">📱</div>
+                    <h3 class="text-xl font-semibold mb-2">Thử Đồ Ảo AR</h3>
+                    <p class="text-purple-100">Xem trang phục trên cơ thể bạn trước khi mua</p>
+                </div>
+                <div>
+                    <div class="text-4xl mb-4">🤖</div>
+                    <h3 class="text-xl font-semibold mb-2">AI Tư Vấn Size</h3>
+                    <p class="text-purple-100">Gợi ý size chính xác dựa trên số đo cơ thể</p>
+                </div>
+                <div>
+                    <div class="text-4xl mb-4">✨</div>
+                    <h3 class="text-xl font-semibold mb-2">Phối Đồ Thông Minh</h3>
+                    <p class="text-purple-100">AI gợi ý cách phối đồ phù hợp với phong cách</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sale Section -->
+    <section id="sale" class="py-16 bg-red-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-red-600 mb-4">🔥 FLASH SALE 50% 🔥</h2>
+                <p class="text-xl text-gray-700">Chỉ còn 2 ngày! Giảm giá sốc cho tất cả sản phẩm</p>
+                <div class="flex justify-center space-x-4 mt-6">
+                    <div class="bg-red-600 text-white px-4 py-2 rounded-lg">
+                        <div class="text-2xl font-bold">01</div>
+                        <div class="text-sm">Ngày</div>
+                    </div>
+                    <div class="bg-red-600 text-white px-4 py-2 rounded-lg">
+                        <div class="text-2xl font-bold">12</div>
+                        <div class="text-sm">Giờ</div>
+                    </div>
+                    <div class="bg-red-600 text-white px-4 py-2 rounded-lg">
+                        <div class="text-2xl font-bold">34</div>
+                        <div class="text-sm">Phút</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-4 gap-6">
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg">
+                    <div class="h-48 bg-gradient-to-br from-red-200 to-pink-200 flex items-center justify-center">
+                        <div class="text-4xl">👚</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-2">Áo Thun Basic</h3>
+                        <div class="flex items-center">
+                            <span class="text-xl font-bold text-red-600">199K</span>
+                            <span class="text-gray-500 line-through ml-2">399K</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg">
+                    <div class="h-48 bg-gradient-to-br from-blue-200 to-purple-200 flex items-center justify-center">
+                        <div class="text-4xl">👖</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-2">Quần Short Jeans</h3>
+                        <div class="flex items-center">
+                            <span class="text-xl font-bold text-red-600">299K</span>
+                            <span class="text-gray-500 line-through ml-2">599K</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg">
+                    <div class="h-48 bg-gradient-to-br from-green-200 to-teal-200 flex items-center justify-center">
+                        <div class="text-4xl">👗</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-2">Váy Midi Hoa</h3>
+                        <div class="flex items-center">
+                            <span class="text-xl font-bold text-red-600">449K</span>
+                            <span class="text-gray-500 line-through ml-2">899K</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg">
+                    <div class="h-48 bg-gradient-to-br from-yellow-200 to-orange-200 flex items-center justify-center">
+                        <div class="text-4xl">🧥</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-2">Áo Cardigan</h3>
+                        <div class="flex items-center">
+                            <span class="text-xl font-bold text-red-600">599K</span>
+                            <span class="text-gray-500 line-through ml-2">1.199K</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="py-16 bg-gray-900 text-white">
+        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold mb-4">Đăng Ký Nhận Ưu Đãi</h2>
+            <p class="text-xl text-gray-300 mb-8">
+                Nhận thông tin về sản phẩm mới và khuyến mãi độc quyền
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+                <input type="email" placeholder="Email của bạn..." class="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                <button class="bg-pink-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-pink-700 transition-colors">
+                    Đăng Ký
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="relative py-20">
+        <div class="absolute inset-0 bg-black/40"></div>
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-12">
+                <div>
+                    <div class="text-3xl font-bold luxury-text mb-6">
+                        ✨ LUXE FASHION
+                    </div>
+                    <p class="text-gray-300 mb-6 leading-relaxed">
+                        Định nghĩa lại thời trang cao cấp với công nghệ AI tiên tiến và dịch vụ VIP độc quyền
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="glass-effect p-3 rounded-full hover:scale-110 transition-all duration-300 neon-glow">
+                            <span class="text-2xl">📘</span>
+                        </a>
+                        <a href="#" class="glass-effect p-3 rounded-full hover:scale-110 transition-all duration-300 neon-glow">
+                            <span class="text-2xl">📷</span>
+                        </a>
+                        <a href="#" class="glass-effect p-3 rounded-full hover:scale-110 transition-all duration-300 neon-glow">
+                            <span class="text-2xl">🐦</span>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-xl text-white mb-6">LUXURY COLLECTIONS</h3>
+                    <ul class="space-y-3 text-gray-300">
+                        <li><a href="#" class="hover:text-yellow-300 transition-colors flex items-center"><span class="mr-2">👚</span>Premium Blouses</a></li>
+                        <li><a href="#" class="hover:text-yellow-300 transition-colors flex items-center"><span class="mr-2">👗</span>Designer Dresses</a></li>
+                        <li><a href="#" class="hover:text-yellow-300 transition-colors flex items-center"><span class="mr-2">👖</span>Luxury Denim</a></li>
+                        <li><a href="#" class="hover:text-yellow-300 transition-colors flex items-center"><span class="mr-2">🧥</span>Executive Blazers</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-xl text-white mb-6">VIP SERVICES</h3>
+                    <ul class="space-y-3 text-gray-300">
+                        <li><a href="#" class="hover:text-yellow-300 transition-colors flex items-center"><span class="mr-2">🤖</span>AI Personal Stylist</a></li>
+                        <li><a href="#" class="hover:text-yellow-300 transition-colors flex items-center"><span class="mr-2">👑</span>VIP Concierge</a></li>
+                        <li><a href="#" class="hover:text-yellow-300 transition-colors flex items-center"><span class="mr-2">📱</span>AR Try-On</a></li>
+                        <li><a href="#" class="hover:text-yellow-300 transition-colors flex items-center"><span class="mr-2">💎</span>Exclusive Access</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-xl text-white mb-6">CONTACT LUXURY</h3>
+                    <ul class="space-y-3 text-gray-300">
+                        <li class="flex items-center"><span class="mr-3 text-xl">📞</span>+84 1900 LUXE (5893)</li>
+                        <li class="flex items-center"><span class="mr-3 text-xl">📧</span>vip@luxefashion.vn</li>
+                        <li class="flex items-center"><span class="mr-3 text-xl">📍</span>Landmark 81, Vinhomes Central Park</li>
+                        <li class="flex items-center"><span class="mr-3 text-xl">🕒</span>24/7 VIP Support</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-16 pt-8 border-t border-white/20">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-400 mb-4 md:mb-0">&copy; 2024 LUXE FASHION. All Rights Reserved. Luxury Redefined.</p>
+                    <div class="flex space-x-6 text-gray-400">
+                        <a href="#" class="hover:text-yellow-300 transition-colors">Privacy Policy</a>
+                        <a href="#" class="hover:text-yellow-300 transition-colors">Terms of Service</a>
+                        <a href="#" class="hover:text-yellow-300 transition-colors">VIP Terms</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AI Chat Assistant -->
+    <div class="fixed bottom-8 right-8 z-50">
+        <button id="ai-chat-btn" class="luxury-gradient text-white p-6 rounded-full premium-shadow hover:scale-110 transition-all duration-300 floating neon-glow">
+            <div class="text-3xl">🤖</div>
+        </button>
+    </div>
+
+    <!-- AI Chat Modal -->
+    <div id="chat-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl w-full max-w-md">
+                <div class="ai-badge text-white p-4 rounded-t-2xl">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-semibold">🤖 Trợ Lý AI StyleHub</h3>
+                        <button id="close-chat" class="text-white hover:text-gray-200">✕</button>
+                    </div>
+                </div>
+                <div class="p-6 h-96 overflow-y-auto">
+                    <div class="space-y-4">
+                        <div class="bg-gray-100 rounded-lg p-3">
+                            <p class="text-sm">Xin chào! Tôi là trợ lý AI của StyleHub. Tôi có thể giúp bạn:</p>
+                            <ul class="text-sm mt-2 space-y-1">
+                                <li>• Tư vấn size phù hợp</li>
+                                <li>• Gợi ý phối đồ</li>
+                                <li>• Tìm sản phẩm theo sở thích</li>
+                                <li>• Thử đồ ảo trực tiếp</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 border-t">
+                    <div class="flex space-x-2">
+                        <input type="text" placeholder="Nhập tin nhắn..." class="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <button class="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors">
+                            Gửi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cartCount = 0;
+
+        // Add to cart functionality
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                cartCount++;
+                const cartCountElement = document.getElementById('cart-count');
+                cartCountElement.textContent = cartCount;
+                cartCountElement.classList.add('cart-count');
+                
+                // Show success message
+                const productName = this.closest('.bg-white').querySelector('h3').textContent;
+                alert(`✅ Đã thêm "${productName}" vào giỏ hàng!\n\nGiỏ hàng hiện có: ${cartCount} sản phẩm`);
+                
+                setTimeout(() => {
+                    cartCountElement.classList.remove('cart-count');
+                }, 500);
+            });
+        });
+
+        // Try-on functionality
+        document.querySelectorAll('.try-on-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const productName = this.closest('.bg-white').querySelector('h3').textContent;
+                alert(`📱 Tính năng Thử Đồ Ảo cho "${productName}":\n\n• Bật camera để quét cơ thể\n• AI phân tích kích thước tự động\n• Hiển thị sản phẩm trên người thật\n• Xoay 360° để xem mọi góc độ\n\n🤖 AI gợi ý: Sản phẩm này phù hợp với dáng người của bạn!`);
+            });
+        });
+
+        // AI Chat functionality
+        const aiChatBtn = document.getElementById('ai-chat-btn');
+        const chatModal = document.getElementById('chat-modal');
+        const closeChat = document.getElementById('close-chat');
+
+        aiChatBtn.addEventListener('click', function() {
+            chatModal.classList.remove('hidden');
+        });
+
+        closeChat.addEventListener('click', function() {
+            chatModal.classList.add('hidden');
+        });
+
+        chatModal.addEventListener('click', function(e) {
+            if (e.target === chatModal) {
+                chatModal.classList.add('hidden');
+            }
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Color selection
+        document.querySelectorAll('.w-8.h-8.rounded-full').forEach(colorBtn => {
+            colorBtn.addEventListener('click', function() {
+                // Remove active state from siblings
+                this.parentNode.querySelectorAll('.w-8.h-8.rounded-full').forEach(btn => {
+                    btn.classList.remove('ring-2', 'ring-pink-500');
+                });
+                // Add active state to clicked button
+                this.classList.add('ring-2', 'ring-pink-500');
+            });
+        });
+
+        // Search functionality
+        document.querySelector('input[placeholder="Tìm kiếm..."]').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const searchTerm = this.value;
+                if (searchTerm) {
+                    alert(`🔍 Đang tìm kiếm: "${searchTerm}"\n\nKết quả sẽ hiển thị các sản phẩm phù hợp với từ khóa của bạn!`);
+                }
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9686fca781d0fd07',t:'MTc1NDA2ODYyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

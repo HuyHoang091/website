@@ -1,0 +1,30 @@
+.aiBanner {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 40px 150px;
+    text-align: center;
+    color: white;
+    background: linear-gradient(135deg, #ea66df 0%, #b053b9 50%, #e77a6b 100%)
+}
+
+.icon {
+    font-size: 34px;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 7px;
+}
+
+.description {
+    font-size: 16px;
+}
+
+@media (max-width: 640px) {
+    .aiBanner {
+        grid-template-columns: 1fr !important;
+        gap: 20px;
+        padding: 60px 40px;
+    }
+}

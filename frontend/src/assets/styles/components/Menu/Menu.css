@@ -1,0 +1,74 @@
+.menuToggle {
+    position: fixed;
+    top: 25px;
+    left: 20px;
+    font-size: 24px;
+    z-index: 2;
+    cursor: pointer;
+    transition: transform 0.3s;
+    color: black;
+}
+
+.menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background-color: #fff;
+    padding: 20px;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: transform 0.3s;
+    transform: translateX(-100%);
+}
+
+.menuHeader {
+    font-size: 20px;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+    color: #333;
+}
+
+.menuHeader h2 {
+    margin: 0;
+    margin-bottom: 15px;
+}
+
+.menuItem {
+    display: flex;
+    align-items: center;
+    padding:  14px;
+    border-radius: 8px;
+    transition: all 0.1s;
+    cursor: pointer;
+    color: #333;
+}
+
+.menuItem:hover {
+    background-color: #f0f0f0;
+}
+
+.menuItem i {
+    text-align: center;
+    width: 20px;
+    font-size: 22px;
+}
+
+.menuItem span {
+    font-weight: 500;
+    margin-left: 20px;
+}
+
+#menuToggle:checked ~ .menu {
+    transform: translateX(0);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+#menuToggle:checked ~ .menuToggle {
+    transform: translateX(200px);
+    color: #333;
+}

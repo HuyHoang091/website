@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  app310-cu118:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    container_name: app310-cu118
+
+  app36:
+    build:
+      context: ./Self-Correction-Human-Parsing-with-libtorch-deployment
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    container_name: app36
+
+  app37-cu102:
+    build:
+      context: ./gpu/openpose
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8000"
+    container_name: app37-cu102

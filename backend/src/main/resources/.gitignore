@@ -1,0 +1,4 @@
+# # Ignore everything in this directory
+# applications.properties
+# # Except this file
+# !.gitignore
