@@ -1,5 +1,5 @@
 import React from "react";
-import "../../assets/styles/layouts/FeaturedProduct.css";
+import "../assets/styles/layouts/FeaturedProduct.css";
 
 export default function FeaturedProduct({children}) {
     return (

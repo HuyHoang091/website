@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Input from "../../components/Input/Input";
 import { login } from "../../services/authService";
-import styles from '../../layouts/LoginPage.module.css';
+import styles from '../../assets/styles/layouts/LoginPage.module.css';
 import AuthLayout from "../../layouts/AuthLayout";
 
 const LoginPage = () => {

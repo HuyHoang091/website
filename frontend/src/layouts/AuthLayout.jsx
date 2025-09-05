@@ -1,5 +1,5 @@
 import React from "react";
-import styles from '../../assets/styles/layouts/LoginPage.module.css';
+import styles from '../assets/styles/layouts/LoginPage.module.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import { setupLive2D, handleReload } from "../utils/Live2D";

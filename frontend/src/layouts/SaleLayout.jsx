@@ -1,5 +1,5 @@
 import React, { useEffect, useState }  from "react";
-import styles from "../../assets/styles/layouts/SaleLayout.module.css"
+import styles from "../assets/styles/layouts/SaleLayout.module.css"
 
 export default function SaleLayout({children, endTime}) {
     const [timeLeft, setTimeLeft] = useState({
