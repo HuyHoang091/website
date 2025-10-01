@@ -20,12 +20,18 @@ public class User {
     private String phone;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ROLE role = ROLE.customer;
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private ROLE role = ROLE.USER;
+    private LocalDateTime createdAt;
     private String status;
 
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
     public enum ROLE {
-        customer,
-        admin
+        USER, SALER,
+        ADMIN
     }
 }

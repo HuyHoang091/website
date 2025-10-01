@@ -31,8 +31,15 @@ public class Order {
     @Column(precision = 12, scale = 2, nullable = false)
     private BigDecimal totalAmount;
     
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private String createBy;
+    private LocalDateTime createdAt;
 
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
     public enum STATUS {
         pending,
         paid,

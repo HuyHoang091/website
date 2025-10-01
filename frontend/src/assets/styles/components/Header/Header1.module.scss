@@ -207,3 +207,33 @@ $grid-columns: 12;
 .search {
   position: relative;
 }
+
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.userName {
+  font-weight: 600;
+  color: white;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+.logoutButton {
+  background: linear-gradient(135deg, #ea6666 0%, #a24b78 50%, #93a0fb 100%);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, #93a0fb 0%, #a24b78 50%, #ea6666 100%);
+  }
+}

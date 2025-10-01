@@ -33,5 +33,12 @@ public class OrderItem {
     @Column(precision = 12, scale = 2, nullable = false)
     private BigDecimal lineTotal;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 }

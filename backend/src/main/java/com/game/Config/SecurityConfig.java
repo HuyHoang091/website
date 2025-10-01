@@ -1,5 +1,7 @@
 package com.game.Config;
 
+import java.util.List;
+
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -28,15 +33,12 @@ public class SecurityConfig {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeRequests()
-                .antMatchers("/api/auth/login", "/api/auth/register", "/api/auth/forgot-password", "/api/auth/reset-password").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/map/**", "/api/item/**", "/api/monster/**", "/api/monsterdrop/**", "/api/skill/**", "/api/skillupdate/**")
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .antMatchers("/api/auth/login", "/api/auth/register", "/api/auth/forgot-password", "/api/auth/reset-password", "/ws/**", "/images/**", "/fb/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/map/**")
                 .hasAnyRole("USER", "ADMIN")
-                .antMatchers("/api/map/**").hasRole("ADMIN")
-                .antMatchers("/api/item/**").hasRole("ADMIN")
-                .antMatchers("/api/monster/**").hasRole("ADMIN")
-                .antMatchers("/api/monsterdrop/**").hasRole("ADMIN")
-                .antMatchers("/api/skill/**").hasRole("ADMIN")
-                .antMatchers("/api/skillupdate/**").hasRole("ADMIN")
+                .antMatchers("/api/chat/**").hasAnyRole("ADMIN", "SALER")
+                .antMatchers("/api/upload/**").hasAnyRole("ADMIN", "USER", "SALER")
                 .anyRequest().authenticated()
             .and()
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

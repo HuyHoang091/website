@@ -12,10 +12,10 @@ public class JwtUtil {
     private String SECRET_KEY;
     private final long EXPIRATION_TIME = 86400000;
 
-    public String generateToken(String email, String sessionId) {
+    public String generateToken(String email, String role) {
         return Jwts.builder()
             .setSubject(email)
-            .claim("sessionId", sessionId)
+            .claim("role", role)
             .setIssuedAt(new Date())
             .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
             .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
@@ -39,12 +39,12 @@ public class JwtUtil {
         return claims.getSubject();
     }
 
-    public String getSessionIdFromToken(String token) {
+    public String getRoleFromToken(String token) {
         Claims claims = Jwts.parser()
             .setSigningKey(SECRET_KEY)
             .parseClaimsJws(token)
             .getBody();
-        return claims.get("sessionId", String.class);
+        return claims.get("role", String.class);
     }
 
     public String generateResetToken(String email) {

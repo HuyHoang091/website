@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Tồn Kho - Fashion Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b-4 border-indigo-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center">
+                    <i class="fas fa-store text-3xl text-indigo-600 mr-3"></i>
+                    <h1 class="text-3xl font-bold text-gray-900">Fashion Store</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-600">Xin chào, Admin</span>
+                    <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition duration-200">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Đăng xuất
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Title -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Quản Lý Tồn Kho</h2>
+            <p class="text-gray-600">Quản lý sản phẩm quần áo trong kho</p>
+        </div>
+
+        <!-- Controls -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                <!-- Search -->
+                <div class="flex-1 max-w-md">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." 
+                               class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- Filter -->
+                <div class="flex items-center space-x-4">
+                    <select id="categoryFilter" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                        <option value="">Tất cả danh mục</option>
+                        <option value="Áo">Áo</option>
+                        <option value="Quần">Quần</option>
+                        <option value="Váy">Váy</option>
+                        <option value="Phụ kiện">Phụ kiện</option>
+                    </select>
+
+                    <button id="addProductBtn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition duration-200">
+                        <i class="fas fa-plus mr-2"></i>Thêm sản phẩm
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sản phẩm</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Danh mục</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Màu sắc</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số lượng</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTable" class="bg-white divide-y divide-gray-200">
+                        <!-- Products will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                        <i class="fas fa-boxes text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Tổng sản phẩm</p>
+                        <p id="totalProducts" class="text-2xl font-bold text-gray-900">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100 text-green-600">
+                        <i class="fas fa-check-circle text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Còn hàng</p>
+                        <p id="inStockProducts" class="text-2xl font-bold text-gray-900">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                        <i class="fas fa-exclamation-triangle text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Sắp hết</p>
+                        <p id="lowStockProducts" class="text-2xl font-bold text-gray-900">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-red-100 text-red-600">
+                        <i class="fas fa-times-circle text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Hết hàng</p>
+                        <p id="outOfStockProducts" class="text-2xl font-bold text-gray-900">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div id="productModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 id="modalTitle" class="text-xl font-bold text-gray-900">Thêm sản phẩm mới</h3>
+                    <button id="closeModal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <form id="productForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tên sản phẩm</label>
+                        <input type="text" id="productName" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Danh mục</label>
+                            <select id="productCategory" required 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                <option value="">Chọn danh mục</option>
+                                <option value="Áo">Áo</option>
+                                <option value="Quần">Quần</option>
+                                <option value="Váy">Váy</option>
+                                <option value="Phụ kiện">Phụ kiện</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Giá cơ bản (VNĐ)</label>
+                            <input type="number" id="productPrice" required min="0" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <!-- Variants Section -->
+                    <div class="border-t pt-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-medium text-gray-900">Biến thể sản phẩm</h4>
+                            <button type="button" id="addVariantBtn" 
+                                    class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm">
+                                <i class="fas fa-plus mr-1"></i>Thêm biến thể
+                            </button>
+                        </div>
+                        
+                        <div id="variantsList" class="space-y-3">
+                            <!-- Variants will be added here -->
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-6">
+                        <button type="button" id="cancelBtn" 
+                                class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200">
+                            Hủy
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition duration-200">
+                            Lưu
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data with variants
+        let products = [
+            {
+                id: 1,
+                name: "Áo thun nam basic",
+                category: "Áo",
+                basePrice: 199000,
+                variants: [
+                    { size: "S", color: "Trắng", quantity: 15, sku: "AT001-S-W" },
+                    { size: "M", color: "Trắng", quantity: 25, sku: "AT001-M-W" },
+                    { size: "L", color: "Trắng", quantity: 12, sku: "AT001-L-W" },
+                    { size: "S", color: "Đen", quantity: 8, sku: "AT001-S-B" },
+                    { size: "M", color: "Đen", quantity: 20, sku: "AT001-M-B" },
+                    { size: "L", color: "Đen", quantity: 5, sku: "AT001-L-B" }
+                ]
+            },
+            {
+                id: 2,
+                name: "Quần jeans nữ skinny",
+                category: "Quần",
+                basePrice: 450000,
+                variants: [
+                    { size: "S", color: "Xanh đen", quantity: 8, sku: "QJ002-S-DB" },
+                    { size: "M", color: "Xanh đen", quantity: 12, sku: "QJ002-M-DB" },
+                    { size: "L", color: "Xanh đen", quantity: 6, sku: "QJ002-L-DB" },
+                    { size: "S", color: "Xanh nhạt", quantity: 0, sku: "QJ002-S-LB" },
+                    { size: "M", color: "Xanh nhạt", quantity: 3, sku: "QJ002-M-LB" }
+                ]
+            },
+            {
+                id: 3,
+                name: "Váy maxi hoa",
+                category: "Váy",
+                basePrice: 320000,
+                variants: [
+                    { size: "S", color: "Hoa đỏ", quantity: 4, sku: "VM003-S-RF" },
+                    { size: "M", color: "Hoa đỏ", quantity: 0, sku: "VM003-M-RF" },
+                    { size: "L", color: "Hoa đỏ", quantity: 2, sku: "VM003-L-RF" },
+                    { size: "S", color: "Hoa xanh", quantity: 6, sku: "VM003-S-BF" },
+                    { size: "M", color: "Hoa xanh", quantity: 8, sku: "VM003-M-BF" }
+                ]
+            },
+            {
+                id: 4,
+                name: "Túi xách da",
+                category: "Phụ kiện",
+                basePrice: 680000,
+                variants: [
+                    { size: "One Size", color: "Nâu", quantity: 15, sku: "TX004-OS-BR" },
+                    { size: "One Size", color: "Đen", quantity: 10, sku: "TX004-OS-BL" },
+                    { size: "One Size", color: "Đỏ", quantity: 5, sku: "TX004-OS-RD" }
+                ]
+            }
+        ];
+
+        let editingId = null;
+        let variantCounter = 0;
+
+        // DOM elements
+        const inventoryTable = document.getElementById('inventoryTable');
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const addProductBtn = document.getElementById('addProductBtn');
+        const productModal = document.getElementById('productModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const productForm = document.getElementById('productForm');
+        const modalTitle = document.getElementById('modalTitle');
+        const addVariantBtn = document.getElementById('addVariantBtn');
+        const variantsList = document.getElementById('variantsList');
+
+        // Statistics elements
+        const totalProducts = document.getElementById('totalProducts');
+        const inStockProducts = document.getElementById('inStockProducts');
+        const lowStockProducts = document.getElementById('lowStockProducts');
+        const outOfStockProducts = document.getElementById('outOfStockProducts');
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(amount);
+        }
+
+        // Get stock status
+        function getStockStatus(quantity) {
+            if (quantity === 0) return { text: 'Hết hàng', class: 'bg-red-100 text-red-800' };
+            if (quantity <= 5) return { text: 'Sắp hết', class: 'bg-yellow-100 text-yellow-800' };
+            return { text: 'Còn hàng', class: 'bg-green-100 text-green-800' };
+        }
+
+        // Generate SKU
+        function generateSKU(productName, size, color) {
+            const nameCode = productName.substring(0, 3).toUpperCase();
+            const sizeCode = size.substring(0, 2).toUpperCase();
+            const colorCode = color.substring(0, 2).toUpperCase();
+            const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            return `${nameCode}${randomNum}-${sizeCode}-${colorCode}`;
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            let totalVariants = 0;
+            let inStock = 0;
+            let lowStock = 0;
+            let outOfStock = 0;
+
+            products.forEach(product => {
+                product.variants.forEach(variant => {
+                    totalVariants++;
+                    if (variant.quantity === 0) outOfStock++;
+                    else if (variant.quantity <= 5) lowStock++;
+                    else inStock++;
+                });
+            });
+
+            totalProducts.textContent = totalVariants;
+            inStockProducts.textContent = inStock;
+            lowStockProducts.textContent = lowStock;
+            outOfStockProducts.textContent = outOfStock;
+        }
+
+        // Render products table
+        function renderProducts(productsToRender = products) {
+            inventoryTable.innerHTML = '';
+            
+            productsToRender.forEach(product => {
+                product.variants.forEach((variant, index) => {
+                    const status = getStockStatus(variant.quantity);
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50';
+                    
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">${product.name}</div>
+                            <div class="text-sm text-gray-500">ID: ${product.id}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${product.category}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${variant.sku}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${variant.size}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${variant.color}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${variant.quantity}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(product.basePrice)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${status.class}">
+                                ${status.text}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button onclick="editVariant('${product.id}', '${variant.sku}')" class="text-indigo-600 hover:text-indigo-900 mr-3">
+                                <i class="fas fa-edit"></i> Sửa
+                            </button>
+                            <button onclick="deleteVariant('${product.id}', '${variant.sku}')" class="text-red-600 hover:text-red-900">
+                                <i class="fas fa-trash"></i> Xóa
+                            </button>
+                        </td>
+                    `;
+                    
+                    inventoryTable.appendChild(row);
+                });
+            });
+            
+            updateStatistics();
+        }
+
+        // Filter products
+        function filterProducts() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const categoryTerm = categoryFilter.value;
+            
+            const filtered = products.filter(product => {
+                const matchesSearch = product.name.toLowerCase().includes(searchTerm) ||
+                                    product.variants.some(v => v.color.toLowerCase().includes(searchTerm) || v.sku.toLowerCase().includes(searchTerm));
+                const matchesCategory = !categoryTerm || product.category === categoryTerm;
+                
+                return matchesSearch && matchesCategory;
+            });
+            
+            renderProducts(filtered);
+        }
+
+        // Add variant row
+        function addVariantRow(variant = null) {
+            variantCounter++;
+            const variantDiv = document.createElement('div');
+            variantDiv.className = 'bg-gray-50 p-4 rounded-lg';
+            variantDiv.id = `variant-${variantCounter}`;
+            
+            variantDiv.innerHTML = `
+                <div class="grid grid-cols-4 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Size</label>
+                        <select class="variant-size w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500" required>
+                            <option value="">Chọn size</option>
+                            <option value="XS" ${variant && variant.size === 'XS' ? 'selected' : ''}>XS</option>
+                            <option value="S" ${variant && variant.size === 'S' ? 'selected' : ''}>S</option>
+                            <option value="M" ${variant && variant.size === 'M' ? 'selected' : ''}>M</option>
+                            <option value="L" ${variant && variant.size === 'L' ? 'selected' : ''}>L</option>
+                            <option value="XL" ${variant && variant.size === 'XL' ? 'selected' : ''}>XL</option>
+                            <option value="XXL" ${variant && variant.size === 'XXL' ? 'selected' : ''}>XXL</option>
+                            <option value="One Size" ${variant && variant.size === 'One Size' ? 'selected' : ''}>One Size</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Màu sắc</label>
+                        <input type="text" class="variant-color w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500" 
+                               value="${variant ? variant.color : ''}" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Số lượng</label>
+                        <input type="number" class="variant-quantity w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500" 
+                               value="${variant ? variant.quantity : ''}" min="0" required>
+                    </div>
+                    <div class="flex items-end">
+                        <button type="button" onclick="removeVariant('variant-${variantCounter}')" 
+                                class="w-full bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            variantsList.appendChild(variantDiv);
+        }
+
+        // Remove variant
+        function removeVariant(variantId) {
+            const variantDiv = document.getElementById(variantId);
+            if (variantDiv) {
+                variantDiv.remove();
+            }
+        }
+
+        // Show modal
+        function showModal(title = 'Thêm sản phẩm mới') {
+            modalTitle.textContent = title;
+            variantsList.innerHTML = '';
+            variantCounter = 0;
+            addVariantRow(); // Add one default variant row
+            productModal.classList.remove('hidden');
+            productModal.classList.add('flex');
+        }
+
+        // Hide modal
+        function hideModal() {
+            productModal.classList.add('hidden');
+            productModal.classList.remove('flex');
+            productForm.reset();
+            variantsList.innerHTML = '';
+            editingId = null;
+        }
+
+        // Add product
+        function addProduct(productData) {
+            const newId = Math.max(...products.map(p => p.id)) + 1;
+            products.push({
+                id: newId,
+                ...productData
+            });
+            renderProducts();
+        }
+
+        // Edit variant
+        function editVariant(productId, sku) {
+            const product = products.find(p => p.id == productId);
+            const variant = product.variants.find(v => v.sku === sku);
+            if (!product || !variant) return;
+            
+            editingId = productId;
+            showModal('Chỉnh sửa sản phẩm');
+            
+            document.getElementById('productName').value = product.name;
+            document.getElementById('productCategory').value = product.category;
+            document.getElementById('productPrice').value = product.basePrice;
+            
+            // Clear variants list and add existing variants
+            variantsList.innerHTML = '';
+            variantCounter = 0;
+            product.variants.forEach(v => addVariantRow(v));
+        }
+
+        // Update product
+        function updateProduct(id, productData) {
+            const index = products.findIndex(p => p.id == id);
+            if (index !== -1) {
+                products[index] = { id: parseInt(id), ...productData };
+                renderProducts();
+            }
+        }
+
+        // Delete variant
+        function deleteVariant(productId, sku) {
+            if (confirm('Bạn có chắc chắn muốn xóa biến thể này?')) {
+                const product = products.find(p => p.id == productId);
+                if (product) {
+                    product.variants = product.variants.filter(v => v.sku !== sku);
+                    if (product.variants.length === 0) {
+                        products = products.filter(p => p.id != productId);
+                    }
+                    renderProducts();
+                }
+            }
+        }
+
+        // Event listeners
+        searchInput.addEventListener('input', filterProducts);
+        categoryFilter.addEventListener('change', filterProducts);
+        addProductBtn.addEventListener('click', () => showModal());
+        closeModal.addEventListener('click', hideModal);
+        cancelBtn.addEventListener('click', hideModal);
+        addVariantBtn.addEventListener('click', () => addVariantRow());
+
+        productForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const variants = [];
+            const variantDivs = variantsList.querySelectorAll('[id^="variant-"]');
+            
+            variantDivs.forEach(div => {
+                const size = div.querySelector('.variant-size').value;
+                const color = div.querySelector('.variant-color').value;
+                const quantity = parseInt(div.querySelector('.variant-quantity').value);
+                
+                if (size && color && quantity >= 0) {
+                    variants.push({
+                        size,
+                        color,
+                        quantity,
+                        sku: generateSKU(document.getElementById('productName').value, size, color)
+                    });
+                }
+            });
+            
+            if (variants.length === 0) {
+                alert('Vui lòng thêm ít nhất một biến thể!');
+                return;
+            }
+            
+            const productData = {
+                name: document.getElementById('productName').value,
+                category: document.getElementById('productCategory').value,
+                basePrice: parseInt(document.getElementById('productPrice').value),
+                variants: variants
+            };
+            
+            if (editingId) {
+                updateProduct(editingId, productData);
+            } else {
+                addProduct(productData);
+            }
+            
+            hideModal();
+        });
+
+        // Close modal when clicking outside
+        productModal.addEventListener('click', (e) => {
+            if (e.target === productModal) {
+                hideModal();
+            }
+        });
+
+        // Initial render
+        renderProducts();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b2bf1224dd045d',t:'MTc1NzIxMTgzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

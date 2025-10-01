@@ -15,6 +15,7 @@ public class Discount {
     private Long discountId;
 
     private String name;
+    private Long categoriesId;
     private String description;
 
     @Column(precision = 5, scale = 2)

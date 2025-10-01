@@ -26,11 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         List<GrantedAuthority> authorities = new ArrayList<>();
-        if ("admin".equalsIgnoreCase(email)) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        } else {
-            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        }
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
         
         return new CustomUserDetails(
             user.getId(),

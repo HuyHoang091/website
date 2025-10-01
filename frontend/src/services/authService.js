@@ -17,6 +17,16 @@ export async function login(username, password) {
     if (!res.ok) {
         throw new Error(data.message || "Đăng nhập thất bại");
     }
+
+    localStorage.setItem("tokenJWT", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    const role = data.user.role;
+    if (role === 'SALER') {
+        window.location.href = "/test";
+    } else {
+        window.location.href = "/";
+    }
     return data;
 }
 

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Preview - AI Fashion Store</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .glass-effect { backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.1); }
+        .ai-glow { box-shadow: 0 0 30px rgba(102, 126, 234, 0.3); }
+        .hover-scale { transition: transform 0.3s ease; }
+        .hover-scale:hover { transform: scale(1.05); }
+        .shimmer { animation: shimmer 2s infinite; }
+        @keyframes shimmer {
+            0% { background-position: -200px 0; }
+            100% { background-position: calc(200px + 100%) 0; }
+        }
+        .shimmer { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200px 100%; }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const VIPPreviewPage = () => {
+            const [selectedProduct, setSelectedProduct] = useState(null);
+            const [isAITryOn, setIsAITryOn] = useState(false);
+            const [userPhoto, setUserPhoto] = useState(null);
+            const [isProcessing, setIsProcessing] = useState(false);
+
+            const vipProducts = [
+                {
+                    id: 1,
+                    name: "Áo Sơ Mi Premium Silk",
+                    price: "2,890,000",
+                    originalPrice: "3,500,000",
+                    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%23f8fafc'/%3E%3Cpath d='M50 80 L250 80 L250 120 L200 120 L200 320 L100 320 L100 120 L50 120 Z' fill='%23e2e8f0'/%3E%3Cpath d='M100 120 L200 120 L200 180 L180 180 L180 320 L120 320 L120 180 L100 180 Z' fill='%23cbd5e1'/%3E%3Ctext x='150' y='360' text-anchor='middle' fill='%23475569' font-size='14'%3EÁo Sơ Mi Premium%3C/text%3E%3C/svg%3E",
+                    category: "Áo Sơ Mi",
+                    rating: 4.9,
+                    reviews: 127,
+                    exclusive: true
+                },
+                {
+                    id: 2,
+                    name: "Váy Dạ Hội Luxury",
+                    price: "5,200,000",
+                    originalPrice: "6,800,000",
+                    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%23fef7f0'/%3E%3Cpath d='M120 60 L180 60 L180 100 L200 100 L220 400 L80 400 L100 100 L120 100 Z' fill='%23f59e0b'/%3E%3Cpath d='M130 100 L170 100 L190 400 L110 400 Z' fill='%23d97706'/%3E%3Ctext x='150' y='360' text-anchor='middle' fill='%2392400e' font-size='14'%3EVáy Dạ Hội%3C/text%3E%3C/svg%3E",
+                    category: "Váy",
+                    rating: 5.0,
+                    reviews: 89,
+                    exclusive: true
+                },
+                {
+                    id: 3,
+                    name: "Blazer Executive",
+                    price: "4,150,000",
+                    originalPrice: "5,200,000",
+                    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%23f1f5f9'/%3E%3Cpath d='M80 100 L220 100 L220 140 L200 140 L200 350 L100 350 L100 140 L80 140 Z' fill='%231e293b'/%3E%3Cpath d='M100 140 L200 140 L200 200 L180 200 L180 350 L120 350 L120 200 L100 200 Z' fill='%23334155'/%3E%3Cpath d='M130 160 L170 160 L170 180 L130 180 Z' fill='%23475569'/%3E%3Ctext x='150' y='380' text-anchor='middle' fill='%230f172a' font-size='14'%3EBlazer Executive%3C/text%3E%3C/svg%3E",
+                    category: "Áo Khoác",
+                    rating: 4.8,
+                    reviews: 203,
+                    exclusive: true
+                }
+            ];
+
+            const handleAITryOn = (product) => {
+                setSelectedProduct(product);
+                setIsAITryOn(true);
+            };
+
+            const processAITryOn = () => {
+                setIsProcessing(true);
+                // Mô phỏng quá trình AI xử lý
+                setTimeout(() => {
+                    setIsProcessing(false);
+                    alert('🎉 AI đã tạo thành công hình ảnh thử đồ! Bạn trông thật tuyệt vời với sản phẩm này!');
+                }, 3000);
+            };
+
+            const handlePhotoUpload = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        setUserPhoto(e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            return (
+                <div className="min-h-screen text-white">
+                    {/* Header */}
+                    <header className="glass-effect border-b border-white/20 p-6">
+                        <div className="max-w-7xl mx-auto flex justify-between items-center">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                                    <span className="text-2xl">👑</span>
+                                </div>
+                                <div>
+                                    <h1 className="text-2xl font-bold">VIP COLLECTION</h1>
+                                    <p className="text-sm opacity-80">Exclusive AI Fashion Experience</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-4">
+                                <div className="bg-yellow-500 text-black px-4 py-2 rounded-full font-semibold">
+                                    🌟 VIP Member
+                                </div>
+                                <button className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors">
+                                    Hồ Sơ
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Hero Section */}
+                    <section className="py-16 px-6">
+                        <div className="max-w-7xl mx-auto text-center">
+                            <h2 className="text-5xl font-bold mb-6">
+                                Trải Nghiệm <span className="text-yellow-400">AI Thử Đồ</span> Độc Quyền
+                            </h2>
+                            <p className="text-xl opacity-90 mb-8 max-w-3xl mx-auto">
+                                Khám phá bộ sưu tập VIP với công nghệ AI tiên tiến. Thử đồ ảo ngay lập tức và tìm ra phong cách hoàn hảo của bạn.
+                            </p>
+                            <div className="flex justify-center space-x-4">
+                                <div className="bg-white/10 px-6 py-3 rounded-full">
+                                    <span className="text-yellow-400">🤖</span> AI Thử Đồ Thực Tế
+                                </div>
+                                <div className="bg-white/10 px-6 py-3 rounded-full">
+                                    <span className="text-green-400">✨</span> Chất Lượng Premium
+                                </div>
+                                <div className="bg-white/10 px-6 py-3 rounded-full">
+                                    <span className="text-blue-400">🚀</span> Giao Hàng VIP
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Products Grid */}
+                    <section className="py-12 px-6">
+                        <div className="max-w-7xl mx-auto">
+                            <h3 className="text-3xl font-bold mb-8 text-center">Bộ Sưu Tập VIP Độc Quyền</h3>
+                            <div className="grid md:grid-cols-3 gap-8">
+                                {vipProducts.map((product) => (
+                                    <div key={product.id} className="glass-effect rounded-2xl p-6 hover-scale ai-glow">
+                                        <div className="relative mb-4">
+                                            <img 
+                                                src={product.image} 
+                                                alt={product.name}
+                                                className="w-full h-64 object-cover rounded-xl"
+                                            />
+                                            <div className="absolute top-4 right-4 bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-bold">
+                                                VIP ONLY
+                                            </div>
+                                            <div className="absolute top-4 left-4 bg-red-500 px-3 py-1 rounded-full text-sm font-bold">
+                                                -25%
+                                            </div>
+                                        </div>
+                                        
+                                        <h4 className="text-xl font-bold mb-2">{product.name}</h4>
+                                        <p className="text-sm opacity-80 mb-3">{product.category}</p>
+                                        
+                                        <div className="flex items-center mb-3">
+                                            <div className="flex text-yellow-400">
+                                                {'★'.repeat(Math.floor(product.rating))}
+                                            </div>
+                                            <span className="ml-2 text-sm">({product.reviews} đánh giá)</span>
+                                        </div>
+                                        
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div>
+                                                <span className="text-2xl font-bold text-yellow-400">{product.price}₫</span>
+                                                <span className="text-sm line-through opacity-60 ml-2">{product.originalPrice}₫</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="space-y-3">
+                                            <button 
+                                                onClick={() => handleAITryOn(product)}
+                                                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 py-3 rounded-xl font-semibold transition-all transform hover:scale-105"
+                                            >
+                                                🤖 Thử Đồ AI
+                                            </button>
+                                            <button className="w-full bg-white/20 hover:bg-white/30 py-3 rounded-xl font-semibold transition-colors">
+                                                Thêm Vào Giỏ
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* AI Try-On Modal */}
+                    {isAITryOn && (
+                        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                            <div className="glass-effect rounded-2xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h3 className="text-2xl font-bold">🤖 AI Thử Đồ Ảo - {selectedProduct?.name}</h3>
+                                    <button 
+                                        onClick={() => setIsAITryOn(false)}
+                                        className="text-white hover:text-red-400 text-2xl"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                                
+                                <div className="grid md:grid-cols-2 gap-8">
+                                    {/* Upload Section */}
+                                    <div>
+                                        <h4 className="text-lg font-semibold mb-4">📸 Tải Ảnh Của Bạn</h4>
+                                        <div className="border-2 border-dashed border-white/30 rounded-xl p-8 text-center">
+                                            {userPhoto ? (
+                                                <div>
+                                                    <img src={userPhoto} alt="User" className="w-32 h-32 object-cover rounded-full mx-auto mb-4" />
+                                                    <p className="text-green-400">✅ Ảnh đã được tải lên!</p>
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <div className="text-6xl mb-4">📷</div>
+                                                    <p className="mb-4">Tải ảnh toàn thân của bạn để AI thử đồ</p>
+                                                    <input 
+                                                        type="file" 
+                                                        accept="image/*" 
+                                                        onChange={handlePhotoUpload}
+                                                        className="hidden" 
+                                                        id="photo-upload"
+                                                    />
+                                                    <label 
+                                                        htmlFor="photo-upload"
+                                                        className="bg-blue-500 hover:bg-blue-600 px-6 py-3 rounded-xl cursor-pointer inline-block transition-colors"
+                                                    >
+                                                        Chọn Ảnh
+                                                    </label>
+                                                </div>
+                                            )}
+                                        </div>
+                                        
+                                        <div className="mt-6">
+                                            <h5 className="font-semibold mb-3">⚙️ Tùy Chọn AI</h5>
+                                            <div className="space-y-2">
+                                                <label className="flex items-center">
+                                                    <input type="checkbox" className="mr-2" defaultChecked />
+                                                    Tự động điều chỉnh kích thước
+                                                </label>
+                                                <label className="flex items-center">
+                                                    <input type="checkbox" className="mr-2" defaultChecked />
+                                                    Tối ưu hóa ánh sáng
+                                                </label>
+                                                <label className="flex items-center">
+                                                    <input type="checkbox" className="mr-2" />
+                                                    Hiển thị nhiều góc độ
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Preview Section */}
+                                    <div>
+                                        <h4 className="text-lg font-semibold mb-4">👗 Xem Trước Kết Quả</h4>
+                                        <div className="bg-white/10 rounded-xl p-6 h-80 flex items-center justify-center">
+                                            {isProcessing ? (
+                                                <div className="text-center">
+                                                    <div className="animate-spin w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                                                    <p>🤖 AI đang xử lý...</p>
+                                                    <p className="text-sm opacity-80">Vui lòng đợi 2-3 giây</p>
+                                                </div>
+                                            ) : userPhoto ? (
+                                                <div className="text-center">
+                                                    <div className="text-4xl mb-4">✨</div>
+                                                    <p>Sẵn sàng tạo hình ảnh thử đồ!</p>
+                                                    <button 
+                                                        onClick={processAITryOn}
+                                                        className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 px-8 py-3 rounded-xl font-semibold mt-4 transition-all transform hover:scale-105"
+                                                    >
+                                                        🚀 Bắt Đầu AI Thử Đồ
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="text-center opacity-60">
+                                                    <div className="text-4xl mb-4">🖼️</div>
+                                                    <p>Tải ảnh lên để xem kết quả</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        
+                                        <div className="mt-4 p-4 bg-blue-500/20 rounded-xl">
+                                            <h6 className="font-semibold mb-2">💡 Mẹo để có kết quả tốt nhất:</h6>
+                                            <ul className="text-sm space-y-1 opacity-90">
+                                                <li>• Sử dụng ảnh toàn thân, đứng thẳng</li>
+                                                <li>• Ánh sáng tốt, nền đơn giản</li>
+                                                <li>• Mặc quần áo vừa vặn</li>
+                                                <li>• Độ phân giải cao (tối thiểu 800x600)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Features Section */}
+                    <section className="py-16 px-6">
+                        <div className="max-w-7xl mx-auto">
+                            <h3 className="text-3xl font-bold mb-12 text-center">Tại Sao Chọn VIP Collection?</h3>
+                            <div className="grid md:grid-cols-4 gap-8">
+                                <div className="text-center">
+                                    <div className="text-5xl mb-4">🤖</div>
+                                    <h4 className="text-xl font-semibold mb-2">AI Thử Đồ</h4>
+                                    <p className="opacity-80">Công nghệ AI tiên tiến giúp bạn thử đồ ảo chân thực</p>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-5xl mb-4">👑</div>
+                                    <h4 className="text-xl font-semibold mb-2">Độc Quyền VIP</h4>
+                                    <p className="opacity-80">Sản phẩm cao cấp chỉ dành cho thành viên VIP</p>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-5xl mb-4">🚀</div>
+                                    <h4 className="text-xl font-semibold mb-2">Giao Hàng Nhanh</h4>
+                                    <p className="opacity-80">Giao hàng VIP trong 24h tại TP.HCM và Hà Nội</p>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-5xl mb-4">💎</div>
+                                    <h4 className="text-xl font-semibold mb-2">Chất Lượng Premium</h4>
+                                    <p className="opacity-80">100% chính hãng, chất liệu cao cấp nhập khẩu</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Footer */}
+                    <footer className="glass-effect border-t border-white/20 py-8 px-6 mt-16">
+                        <div className="max-w-7xl mx-auto text-center">
+                            <div className="flex justify-center items-center space-x-4 mb-4">
+                                <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                                    <span className="text-lg">👑</span>
+                                </div>
+                                <span className="text-xl font-bold">VIP Fashion AI</span>
+                            </div>
+                            <p className="opacity-80 mb-4">Trải nghiệm mua sắm thời trang với công nghệ AI tiên tiến</p>
+                            <div className="flex justify-center space-x-6 text-sm">
+                                <a href="#" className="hover:text-yellow-400 transition-colors">Về Chúng Tôi</a>
+                                <a href="#" className="hover:text-yellow-400 transition-colors">Liên Hệ</a>
+                                <a href="#" className="hover:text-yellow-400 transition-colors">Chính Sách</a>
+                                <a href="#" className="hover:text-yellow-400 transition-colors">Hỗ Trợ</a>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<VIPPreviewPage />, document.getElementById('root'));
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b287b1360a2b12',t:'MTc1NzIwOTU2Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

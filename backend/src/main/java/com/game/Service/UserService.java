@@ -23,12 +23,16 @@ public class UserService {
     @Autowired
     private EmailService emailService;
 
-    public User login(String account, String password) {
+    public User loginByEmail(String account, String password) {
         User user = userRepository.findByEmail(account);
-        User user1 = userRepository.findByPhone(account);
-        if (user == null) {
-            user = user1;
+        if (user != null && passwordEncoder.matches(password, user.getPasswordHash())) {
+            return user;
         }
+        return null;
+    }
+
+    public User loginByPhone(String account, String password) {
+        User user = userRepository.findByPhone(account);
         if (user != null && passwordEncoder.matches(password, user.getPasswordHash())) {
             return user;
         }

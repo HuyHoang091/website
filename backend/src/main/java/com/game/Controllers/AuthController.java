@@ -1,6 +1,7 @@
 package com.game.Controllers;
 
 import com.game.Config.JwtUtil;
+import com.game.Dto.LoginRequest;
 import com.game.Model.User;
 import com.game.Repository.ResetTokenRepository;
 import com.game.Model.AuthResponse;
@@ -35,23 +36,24 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User loginRequest) {
-        User user = userService.login(loginRequest.getEmail(), loginRequest.getPasswordHash());
-        User user1 = userService.login(loginRequest.getPhone(), loginRequest.getPasswordHash());
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        String username = request.getUsername();
+        String password = request.getPassword();
+
+        User user = username.contains("@") 
+            ? userService.loginByEmail(username, password)
+            : userService.loginByPhone(username, password);
+
         if (user == null) {
-            user = user1;
+            return ResponseEntity.badRequest().body("Tài khoản hoặc mật khẩu không đúng!");
         }
-        if (user != null) {
-            if (user.getStatus().equals("Blocked")) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Tài khoản của bạn đã bị khóa!");
-            }
-            String sessionId = UUID.randomUUID().toString();
-            // user.setSessionId(sessionId);
-            // userService.updateUser(user.getId(), user);
-            String token = jwtUtil.generateToken(user.getEmail(), sessionId);
-            return ResponseEntity.ok(new AuthResponse(user, token));
+
+        if ("Blocked".equals(user.getStatus())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Tài khoản của bạn đã bị khóa!");
         }
-        return ResponseEntity.badRequest().body("Tài khoản hoặc mật khẩu không đúng!");
+
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().toString());
+        return ResponseEntity.ok(new AuthResponse(user, token));
     }
 
     @PostMapping("/register")

@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Menu from '../Menu/Menu';
 import styles from '../../assets/styles/components/Header/Header1.module.scss';
 import { faHouse, faCartShopping, faFontAwesome, faBook, faQuestion } from "@fortawesome/free-solid-svg-icons";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const menuItems = [
     { icon: faHouse, label: "Trang chủ", href: "/" },
@@ -13,6 +13,29 @@ const menuItems = [
 ];
 
 export default function Header() {
+  const [name, setName] = useState("VIP Login");
+  const [isLogin, setIsLogin] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const tokenJWT = localStorage.getItem('tokenJWT');
+    const user = localStorage.getItem('user');
+
+    if (tokenJWT && user) {
+        const parsedUser = JSON.parse(user);
+        setName(parsedUser.fullName || "User");
+        setIsLogin(true);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('tokenJWT');
+    localStorage.removeItem('user');
+    setIsLogin(false);
+    setName("VIP Login");
+    navigate("/login");
+  };
+
   return (
     <header className={styles.header}>
       <div className={styles.headerContainer}>
@@ -37,9 +60,21 @@ export default function Header() {
                 🛒
                 <span className={styles.cartCount}>0</span>
             </button>
-            <Link to="/login" className={styles['col-2']}>
-              <button className={styles.vipButton}>VIP Login</button>
-            </Link>
+
+            <div className={styles['col-2']}>
+              {!isLogin ? (
+                <Link to="/login">
+                  <button className={styles.vipButton}>Vip Login</button>
+                </Link>
+              ) : (
+                <div className={styles.userSection}>
+                  <span className={styles.userName}>{name}</span>
+                  <button onClick={handleLogout} className={styles.logoutButton}>
+                    Đăng xuất
+                  </button>
+                </div>
+              )}
+            </div>
         </div>
       </div>
     </header>

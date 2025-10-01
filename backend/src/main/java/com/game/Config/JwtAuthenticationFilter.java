@@ -40,12 +40,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null && jwtUtil.validateToken(token)) {
             String email = jwtUtil.getEmailFromToken(token);
 
-            // String tokenSessionId = jwtUtil.getSessionIdFromToken(token);
-            // User user = userRepository.findByUsername(username);
-            // // if (!tokenSessionId.equals(user.getSessionId()) || tokenSessionId.equals("")) {
-            // //     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            // //     return;
-            // // }
+            String role = jwtUtil.getRoleFromToken(token);
+            User user = userRepository.findByEmail(email);
+            // if (!role.equals(user.getRole())) {
+            //     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            //     return;
+            // }
 
             CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(email);
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(

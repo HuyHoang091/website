@@ -26,5 +26,12 @@ public class CartItem {
     @Column(precision = 12, scale = 2, nullable = false)
     private BigDecimal priceAtAdd;
     
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 }

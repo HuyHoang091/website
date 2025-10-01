@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test with Reducer and UI</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .chat-list { border: 1px solid #ccc; padding: 10px; width: 300px; }
+        .chat-card { border-bottom: 1px solid #eee; padding: 5px; cursor: pointer; }
+        .chat-card:last-child { border-bottom: none; }
+        .messages { border: 1px solid #ccc; padding: 10px; width: 500px; height: 300px; overflow-y: auto; margin-top: 10px; }
+        .message { margin-bottom: 5px; }
+        .sender { color: blue; }
+        .receiver { color: green; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script>
+        // Initial state
+        const initialState = { chatCards: [], messages: {} };
+
+        function chatReducer(state, action) {
+            switch(action.type){
+                case 'ADD_MESSAGE': {
+                    const { conversationId, msg, name } = action.payload;
+                    const oldMsgs = state.messages[conversationId] || [];
+                    const messages = { ...state.messages, [conversationId]: [...oldMsgs, msg] };
+
+                    const cardIndex = state.chatCards.findIndex(c => c.id === conversationId);
+                    let chatCards;
+                    if(cardIndex >= 0){
+                        chatCards = state.chatCards.map(c => 
+                            c.id === conversationId ? { ...c, lastMessage: msg.content, time: msg.time } : c
+                        );
+                    } else {
+                        chatCards = [...state.chatCards, { id: conversationId, name: name || 'Unknown', lastMessage: msg.content, time: msg.time }];
+                    }
+
+                    return { ...state, messages, chatCards };
+                }
+                default: return state;
+            }
+        }
+
+        function createStore(reducer, initialState){
+            let state = initialState;
+            const listeners = [];
+            function dispatch(action){ state = reducer(state, action); listeners.forEach(fn => fn(state)); }
+            function getState(){ return state; }
+            function subscribe(fn){ listeners.push(fn); }
+            return { dispatch, getState, subscribe };
+        }
+
+        const store = createStore(chatReducer, initialState);
+
+        // UI rendering
+        function renderUI(state){
+            const chatListEl = document.getElementById('chatList');
+            const messagesEl = document.getElementById('messages');
+            chatListEl.innerHTML = '';
+            messagesEl.innerHTML = '';
+
+            state.chatCards.forEach(card => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'chat-card';
+                cardEl.textContent = `${card.name}: ${card.lastMessage} (${card.time})`;
+                cardEl.onclick = () => renderMessages(card.id);
+                chatListEl.appendChild(cardEl);
+            });
+
+            function renderMessages(conversationId){
+                messagesEl.innerHTML = '';
+                const msgs = state.messages[conversationId] || [];
+                msgs.forEach(m => {
+                    const msgEl = document.createElement('div');
+                    msgEl.className = 'message ' + (m.isSender ? 'sender' : 'receiver');
+                    msgEl.textContent = `${m.isSender ? 'You' : 'Them'}: ${m.content} (${m.time})`;
+                    messagesEl.appendChild(msgEl);
+                });
+            }
+        }
+
+        store.subscribe(renderUI);
+
+        function addMessage(conversationId, msg, name){
+            store.dispatch({ type:'ADD_MESSAGE', payload:{ conversationId, msg, name } });
+        }
+
+        // WebSocket test setup
+        const WEBSOCKET_URL = 'http://localhost:8080/ws';
+        const SALE_USER_ID = 'sale1';
+        const CLIENT_USER_ID = 'user1';
+        let saleClient, userClient;
+
+        function connectSale(){
+            const socket = new SockJS(`${WEBSOCKET_URL}?userId=${SALE_USER_ID}`);
+            saleClient = Stomp.over(socket);
+            saleClient.connect({}, () => {
+                saleClient.subscribe(`/user/queue/sale`, message => {
+                    const msg = JSON.parse(message.body);
+                    addMessage(msg.from || CLIENT_USER_ID, { 
+                        id: msg.id || Date.now(),
+                        content: msg.content,
+                        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+                        isSender: false
+                    }, msg.fromName || 'User');
+                });
+                saleClient.send('/app/registerSale', {}, {});
+            });
+        }
+
+        function connectUser(){
+            const socket = new SockJS(`${WEBSOCKET_URL}?userId=${CLIENT_USER_ID}`);
+            userClient = Stomp.over(socket);
+            userClient.connect({}, () => {
+                userClient.subscribe(`/user/queue/user`, message => {
+                    const msg = JSON.parse(message.body);
+                    addMessage(msg.clientId || SALE_USER_ID, {
+                        id: msg.id || Date.now(),
+                        content: msg.content,
+                        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+                        isSender: false
+                    }, msg.toName || 'Sale');
+                });
+
+                setTimeout(sendUserMessage, 2000); // send test message
+            });
+        }
+
+        function sendUserMessage(){
+            const payload = {
+                from: CLIENT_USER_ID,
+                fromName: 'John Doe',
+                type: 'message',
+                content: 'Hello, can you help me?',
+                clientId: CLIENT_USER_ID
+            };
+            userClient.send('/app/userMessage', {}, JSON.stringify(payload));
+        }
+
+        window.onload = function(){
+            connectSale();
+            setTimeout(connectUser, 1000);
+        };
+    </script>
+</head>
+<body>
+    <h1>WebSocket Reducer Test with UI</h1>
+    <div class="chat-list" id="chatList"></div>
+    <div class="messages" id="messages"></div>
+</body>
+</html>

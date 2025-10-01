@@ -27,8 +27,14 @@ public class Payment {
     @Column(nullable = false)
     private STATUS status;
     
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
     public enum STATUS {
         pending,
         success,

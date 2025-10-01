@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tìm kiếm sản phẩm</title>
+  <link rel="stylesheet" href="/static/ImageSearch2.css" />
+</head>
+<body>
+  <div id="root"></div>
+
+  <script>
+    const root = document.getElementById("root");
+    root.innerHTML = `
+      <div class="page-container">
+        <div class="loadingBackground">
+          <div class="floatingShapes">
+            <div class="shape shape1"></div>
+            <div class="shape shape2"></div>
+            <div class="shape shape3"></div>
+            <div class="shape shape4"></div>
+          </div>
+        </div>
+        <div class="search-container">
+          <h1 class="title">🔍 Tìm kiếm sản phẩm bằng hình ảnh</h1>
+          <div id="dropzone" class="dropzone">
+            <p class="hint">Kéo thả ảnh, dán (Ctrl+V) hoặc chọn file</p>
+            <button class="upload-btn" id="pickFile">📁 Chọn File</button>
+            <input type="file" id="fileInput" accept="image/*" style="display:none">
+          </div>
+          <p id="loading" class="loading" style="display:none">⏳ Đang tìm kiếm...</p>
+          <div id="results" class="results-row"></div>
+        </div>
+      </div>
+    `;
+
+    const fileInput = document.getElementById("fileInput");
+    const dropzone = document.getElementById("dropzone");
+    const pickFile = document.getElementById("pickFile");
+    const resultsDiv = document.getElementById("results");
+    const loadingEl = document.getElementById("loading");
+
+    let uploadedImage = null;
+
+    function previewImage(file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        dropzone.innerHTML = `
+          <div class="preview">
+            <img src="${e.target.result}" alt="Uploaded">
+            <button id="clearBtn">❌ Xóa</button>
+          </div>`;
+        document.getElementById("clearBtn").onclick = resetUpload;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetUpload() {
+      dropzone.innerHTML = `
+        <p class="hint">Kéo thả ảnh, dán (Ctrl+V) hoặc chọn file</p>
+        <button class="upload-btn" id="pickFile">📁 Chọn File</button>
+        <input type="file" id="fileInput" accept="image/*" style="display:none">`;
+      bindEvents();
+      resultsDiv.innerHTML = "";
+    }
+
+    async function uploadToBackend(file) {
+      loadingEl.style.display = "block";
+      resultsDiv.innerHTML = "";
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/search/", { method:"POST", body: formData });
+      const data = await res.json();
+      loadingEl.style.display = "none";
+      showResults(data.results || []);
+    }
+
+    function showResults(results) {
+      resultsDiv.innerHTML = "";
+      results.forEach(r => {
+        const card = document.createElement("div");
+        card.className = "result-card";
+        let imgsHtml = "";
+        if (r.images && r.images.length > 0) {
+            imgsHtml += `<img src="${r.images[0]}" alt="Product" onclick="openLightbox('${r.images[0]}')">`;
+        }
+        if (r.images && r.images.length > 1) {
+            imgsHtml += `<img src="${r.images[1]}" alt="Product" onclick="openLightbox('${r.images[1]}')">`;
+        }
+        card.innerHTML = `
+          <div class="card-images" style="display:flex; gap:10px;">
+            ${imgsHtml}
+          </div>
+          <div class="card-info"><p class="pid">📦 Mã: ${r.product_id}</p></div>
+          <div class="card-info"><p class="pid2">Ghi chú: ${r.notes}</p></div>
+          <div class="card-info"><p class="pid1">Độ chính xác: ${r.score.toFixed(2)}</p></div>
+        `;
+        resultsDiv.appendChild(card);
+      });
+    }
+
+    function handleFile(file) {
+      if (file && file.type.startsWith("image/")) {
+        previewImage(file);
+        uploadToBackend(file);
+      }
+    }
+
+    function bindEvents() {
+      document.getElementById("pickFile").onclick = () => fileInput.click();
+      document.getElementById("fileInput").onchange = e => handleFile(e.target.files[0]);
+      dropzone.ondragover = e => { e.preventDefault(); dropzone.classList.add("drag-over"); };
+      dropzone.ondragleave = e => { e.preventDefault(); dropzone.classList.remove("drag-over"); };
+      dropzone.ondrop = e => { e.preventDefault(); handleFile(e.dataTransfer.files[0]); };
+      // document.addEventListener("paste", e => {
+      //   for (let item of e.clipboardData.items) {
+      //     if (item.type.startsWith("image/")) {
+      //       handleFile(item.getAsFile());
+      //       break;
+      //     }
+      //   }
+      // });
+    }
+
+    document.addEventListener("paste", handlePaste);
+
+    function handlePaste(e) {
+      for (let item of e.clipboardData.items) {
+        if (item.type.startsWith("image/")) {
+          handleFile(item.getAsFile());
+          break;
+        }
+      }
+    }
+
+    bindEvents();
+  </script>
+  <div id="lightbox" class="lightbox-overlay" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="Phóng ảnh">
+  </div>
+  <script>
+    function openLightbox(src) {
+        const overlay = document.getElementById("lightbox");
+        const img = document.getElementById("lightbox-img");
+        img.src = src;
+        overlay.classList.add("active");
+    }
+
+    function closeLightbox() {
+        const overlay = document.getElementById("lightbox");
+        overlay.classList.remove("active");
+    }
+  </script>
+</body>
+</html>

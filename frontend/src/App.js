@@ -1,28 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import AppRoutes from './routes/AppRoutes';
-import Header from './components/Header/Header1';
+import { v4 as uuidv4 } from 'uuid';
 
-const App = () => 
-// {
-//     const [htmlContent, setHtmlContent] = useState("");
+const App = () => {
+    useEffect(() => {
+        const tokenJWT = localStorage.getItem('tokenJWT');
+        let guestToken = localStorage.getItem('guestToken');
 
-//     useEffect(() => {
-//         fetch("./routes/demo.html")
-//         .then((res) => res.text())
-//         .then((data) => setHtmlContent(data));
-//     }, []);
+        if (!guestToken) {
+            guestToken = uuidv4();
+            localStorage.setItem('guestToken', guestToken);
+            localStorage.setItem('guestName', `Guest-${guestToken.slice(0, 8)}`);
+            localStorage.setItem('guest', 'true');
+        }
 
-//     return (
-//         <div>
-//             <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
-//             <Header />
-//             <AppRoutes />
-//         </div>
-//     );
-// }
-<div>
-    <Header />
-    <AppRoutes />
-</div>
+        if (tokenJWT) {
+            localStorage.setItem('guest', 'false');
+        }
+    }, []);
+    return (
+        <div>
+            <AppRoutes />
+        </div>
+    );
+}
 
 export default App;
