@@ -7,4 +7,5 @@ public interface ChatSummary {
     String getName();
     String getLastMessage();
     String getTime();
+    Integer getUnreadCount();
 }

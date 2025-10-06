@@ -9,6 +9,7 @@ export default function ListChat({ onSelectChat, selectedChatId }) {
     const [search, setSearch] = useState("");
     const clientRef = useRef(null);
     const subRef = useRef(null);
+    const selectedChatIdRef = useRef(selectedChatId);
 
     useEffect(() => {
         axios.get("http://localhost:8080/api/chat/list", {
@@ -17,6 +18,10 @@ export default function ListChat({ onSelectChat, selectedChatId }) {
         .then(res => setChats(res.data))
         .catch(err => console.error("Error fetching chat list:", err));
     }, []);
+
+    useEffect(() => {
+        selectedChatIdRef.current = selectedChatId;
+    }, [selectedChatId]);
 
     const filteredChats = chats.filter((chat) => {
         const name = chat.name ? chat.name.toLowerCase() : "";
@@ -58,31 +63,6 @@ export default function ListChat({ onSelectChat, selectedChatId }) {
             console.log("📩 Update list chat (listchat):", body);
             updateChatList(body);
         }));
-
-        // Thêm: Subscribe kênh sale để bắt cập nhật tin nhắn user
-        subscriptions.push(client.subscribe("/user/queue/sale", (message) => {
-            try {
-                const body = JSON.parse(message.body);
-                
-                // Bỏ qua các cập nhật status hoặc tin nhắn không có from (có thể là ping/pong)
-                if (body.clientId || !body.from) return;
-                
-                console.log("📩 Update list chat (sale channel):", body);
-                
-                // Tạo object tương thích với định dạng listchat để sử dụng hàm updateChatList
-                const listChatUpdate = {
-                    to: body.from,
-                    content: body.type === "image" 
-                        ? (body.fromName || "") + ": Đã gửi 1 ảnh" 
-                        : (body.fromName || "") + ": " + body.content,
-                    createdAt: body.createdAt
-                };
-                
-                updateChatList(listChatUpdate);
-            } catch (err) {
-                console.error("❌ Lỗi xử lý tin nhắn sale:", err);
-            }
-        }));
         
         // Lưu ref để có thể unsubscribe sau này
         subRef.current = {
@@ -90,62 +70,42 @@ export default function ListChat({ onSelectChat, selectedChatId }) {
                 subscriptions.forEach(sub => sub.unsubscribe());
             }
         };
-        
-        // Lắng nghe sự kiện từ window (được phát từ ChatWindow)
-        window.addEventListener("chat:unread", handleChatUnreadEvent);
-        
-        return () => {
-            window.removeEventListener("chat:unread", handleChatUnreadEvent);
-        };
     }
 
     // Thêm hàm xử lý cập nhật chat list - tái sử dụng logic
     function updateChatList(body) {
-        // Cập nhật chat theo key = body.to
         setChats((prevChats) => {
             const index = prevChats.findIndex(
-                (chat) => String(chat.id) === String(body.to) || String(chat.userId) === String(body.to)
+                (chat) => String(chat.userId) === String(body.to)
             );
-            
+
             if (index !== -1) {
                 const updatedChat = {
                     ...prevChats[index],
                     lastMessage: body.content,
                     time: body.createdAt,
-                    unread: selectedChatId === body.to ? 0 : (prevChats[index].unread || 0) + 1
+                    // Nếu user không phải là user hiện tại, tăng `unread`
+                    unreadCount: selectedChatIdRef.current === body.to ? 0 : (prevChats[index].unreadCount || 0) + 1,
                 };
-                
+
                 // Di chuyển chat được cập nhật lên đầu danh sách
                 const newChats = [...prevChats];
                 newChats.splice(index, 1);
                 return [updatedChat, ...newChats];
             } else {
-                // Nếu chat chưa có trong list, thêm mới
-                return [{
-                    userId: body.to,
-                    name: `Khách ${body.to}`, 
-                    lastMessage: body.content,
-                    time: body.createdAt,
-                    unread: 1
-                }, ...prevChats];
+                // Nếu chat chưa có trong danh sách, thêm mới
+                return [
+                    {
+                        userId: body.to,
+                        name: `Khách ${body.to}`,
+                        lastMessage: body.content,
+                        time: body.createdAt,
+                        unreadCount: selectedChatIdRef.current === body.to ? 0 : 1, // Nếu đang chọn, không tăng `unread`
+                    },
+                    ...prevChats,
+                ];
             }
         });
-    }
-
-    // Thêm hàm xử lý event từ ChatWindow
-    function handleChatUnreadEvent(e) {
-        const { userId, message } = e.detail;
-        if (!userId) return;
-        
-        const listChatUpdate = {
-            to: userId,
-            content: message.type === "image" 
-                ? (message.fromName || "") + ": Đã gửi 1 ảnh" 
-                : (message.fromName || "") + ": " + message.content,
-            createdAt: message.createdAt
-        };
-        
-        updateChatList(listChatUpdate);
     }
 
     useEffect(() => {
@@ -168,6 +128,24 @@ export default function ListChat({ onSelectChat, selectedChatId }) {
             unsubscribeListener(); // hủy listener khi unmount
         };
     }, []);
+
+    // Trong hàm `onSelectChat`, cập nhật trạng thái `unread` về 0
+    function handleSelectChat(userId, userName) {
+        if (String(selectedChatIdRef.current) === String(userId)) return;
+        // Cập nhật trạng thái `unread` về 0 cho user được chọn
+        setChats((prevChats) =>
+            prevChats.map((chat) =>
+                String(chat.userId) === String(userId)
+                    ? { ...chat, unreadCount: 0 }
+                    : chat
+            )
+        );
+
+        // Gọi callback để mở cửa sổ chat
+        if (onSelectChat) {
+            onSelectChat(userId, userName);
+        }
+    }
 
     return (
         <div className={styles.listChat} style={{width: "300px"}}>
@@ -194,7 +172,8 @@ export default function ListChat({ onSelectChat, selectedChatId }) {
                         message={chat.lastMessage}
                         time={chat.time}
                         avatar=""
-                        onSelect={onSelectChat}
+                        unread={chat.unreadCount || 0}
+                        onSelect={handleSelectChat}
                         selectedId={selectedChatId}
                         />
                     ))

@@ -1,8 +1,8 @@
 import React from "react";
 import styles from "./MessageItem.module.css";
+import AvatarGenerator from "../Common/AvatarGenerator";
 
-export default function MessageItem({ content, time, status, isSender, type, 
-  avatar = "http://localhost:8080/images/logo192.png", streaming = false }) {
+export default function MessageItem({ content, time, status, isSender, type, chatName, chatId, streaming = false }) {
   let statusText = "";
   if (status === "SENT") statusText = "Đã gửi";
   else if (status === "DELIVERED") statusText = "Đã nhận";
@@ -13,7 +13,7 @@ export default function MessageItem({ content, time, status, isSender, type,
   return (
     <div className={`${styles.messageRow} ${isSenderReal ? styles.sender : styles.receiver}`}>
       {!isSenderReal && (
-        <img src={avatar} alt="avatar" className={styles.avatar} />
+        <AvatarGenerator name={chatName} userId={chatId} size={30} />
       )}
 
       <div className={`${styles.bubble} ${streaming ? styles.streaming : ""}`}>

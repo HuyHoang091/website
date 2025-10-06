@@ -2,7 +2,6 @@ package com.game.Config;
 
 import java.security.Principal;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;

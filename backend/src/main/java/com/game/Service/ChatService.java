@@ -6,6 +6,7 @@ import com.game.Model.Chat;
 import com.game.Repository.ChatRepository;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 import javax.transaction.Transactional;
 
@@ -22,7 +23,26 @@ public class ChatService {
     public List<ChatSummary> getChatList() {
         return chatRepository.findChatSummariesForSaler();
     }
+
     public List<ChatMessageDto> getChat(String from, String to) {
         return chatRepository.findConversation(from, to);
+    }
+
+    public void markMessagesAsRead(String userId, String salerName) {
+        if (userId == null || userId.isEmpty())
+            return;
+
+        try {
+            // Lấy tất cả tin nhắn chưa đọc từ user này
+            List<Chat> unreadMessages = chatRepository.findUnreadMessagesFromUser(userId);
+            if (unreadMessages != null && !unreadMessages.isEmpty()) {
+                for (Chat chat : unreadMessages) {
+                    chat.setStatus(Chat.STATUS.SEEN);
+                }
+                chatRepository.saveAll(unreadMessages);
+            }
+        } catch (Exception e) {
+            System.err.println("Error marking messages as read: " + e.getMessage());
+        }
     }
 }

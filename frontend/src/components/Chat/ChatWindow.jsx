@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import styles from "./ChatWindow.module.css";
 import MessageItem from "./MessageItem";
+import AvatarGenerator from "../Common/AvatarGenerator";
 import { v4 as uuidv4 } from "uuid";
 import { getStompClient, onStompConnect } from "../../hooks/stompClient";
 
@@ -19,6 +20,11 @@ export default function ChatWindow({ chatId, chatName }) {
 
   useEffect(() => {
     if (!chatId) return;
+
+    // Gọi API để đánh dấu tin nhắn là SEEN
+    markMessagesAsSeen();
+
+    // Lấy danh sách tin nhắn
     axios
       .get(`http://localhost:8080/api/chat/saler/${chatId}`, {
         headers: { Authorization: "Bearer " + localStorage.getItem("tokenJWT") },
@@ -182,6 +188,10 @@ export default function ChatWindow({ chatId, chatName }) {
         // normal user message (left side)
         if (body.from && !body.aiResponse) {
           if (String(body.from) === String(chatId)) {
+            // Nếu đang trong cửa sổ chat, đánh dấu tin nhắn là SEEN
+            markMessagesAsSeen();
+
+            // Thêm tin nhắn vào danh sách
             setMessages((p) => [
               ...p,
               {
@@ -193,8 +203,6 @@ export default function ChatWindow({ chatId, chatName }) {
                 status: body.status,
               },
             ]);
-          } else {
-            window.dispatchEvent(new CustomEvent("chat:unread", { detail: { userId: body.from, message: body } }));
           }
           return;
         }
@@ -285,6 +293,18 @@ export default function ChatWindow({ chatId, chatName }) {
     handleSendMessage();
   };
 
+  // Thêm hàm để đánh dấu tin nhắn là SEEN
+  const markMessagesAsSeen = () => {
+    if (!chatId) return;
+    axios
+      .post(
+        `http://localhost:8080/api/chat/markAsRead`,
+        { userId: chatId },
+        { headers: { Authorization: "Bearer " + localStorage.getItem("tokenJWT") } }
+      )
+      .catch((err) => console.error("Không thể đánh dấu tin nhắn là SEEN:", err));
+  };
+
   if (!chatId) {
     return (
       <div>
@@ -304,7 +324,8 @@ export default function ChatWindow({ chatId, chatName }) {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <img src="http://localhost:8080/images/logo192.png" alt="avatar" className={styles.avatar} />
+        {/* <img src="http://localhost:8080/images/logo192.png" alt="avatar" className={styles.avatar} /> */}
+        <AvatarGenerator name={chatName} userId={chatId} size={50} />
         <div className={styles.headerInfo}>
           <h2>{chatName}</h2>
           <div className={styles.connectionStatus}>
@@ -331,7 +352,8 @@ export default function ChatWindow({ chatId, chatName }) {
             isSender={msg.isSender}
             status={msg.status || ""}
             type={msg.type || "message"}
-            avatar="http://localhost:8080/images/logo192.png"
+            chatName={chatName}
+            chatId={chatId}
             fromName={msg.aiResponse ? "AI Assistant" : ""}
             aiResponse={msg.aiResponse}
             streaming={msg.streaming}

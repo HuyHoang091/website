@@ -6,9 +6,10 @@ import com.game.Model.Chat;
 import com.game.Model.UserAISettings;
 import com.game.Repository.ChatRepository;
 import com.game.Repository.UserAISettingsRepository;
+import com.game.Service.ConversationHistoryService;
+import com.game.Service.FacebookMessageService;
 import com.game.Service.UserImageHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
@@ -32,11 +33,13 @@ import java.security.Principal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Controller
 public class WebSocketController {
@@ -55,7 +58,13 @@ public class WebSocketController {
     private UserImageHistoryService userImageHistoryService;
 
     @Autowired
+    private ConversationHistoryService conversationHistoryService;
+
+    @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private FacebookMessageService facebookMessageService;
 
     // RestTemplate bean moved to com.game.Config.RestConfig
 
@@ -106,6 +115,11 @@ public class WebSocketController {
         c.setCreatedAt(LocalDateTime.now());
         Chat saved = chatRepository.save(c);
 
+        // lưu vào lịch sử hội thoại (user gửi): role = user name
+        if(!type.equals("image")) {
+            conversationHistoryService.addMessage(from, fromName == null || fromName.isBlank() ? from : fromName, content);
+        }
+
         Map<String, Object> msgForSales = Map.of(
                 "id", saved.getId(),
                 "from", saved.getFromUser(),
@@ -129,7 +143,7 @@ public class WebSocketController {
 
         messagingTemplate.convertAndSendToUser(from, "/queue/user", ackForUser);
 
-        if (aiMode)
+        if (aiMode && !"image".equals(type))
             handleAIChat(from, fromName, content, clientId);
     }
 
@@ -150,6 +164,43 @@ public class WebSocketController {
             return;
         }
 
+        // region Kiểm tra nếu user là từ Facebook (bắt đầu bằng "fb:")
+        if (to.startsWith("fb:")) {
+            Chat c = new Chat();
+            c.setFromUser("saler");
+            c.setFromName("");
+            c.setToUser(to);
+            c.setToName(toName);
+            c.setContent(content);
+            c.setType(Chat.TYPE.valueOf(type));
+            c.setStatus(Chat.STATUS.SENDING);
+            c.setCreatedAt(LocalDateTime.now());
+            Chat saved = chatRepository.save(c);
+
+            String response = facebookMessageService.sendMessageToFB(to, content);
+            
+            Chat.STATUS status = response != null ? Chat.STATUS.SENT : Chat.STATUS.SENDING;
+            saved.setStatus(status);
+            chatRepository.save(saved);
+
+            if (!type.equals("image")) {
+                conversationHistoryService.addMessage(to, "Tôi", content);
+            }
+
+            sendToAllSales("/queue/sale", Map.of(
+                    "id", saved.getId(),
+                    "clientId", clientId,
+                    "status", saved.getStatus(),
+                    "createdAt", saved.getCreatedAt().format(fmt)));
+            
+            sendToAllSales("/queue/sale/listchat", Map.of(
+                    "to", saved.getToUser(),
+                    "content", saved.getType().toString().equals("image") ? 
+                            "Saler: Đã gửi 1 ảnh" : "Saler: " + saved.getContent(),
+                    "createdAt", saved.getCreatedAt().format(fmt)));
+            return;
+        }
+
         Chat c = new Chat();
         c.setFromUser("saler");
         c.setFromName("");
@@ -160,6 +211,11 @@ public class WebSocketController {
         c.setStatus(Chat.STATUS.SENT);
         c.setCreatedAt(LocalDateTime.now());
         Chat saved = chatRepository.save(c);
+
+        // lưu vào lịch sử hội thoại (saler gửi): role = "Tôi"
+        if(!type.equals("image")) {
+            conversationHistoryService.addMessage(to, "Tôi", content);
+        }
 
         messagingTemplate.convertAndSendToUser(to, "/queue/user", Map.of(
                 "id", saved.getId(),
@@ -185,9 +241,40 @@ public class WebSocketController {
         StringBuilder full = new StringBuilder();
         WebClient client = webClientBuilder.baseUrl("http://localhost:8001").build();
 
+        // Lấy danh sách ảnh đã lưu trong Redis và biên soạn thành các entry đầu tiên
+        List<String> imgList = userImageHistoryService.getUserImageHistory(to); // newest-first
+        if (imgList == null) imgList = List.of();
+        Collections.reverse(imgList); // oldest -> newest
+        List<Map<String, String>> imgEntries = new java.util.ArrayList<>();
+        if (!imgList.isEmpty()) {
+            String content = String.join(", ", imgList);
+            imgEntries.add(Map.of("role", "Ảnh khách gửi", "content", content));
+        }
+
+        // Lấy lịch sử hội thoại từ Redis (ConversationHistoryService trả về newest-first), đảo để chronological
+        List<Map<String, Object>> rawHistory = conversationHistoryService.getConversation(to);
+        if (rawHistory == null) rawHistory = List.of();
+        Collections.reverse(rawHistory);
+        List<Map<String, String>> convoEntries = rawHistory.stream().map(m -> Map.of(
+                        "role", String.valueOf(m.getOrDefault("role", "")),
+                        "content", String.valueOf(m.getOrDefault("content", ""))
+                ))
+                .collect(Collectors.toList());
+
+        // Tổng hợp: ảnh (nếu có) trước, sau đó toàn bộ hội thoại
+        List<Map<String, String>> chatHistory = new java.util.ArrayList<>();
+        if (!imgEntries.isEmpty()) chatHistory.addAll(imgEntries);
+        if (!convoEntries.isEmpty()) chatHistory.addAll(convoEntries);
+
+        // region Xóa khi debug xong
+        // System.out.println("Chat: " + chatHistory);
+        // if(!chatHistory.isEmpty()) {
+        //     return;
+        // }
+
         client.post()
                 .uri("/chat")
-                .bodyValue(Map.of("question", question, "stream", true))
+                .bodyValue(Map.of("question", question, "stream", true, "chat_history", chatHistory))
                 .retrieve()
                 .bodyToFlux(String.class)
                 .map(this::extractToken)
@@ -227,6 +314,9 @@ public class WebSocketController {
                     chat.setCreatedAt(LocalDateTime.now());
                     Chat saved = chatRepository.save(chat);
 
+                    // lưu AI trả lời vào lịch sử hội thoại
+                    conversationHistoryService.addMessage(to, "Tôi", saved.getContent());
+
                     // final message to user
                     messagingTemplate.convertAndSendToUser(to, "/queue/user", Map.of(
                             "id", saved.getId(), "type", "text", "content", saved.getContent(),
@@ -249,7 +339,7 @@ public class WebSocketController {
                 .subscribe();
     }
 
-    private void sendToAllSales(String destination, Object payload) {
+    public void sendToAllSales(String destination, Object payload) {
         saleMap.keySet().forEach(sale -> messagingTemplate.convertAndSendToUser(sale, destination, payload));
     }
 
@@ -285,7 +375,7 @@ public class WebSocketController {
         }
     }
 
-    private void processImageSearch(String userId, String imageUrl) {
+    public void processImageSearch(String userId, String imageUrl) {
         // Xử lý asynchronously để không block thread chính
         CompletableFuture.runAsync(() -> {
             try {
@@ -358,16 +448,17 @@ public class WebSocketController {
     }
 
     // private void notifySaleAboutFoundProduct(String userId, String productCode) {
-    //     sendToAllSales("/queue/sale/product", Map.of(
-    //             "userId", userId,
-    //             "productCode", productCode,
-    //             "timestamp", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
+    // sendToAllSales("/queue/sale/product", Map.of(
+    // "userId", userId,
+    // "productCode", productCode,
+    // "timestamp",
+    // LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
 
-    //     // Gửi thông báo trên list chat
-    //     sendToAllSales("/queue/sale/listchat", Map.of(
-    //             "to", userId,
-    //             "content", "🔍 Đã tìm thấy sản phẩm: " + productCode,
-    //             "createdAt", LocalDateTime.now().format(fmt),
-    //             "system", true));
+    // // Gửi thông báo trên list chat
+    // sendToAllSales("/queue/sale/listchat", Map.of(
+    // "to", userId,
+    // "content", "🔍 Đã tìm thấy sản phẩm: " + productCode,
+    // "createdAt", LocalDateTime.now().format(fmt),
+    // "system", true));
     // }
 }
