@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Demo Chat - User & Saler</title>
+  <style>
+    body{font-family: Arial, Helvetica, sans-serif;display:flex;gap:16px;padding:16px}
+    .panel{flex:1;border:1px solid #ddd;border-radius:8px;padding:12px;display:flex;flex-direction:column;height:80vh}
+    .header{font-weight:700;margin-bottom:8px}
+    .messages{flex:1;overflow:auto;border:1px solid #f0f0f0;padding:8px;border-radius:6px;background:#fafafa}
+    .msg{margin:6px 0}
+    .meta{font-size:12px;color:#666}
+    .controls{display:flex;gap:8px;margin-top:8px}
+    input[type=text]{flex:1;padding:8px;border-radius:6px;border:1px solid #ccc}
+    button{padding:8px 12px;border-radius:6px;border:none;background:#2b7cff;color:white}
+  </style>
+</head>
+<body>
+  <div class="panel" id="userPanel">
+    <div class="header">User Chat</div>
+    <div class="meta">Client UUID: <span id="userUuid">-</span> | Email: <input id="userEmail" placeholder="(optional) user@example.com" style="width:180px" /></div>
+    <div class="messages" id="userMessages"></div>
+    <div class="controls">
+      <input id="userInput" type="text" placeholder="Type message as User..." />
+      <button id="userSend">Send</button>
+      <button id="userConnect">Connect</button>
+    </div>
+  </div>
+
+  <div class="panel" id="salerPanel">
+    <div class="header">Saler Chat (Agent)</div>
+    <div class="meta">Public channel to receive User messages</div>
+    <div class="messages" id="salerMessages"></div>
+    <div class="controls">
+      <input id="salerInput" type="text" placeholder="Type message as Saler... (to a specific uuid/email)" />
+      <input id="salerTarget" type="text" placeholder="target uuid or email" style="width:220px" />
+      <button id="salerSend">Send</button>
+      <button id="salerConnect">Connect</button>
+    </div>
+  </div>
+
+  <!-- SockJS + STOMP from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+  <script>
+    // Simple UUIDv4 generator
+    function uuidv4(){
+      return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,c=>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      );
+    }
+
+    // DOM refs
+    const userUuidEl = document.getElementById('userUuid');
+    const userMessages = document.getElementById('userMessages');
+    const salerMessages = document.getElementById('salerMessages');
+
+    // Connection holders
+    let userStomp = null;
+    let salerStomp = null;
+
+    function appendMessage(container, obj){
+      const div = document.createElement('div');
+      div.className = 'msg';
+      div.innerHTML = `<strong>${obj.from}</strong>: ${obj.text} <div class="meta">to: ${obj.to} | status: ${obj.status} | ${new Date(obj.timestamp).toLocaleString()}</div>`;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // USER logic
+    function userConnect(){
+      // create / reuse uuid
+      let uuid = localStorage.getItem('demo-chat-uuid');
+      if(!uuid){ uuid = uuidv4(); localStorage.setItem('demo-chat-uuid', uuid); }
+      userUuidEl.textContent = uuid;
+      const email = document.getElementById('userEmail').value || null;
+
+      const socket = new SockJS('/ws');
+      userStomp = Stomp.over(socket);
+      userStomp.debug = null; // disable verbose logs
+      userStomp.connect({}, function(frame){
+        console.log('USER connected', frame);
+        // subscribe to personal queue: /queue/user-{clientId}
+        const clientDest = '/queue/user-' + uuid;
+        userStomp.subscribe(clientDest, function(msg){
+          const payload = JSON.parse(msg.body);
+          appendMessage(userMessages, payload);
+        });
+
+        // send register message to server to map clientId => uuid/email
+        userStomp.send('/app/register', {}, JSON.stringify({ clientId: uuid, uuid: uuid, email: email }));
+      });
+    }
+
+    document.getElementById('userConnect').addEventListener('click', userConnect);
+
+    document.getElementById('userSend').addEventListener('click', ()=>{
+      const text = document.getElementById('userInput').value.trim();
+      if(!text) return;
+      const uuid = localStorage.getItem('demo-chat-uuid');
+      const email = document.getElementById('userEmail').value || null;
+      const msg = { from: email || uuid, to: 'saler', text, status: 'sent', timestamp: Date.now() };
+      // show locally
+      appendMessage(userMessages, msg);
+      // send to server to broadcast to all salers
+      userStomp.send('/app/chat', {}, JSON.stringify(msg));
+      document.getElementById('userInput').value='';
+    });
+
+    // SALER logic
+    function salerConnect(){
+      const socket = new SockJS('http://localhost:8080/ws');
+      salerStomp = Stomp.over(socket);
+      salerStomp.debug = null;
+      salerStomp.connect({}, function(frame){
+        console.log('SALER connected', frame);
+        // subscribe to public topic for all salers to get messages from users
+        salerStomp.subscribe('/topic/saler', function(msg){
+          const payload = JSON.parse(msg.body);
+          appendMessage(salerMessages, payload);
+        });
+      });
+    }
+    document.getElementById('salerConnect').addEventListener('click', salerConnect);
+
+    document.getElementById('salerSend').addEventListener('click', ()=>{
+      const text = document.getElementById('salerInput').value.trim();
+      const target = document.getElementById('salerTarget').value.trim();
+      if(!text || !target) return alert('Enter message and target uuid/email');
+      const msg = { from: 'SalerName', to: target, text, status: 'sent', timestamp: Date.now() };
+      // send to server: server will resolve target -> clientId and send to that user's personal queue
+      salerStomp.send('/app/saler/send', {}, JSON.stringify(msg));
+      appendMessage(salerMessages, msg);
+      document.getElementById('salerInput').value='';
+    });
+
+    // auto-connect saler for convenience
+    //salerConnect();
+  </script>
+</body>
+</html>

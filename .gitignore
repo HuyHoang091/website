@@ -1,0 +1,7 @@
+*.xlsx
+*.pdf
+*.rar
+*.pt
+media/
+__pycache__/
+qdrant_data/

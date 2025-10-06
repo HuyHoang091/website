@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # OpenSearch for document storage
+  opensearch:
+    image: opensearchproject/opensearch:2.11.0
+    container_name: opensearch
+    environment:
+      - discovery.type=single-node
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+      - DISABLE_SECURITY_PLUGIN=true
+    ports:
+      - "9200:9200"
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+    networks:
+      - rag-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Haystack RAG Service
+  haystack-service:
+    build:
+      context: ./haystack-service
+      dockerfile: Dockerfile
+    container_name: haystack-rag
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENSEARCH_HOST=opensearch:9200
+      - OPENSEARCH_INDEX=documents
+    depends_on:
+      opensearch:
+        condition: service_healthy
+    networks:
+      - rag-network
+    volumes:
+      - ./haystack-service:/app
+    restart: unless-stopped
+
+  # LangChain Streaming Service
+  langchain-service:
+    build:
+      context: ./langchain-service
+      dockerfile: Dockerfile
+    container_name: langchain-streaming
+    ports:
+      - "8001:8001"
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - HAYSTACK_SERVICE_URL=http://haystack-service:8000
+    depends_on:
+      - haystack-service
+    networks:
+      - rag-network
+    volumes:
+      - ./langchain-service:/app
+    restart: unless-stopped
+
+networks:
+  rag-network:
+    driver: bridge
+
+volumes:
+  opensearch-data:

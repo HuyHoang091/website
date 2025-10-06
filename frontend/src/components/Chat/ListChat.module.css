@@ -1,0 +1,71 @@
+.listChat {
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 0 solid #e5e7eb;
+  height: 100vh;
+}
+.header {
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  gap: .5rem;
+  padding: 25px 20px 15px 20px;
+  flex-shrink: 0;
+}
+.header svg {
+  color: #2d7fd2;
+  width: 2rem;
+  height: 2rem;
+}
+.header span {
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-family: Space Grotesk, sans-serif;
+}
+.search {
+  width: 235px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db; 
+  border-radius: 9999px;
+  font-size: 0.875rem; 
+  outline: none;        
+  background-color: #fff;  
+  transition: border-color 0.2s, box-shadow 0.2s;
+  margin-left: 5px;
+}
+
+.search:focus {
+  border-color: #2d7fd2;       
+  box-shadow: 0 0 0 2px rgba(45, 127, 210, 0.2);
+}
+
+.searchWrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 20px;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.searchWrapper svg {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.chatList {
+  flex: 1;              /* chiếm hết phần còn lại */
+  overflow-y: auto;     /* chỉ phần này cuộn */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

@@ -1,0 +1,239 @@
+.header {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.headerContainer {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.headerContent {
+  /* display: flex; */
+  justify-content: space-between;
+  align-items: center;
+  height: 5rem;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 5px;
+}
+
+@media (max-width: 768px) {
+  .headerContent {
+    grid-template-columns: repeat(8, 1fr);
+  }
+  .navLinks {
+    display: none !important;
+    grid-column: initial;
+  }
+  .search {
+    grid-column: span 3 !important;
+    margin-left: 5px;
+  }
+  .search input {
+    font-size: 16px;
+  }
+  .luxuryText {
+    font-size: 18px !important;
+  }
+  .slideIn {
+    grid-column: span 2 !important;
+  }
+  .cartButton {
+    margin-right: 4px;
+    padding-left: 4px;
+  }
+}
+
+$grid-columns: 12;
+
+@for $i from 1 through $grid-columns {
+  .col-#{$i} {
+    grid-column: span $i;
+  }
+}
+
+.luxuryText {
+  font-size: 1.875rem; /* text-3xl */
+  font-weight: bold;
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.slideIn {
+  animation: slideIn 0.8s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.navLink {
+  color: white;
+  font-weight: 500;
+  font-size: 1.125rem;
+  position: relative;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+
+.navLink:hover {
+  color: #facc15; /* yellow-300 */
+}
+
+.navLink::after {
+  content: "";
+  position: absolute;
+  bottom: -0.25rem;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background-color: #facc15;
+  transition: width 0.3s ease;
+}
+
+.navLink:hover::after {
+  width: 100%;
+}
+
+.navLinks {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.vipSale {
+  color: #facc15;
+  font-weight: bold;
+  font-size: 1.125rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.5), 0 0 40px rgba(118, 75, 162, 0.3);
+  text-decoration: inherit;
+}
+
+.searchInput {
+  padding: 0.75rem 1rem 0.75rem 3rem;
+  width: 100%;
+  max-width: 16rem;
+  border-radius: 9999px;
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  outline: none;
+  transition: all 0.3s;
+  box-sizing: border-box
+}
+
+.searchInput::placeholder {
+  color: #d1d5db;
+}
+
+.searchIcon {
+  position: absolute;
+  top: 0.5rem;
+  left: 1rem;
+  color: #facc15;
+  font-size: 1.25rem;
+}
+
+.cartButton {
+  position: relative;
+  color: white;
+  font-size: 1.5rem;
+  transition: all 0.3s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 45px;
+  justify-self: center;
+}
+
+.cartButton:hover {
+  color: #facc15;
+}
+
+.cartCount {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  background: linear-gradient(to right, #ec4899, #8b5cf6);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 9999px;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+}
+
+.vipButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: all 0.3s;
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.5), 0 0 40px rgba(118, 75, 162, 0.3);
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.vipButton:hover {
+  transform: scale(1.05);
+}
+
+.search {
+  position: relative;
+}
+
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.userName {
+  font-weight: 600;
+  color: white;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+.logoutButton {
+  background: linear-gradient(135deg, #ea6666 0%, #a24b78 50%, #93a0fb 100%);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, #93a0fb 0%, #a24b78 50%, #ea6666 100%);
+  }
+}

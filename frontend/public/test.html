@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Leaflet + GHN Demo</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+  <style>
+    #map { height: 500px; }
+    pre { background: #f4f4f4; padding: 10px; }
+  </style>
+</head>
+<body>
+  <h3>Demo chọn địa chỉ + GHN Fee</h3>
+  <div id="map"></div>
+  <pre id="output"></pre>
+  <div style="position: relative;">
+  <input type="text" id="addrInput" placeholder="Nhập địa chỉ..." style="width: 300px;"/>
+  <ul id="suggestions" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ccc; list-style: none; margin: 0; padding: 0; z-index: 1000;"></ul>
+  </div>
+
+  <script>
+    const input = document.getElementById('addrInput');
+    const suggestions = document.getElementById('suggestions');
+    let timeoutId = null;
+
+    input.addEventListener('input', function() {
+        clearTimeout(timeoutId);
+        const value = this.value.trim();
+        if (!value) {
+            suggestions.innerHTML = '';
+            return;
+        }
+
+        timeoutId = setTimeout(async () => {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&format=json&addressdetails=1&limit=5`);
+                const data = await res.json();
+                suggestions.innerHTML = '';
+                data.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item.display_name;
+                    li.style.padding = '5px';
+                    li.style.cursor = 'pointer';
+                    li.addEventListener('click', () => {
+                        input.value = item.display_name;
+                        suggestions.innerHTML = '';
+                        placeMarker(item.lat, item.lon, item.display_name); // marker draggable
+                        matchWithGHN(item.display_name);
+                    });
+                    suggestions.appendChild(li);
+                });
+            } catch(e) {
+                console.error(e);
+            }
+        }, 500);
+    });
+
+    const container = document.querySelector('div[style*="position: relative"]');
+    document.addEventListener('click', function(e) {
+        if (!container.contains(e.target)) {
+            suggestions.innerHTML = '';
+        }
+    });
+
+    // const panStep = 100;
+
+    // document.addEventListener('keydown', function(e) {
+    //     switch(e.key) {
+    //         case 'ArrowUp':
+    //             map.panBy([0, -panStep]);
+    //             break;
+    //         case 'ArrowDown':
+    //             map.panBy([0, panStep]);
+    //             break;
+    //         case 'ArrowLeft':
+    //             map.panBy([-panStep, 0]);
+    //             break;
+    //         case 'ArrowRight':
+    //             map.panBy([panStep, 0]);
+    //             break;
+    //     }
+    // });
+
+    const GHN_TOKEN = "6b59f4d3-8b36-11f0-87a6-b6731eee7e4b";
+
+    // Lấy thông tin shop (from_district_id, from_ward_code)
+    let SHOP_INFO = null;
+    async function getShopInfo() {
+      let res = await fetch("https://online-gateway.ghn.vn/shiip/public-api/v2/shop/all", {
+        headers: { "Token": GHN_TOKEN }
+      });
+      let data = await res.json();
+      if (data.data && data.data.shops.length > 0) {
+        // Lấy shop có địa chỉ chuẩn
+        SHOP_INFO = data.data.shops.find(s => s.district_id !== 0);
+        console.log("Shop Info:", SHOP_INFO);
+      }
+    }
+
+    // Hàm bỏ dấu tiếng Việt
+    function removeVietnameseTones(str) {
+        return str.normalize("NFD")
+                  .replace(/[\u0300-\u036f]/g, "")
+                  .replace(/đ/g, "d").replace(/Đ/g, "D");
+    }
+
+    function normalizeDistrictName(name) {
+      return removeVietnameseTones(
+        name.toLowerCase()
+          .replace("huyen", "")
+          .replace("quan", "")
+          .replace("thanh pho", "")
+          .replace("tp.", "")
+          .replace("thi xa", "")
+          .replace("phuong", "")
+          .trim()
+      );
+    }
+    function extractDistrictFromOSM(addr) {
+        let txt = removeVietnameseTones(addr.toLowerCase());
+
+        let districtMatch = txt.match(/(huyen|quan|thi xa|tp|thanh pho|phuong)\s+([a-z\s]+)/);
+        if (districtMatch) {
+            return districtMatch[2].trim().replace(/[,\.]/g, ""); // xóa dấu phẩy, chấm
+        }
+
+        // Nếu không có keyword → lấy 2 từ cuối trước từ "tinh"
+        let provinceIndex = txt.indexOf("tinh");
+        if (provinceIndex > 0) {
+                let beforeProvince = txt.substring(0, provinceIndex).trim();
+                let parts = beforeProvince.split(" ");
+                if (parts.length >= 2) {
+                return parts.slice(-2).join(" ").replace(/[,\.]/g, ""); // xóa dấu
+            }
+        }
+
+        return null;
+    }
+
+    // Tạo map
+    var map = L.map('map').setView([10.762622, 106.660172], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+    let searchMarker = null;
+
+    function placeMarker(lat, lon, name) {
+        if (!searchMarker) {
+            searchMarker = L.marker([lat, lon], { draggable: true })
+                .addTo(map)
+                .bindPopup(name)
+                .openPopup();
+
+            // Lắng nghe khi marker được kéo xong
+            searchMarker.on('dragend', async function(e) {
+                const pos = e.target.getLatLng();
+                console.log("Marker mới:", pos.lat, pos.lng);
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.lat}&lon=${pos.lng}&format=json`);
+                    const data = await res.json();
+                    console.log("Địa chỉ từ OSM:", data.display_name);
+
+                    input.value = data.display_name;
+
+                    searchMarker.bindPopup(data.display_name).openPopup();
+
+                    // matchWithGHN(input.value);
+                } catch (err) {
+                    console.error("Lỗi reverse geocoding:", err);
+                }
+            });
+        } else {
+            searchMarker.setLatLng([lat, lon])
+                        .bindPopup(name)
+                        .openPopup();
+        }
+        map.setView([lat, lon], 16);
+    }
+
+    // map.on('click', async function(e) {
+    //     const { lat, lng } = e.latlng;
+    //     if (!searchMarker) {
+    //         searchMarker = L.marker([lat, lng], { draggable: true }).addTo(map);
+    //     } else {
+    //         searchMarker.setLatLng([lat, lng]);
+    //     }
+
+    //     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+    //     const data = await res.json();
+    //     input.value = data.display_name;
+    // });
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+
+            L.marker([lat, lon], { 
+                icon: L.icon({
+                    iconUrl: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 32]
+                })
+            }).addTo(map).bindPopup("Vị trí của bạn").openPopup();
+
+            // map.setView([lat, lon], 14); // nếu muốn center vào vị trí
+        }, err => {
+            console.error("Không lấy được vị trí:", err);
+        });
+    }
+
+    // So khớp địa chỉ với GHN
+    async function matchWithGHN(addressText) {
+      try {
+        let cleanAddr = removeVietnameseTones(addressText.toLowerCase());
+
+        // 1. Lấy tỉnh
+        let provRes = await fetch("https://online-gateway.ghn.vn/shiip/public-api/master-data/province", {
+          headers: { "Token": GHN_TOKEN }
+        });
+        let provData = await provRes.json();
+
+        let province = provData.data.find(p =>
+          cleanAddr.includes(removeVietnameseTones(p.ProvinceName.toLowerCase()))
+        );
+        if (!province) {
+          document.getElementById("output").textContent += "\n❌ Không tìm thấy tỉnh";
+          return;
+        }
+
+        // 2. Lấy quận
+        let distRes = await fetch("https://online-gateway.ghn.vn/shiip/public-api/master-data/district", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Token": GHN_TOKEN },
+          body: JSON.stringify({ province_id: province.ProvinceID })
+        });
+        let distData = await distRes.json();
+        let districtGuess = extractDistrictFromOSM(addressText);
+        console.log("District Guess:", districtGuess);
+        let district = null;
+        if (districtGuess) {
+            district = distData.data.find(d =>
+                normalizeDistrictName(d.DistrictName).includes(districtGuess)
+            );
+        }
+        if (!district) {
+            district = distData.data.find(d =>
+                cleanAddr.includes(removeVietnameseTones(d.DistrictName.toLowerCase()))
+            );
+        }
+
+        document.getElementById("output").textContent +=
+          `\nGHN Province: ${province.ProvinceName} (ID: ${province.ProvinceID})` +
+          (district ? `\nGHN District: ${district.DistrictName} (ID: ${district.DistrictID})` : "\n❌ Không tìm thấy quận");
+
+        if (district && SHOP_INFO) {
+          // 3. Lấy dịch vụ
+          getAvailableServices(SHOP_INFO._id, SHOP_INFO.district_id, district.DistrictID, SHOP_INFO.ward_code);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Gọi available-services
+    async function getAvailableServices(shopId, fromDistrict, toDistrict, fromWardCode) {
+      try {
+        let res = await fetch("https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Token": GHN_TOKEN },
+          body: JSON.stringify({
+            shop_id: shopId,
+            from_district: fromDistrict,
+            to_district: toDistrict
+          })
+        });
+        let data = await res.json();
+
+        if (data.data && data.data.length > 0) {
+          let service = data.data[0]; // lấy service đầu tiên
+          document.getElementById("output").textContent += `\n✅ Service: ${service.short_name} (ID: ${service.service_id})`;
+
+          // 4. Tính phí ship
+          getShipFee(fromDistrict, fromWardCode, toDistrict, service.service_id);
+        } else {
+          document.getElementById("output").textContent += "\n❌ Không có dịch vụ khả dụng";
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Tính phí ship
+    async function getShipFee(fromDistrict, fromWard, toDistrict, serviceId) {
+      try {
+        let res = await fetch("https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Token": GHN_TOKEN },
+          body: JSON.stringify({
+            from_district_id: fromDistrict,
+            from_ward_code: fromWard,
+            to_district_id: toDistrict,
+            to_ward_code: "", // có thể bỏ trống nếu chưa match ward
+            service_id: serviceId,
+            weight: 300,
+            length: 30,
+            width: 20,
+            height: 5
+          })
+        });
+        let data = await res.json();
+
+        if (data.data) {
+          document.getElementById("output").textContent += `\n🚚 Ship Fee: ${data.data.total} VND`;
+        } else {
+          document.getElementById("output").textContent += `\n❌ Lỗi tính phí: ${JSON.stringify(data)}`;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Khởi động
+    getShopInfo();
+  </script>
+</body>
+</html>
