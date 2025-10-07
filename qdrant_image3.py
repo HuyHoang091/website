@@ -81,77 +81,159 @@ def chunks(lst, batch_size):
         yield lst[i:i + batch_size]
 
 @app.post("/add-excel/")
-async def add_from_excel(file: UploadFile = File(...), batch_size: int = 100):
-    contents = await file.read()
-    wb = load_workbook(io.BytesIO(contents))
-    sheet = wb.active
-
-    img_map = []
-    for i, img in enumerate(sheet._images, start=1):
-        try:
-            pil_img = Image.open(io.BytesIO(img._data())).convert("RGB")
-            row = img.anchor._from.row + 1
-            img_map.append((row, pil_img))
-        except Exception as e:
-            print(f"Lỗi đọc ảnh {i}: {e}")
-
-    added = []
-
-    for batch in chunks(img_map, batch_size):
-        codes, notes, images, clothes_images = [], [], [], []
-
-        for row, pil_img in batch:
-            code_val = sheet.cell(row, 2).value  # B = mã
-            note_val = sheet.cell(row, 3).value  # C = ghi chú
-            if not code_val:
-                continue
-
-            code = str(code_val).strip()
-            note = str(note_val).strip() if note_val else ""
-
-            # Save image
-            filename = f"{code}_{len(products.get(code, {}).get('images', [])) + 1}.jpg"
-            filepath = os.path.join(MEDIA_DIR, filename)
-            pil_img.save(filepath)
-            url = f"/media/products/{filename}"
-
-            # Update product dictionary
-            if code not in products:
-                products[code] = {"images": [], "notes": []}
-            products[code]["images"].append(url)
-            if note:
-                products[code]["notes"].append(note)
-
-            codes.append(code)
-            notes.append(note)
-            images.append(pil_img)
-            clothes_images.append(detect_clothes(pil_img))
-
-        # Batch embeddings
-        inputs_global = processor(images=images, return_tensors="pt", padding=True).to(device)
-        with torch.no_grad():
-            embs_global = model.get_image_features(**inputs_global)
-        embs_global = embs_global / embs_global.norm(p=2, dim=-1, keepdim=True)
-        embs_global = embs_global.cpu().numpy()
-
-        inputs_clothes = processor(images=clothes_images, return_tensors="pt", padding=True).to(device)
-        with torch.no_grad():
-            embs_clothes = model.get_image_features(**inputs_clothes)
-        embs_clothes = embs_clothes / embs_clothes.norm(p=2, dim=-1, keepdim=True)
-        embs_clothes = embs_clothes.cpu().numpy()
-
-        for code, note, g_emb, c_emb in zip(codes, notes, embs_global, embs_clothes):
-            index_global.add(g_emb.reshape(1, -1))
-            product_ids_global.append(code)
-            embeddings_global_store.append(g_emb)
-
-            index_clothes.add(c_emb.reshape(1, -1))
-            product_ids_clothes.append(code)
-            embeddings_clothes_store.append(c_emb)
-
-            added.append({"product_id": code, "note": note})
-
-    return {"status": "ok", "added_count": len(added)}
+async def add_from_excel(file: UploadFile = File(...), batch_size: int = 50):
+    # Stream file thay vì đọc toàn bộ vào bộ nhớ
+    temp_file_path = f"temp_excel_{id(file)}.xlsx"
+    wb = None
+    try:
+        # Lưu file tạm thời để streaming
+        with open(temp_file_path, "wb") as f:
+            # Đọc và ghi từng chunk nhỏ
+            chunk_size = 1024 * 1024  # 1MB chunks
+            while chunk := await file.read(chunk_size):
+                f.write(chunk)
+        
+        # Đọc workbook từ file tạm - BỎ read_only=True
+        wb = load_workbook(temp_file_path)  # Bỏ read_only để có thể truy cập _images
+        sheet = wb.active
+        
+        if not hasattr(sheet, '_images') or not sheet._images:
+            return {"status": "error", "message": "Không tìm thấy hình ảnh trong file Excel"}
+        
+        # Xử lý hình ảnh theo batch nhỏ
+        img_count = len(sheet._images)
+        added = []
+        
+        # Phần còn lại của hàm giữ nguyên
+        for i in range(0, img_count, batch_size):
+            batch_images = sheet._images[i:i+batch_size]
+            codes, notes = [], []
+            images, clothes_images = [], []
+            
+            # Xử lý từng hình ảnh trong batch
+            for img_idx, img in enumerate(batch_images):
+                try:
+                    row = img.anchor._from.row + 1
+                    code_val = sheet.cell(row, 2).value  # B = mã
+                    note_val = sheet.cell(row, 3).value  # C = ghi chú
+                    
+                    if not code_val:
+                        continue
+                    
+                    code = str(code_val).strip()
+                    note = str(note_val).strip() if note_val else ""
+                    
+                    # Chỉ xử lý từng hình ảnh một
+                    pil_img = Image.open(io.BytesIO(img._data())).convert("RGB")
+                    
+                    # Lưu hình ảnh ngay lập tức
+                    filename = f"{code}_{len(products.get(code, {}).get('images', [])) + 1}.jpg"
+                    filepath = os.path.join(MEDIA_DIR, filename)
+                    pil_img.save(filepath)
+                    url = f"/media/products/{filename}"
+                    
+                    # Cập nhật từ điển product
+                    if code not in products:
+                        products[code] = {"images": [], "notes": []}
+                    products[code]["images"].append(url)
+                    if note:
+                        products[code]["notes"].append(note)
+                    
+                    # Thêm vào batch hiện tại
+                    codes.append(code)
+                    notes.append(note)
+                    images.append(pil_img)
+                    clothes_images.append(detect_clothes(pil_img))
+                    
+                except Exception as e:
+                    print(f"Lỗi xử lý ảnh {i + img_idx + 1}: {str(e)}")
+            
+            # Xử lý embedding cho batch hiện tại
+            if not images:
+                continue  # Bỏ qua nếu không có hình ảnh nào
+                
+            try:
+                # Xử lý toàn cảnh
+                inputs_global = processor(images=images, return_tensors="pt", padding=True).to(device)
+                with torch.no_grad():
+                    embs_global = model.get_image_features(**inputs_global)
+                embs_global = embs_global / embs_global.norm(p=2, dim=-1, keepdim=True)
+                embs_global = embs_global.cpu().numpy()
+                
+                # Giải phóng bộ nhớ ngay lập tức
+                inputs_global = inputs_global.to("cpu")
+                del inputs_global
+                torch.cuda.empty_cache()
+                
+                # Xử lý hình ảnh quần áo
+                inputs_clothes = processor(images=clothes_images, return_tensors="pt", padding=True).to(device)
+                with torch.no_grad():
+                    embs_clothes = model.get_image_features(**inputs_clothes)
+                embs_clothes = embs_clothes / embs_clothes.norm(p=2, dim=-1, keepdim=True)
+                embs_clothes = embs_clothes.cpu().numpy()
+                
+                # Giải phóng bộ nhớ ngay lập tức
+                inputs_clothes = inputs_clothes.to("cpu")
+                del inputs_clothes
+                torch.cuda.empty_cache()
+                
+                # Thêm vào index
+                for idx, (code, note, g_emb, c_emb) in enumerate(zip(codes, notes, embs_global, embs_clothes)):
+                    index_global.add(g_emb.reshape(1, -1))
+                    product_ids_global.append(code)
+                    embeddings_global_store.append(g_emb)
+                    
+                    index_clothes.add(c_emb.reshape(1, -1))
+                    product_ids_clothes.append(code)
+                    embeddings_clothes_store.append(c_emb)
+                    
+                    added.append({"product_id": code, "note": note})
+                
+            finally:
+                # Đảm bảo giải phóng bộ nhớ
+                for img in images:
+                    del img
+                for img in clothes_images:
+                    del img
+                del images[:]
+                del clothes_images[:]
+                del embs_global
+                del embs_clothes
+                torch.cuda.empty_cache()
+                
+                # Gọi garbage collector
+                import gc
+                gc.collect()
+        
+        return {"status": "ok", "added_count": len(added)}
+        
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        # Đóng workbook trước khi xóa file tạm
+        if wb is not None:
+            wb.close()
+            # Đảm bảo workbook được giải phóng hoàn toàn
+            del wb
+            import gc
+            gc.collect()
+            
+        # Thêm một chút delay để đảm bảo file đã được giải phóng
+        import time
+        time.sleep(0.5)
+        
+        # Thử xóa file với retry
+        max_retries = 5
+        for i in range(max_retries):
+            try:
+                if os.path.exists(temp_file_path):
+                    os.remove(temp_file_path)
+                break
+            except PermissionError:
+                if i < max_retries - 1:
+                    time.sleep(0.5)  # Đợi thêm 0.5 giây trước khi thử lại
+                else:
+                    print(f"Không thể xóa file tạm: {temp_file_path}. File sẽ được giữ lại.")
 
 @app.post("/search/")
 async def search(file: UploadFile = File(...), top_k: int = 5):

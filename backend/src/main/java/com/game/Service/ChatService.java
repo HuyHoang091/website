@@ -6,6 +6,7 @@ import com.game.Model.Chat;
 import com.game.Repository.ChatRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 
 import javax.transaction.Transactional;
@@ -28,9 +29,9 @@ public class ChatService {
         return chatRepository.findConversation(from, to);
     }
 
-    public void markMessagesAsRead(String userId, String salerName) {
+    public List<Long> markMessagesAsRead(String userId, String salerName) {
         if (userId == null || userId.isEmpty())
-            return;
+            return List.of();
 
         try {
             // Lấy tất cả tin nhắn chưa đọc từ user này
@@ -40,9 +41,11 @@ public class ChatService {
                     chat.setStatus(Chat.STATUS.SEEN);
                 }
                 chatRepository.saveAll(unreadMessages);
+                return unreadMessages.stream().map(Chat::getId).collect(Collectors.toList());
             }
         } catch (Exception e) {
             System.err.println("Error marking messages as read: " + e.getMessage());
         }
+        return List.of();
     }
 }

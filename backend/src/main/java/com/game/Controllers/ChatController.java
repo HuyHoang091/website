@@ -11,6 +11,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 public class ChatController {
     @Autowired
     private ChatService chatService;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     // @PreAuthorize("hasRole('ADMIN') or hasRole('SALER')")
     @GetMapping("/list")
@@ -49,7 +53,14 @@ public class ChatController {
         }
 
         // Đánh dấu tất cả tin nhắn từ user này là SEEN
-        chatService.markMessagesAsRead(userId, principal.getName());
+        List<Long> updatedMessageIds = chatService.markMessagesAsRead(userId, principal.getName());
+
+        // Gửi thông báo cập nhật trạng thái SEEN cho tất cả tin nhắn của user
+        Map<String, Object> ackForUser = Map.of(
+            "updatedMessageIds", updatedMessageIds,
+            "status", "SEEN"
+        );
+        messagingTemplate.convertAndSendToUser(userId, "/queue/user", ackForUser);
 
         return ResponseEntity.ok().body(Map.of("success", true));
     }

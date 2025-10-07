@@ -3,6 +3,8 @@ Custom BM25 Retriever component
 """
 from typing import List, Optional, Dict
 from haystack import Document, component
+from config import EMBEDDING_MODEL 
+from transformers import AutoTokenizer
 try:
     from rank_bm25 import BM25Okapi
 except ImportError:
@@ -18,7 +20,13 @@ class BM25OkapiRetriever:
         self.bm25 = None
         self.corpus = []
         self.doc_ids = []
+        self.tokenizer = AutoTokenizer.from_pretrained(EMBEDDING_MODEL)
         self.initialize()
+
+    def _tokenize(self, text: str):
+        """Tokenize text using the embedding model's tokenizer."""
+        tokens = self.tokenizer.tokenize(text.lower())
+        return tokens
     
     def initialize(self):
         """Initialize or update BM25 index from document store"""
@@ -30,7 +38,7 @@ class BM25OkapiRetriever:
             return
 
         # Tokenize documents for BM25
-        self.corpus = [doc.content.lower().split() for doc in docs]
+        self.corpus = [self._tokenize(doc.content) for doc in docs]
         self.doc_ids = [doc.id for doc in docs]
         self.bm25 = BM25Okapi(self.corpus)
     
@@ -43,7 +51,7 @@ class BM25OkapiRetriever:
                 return {"documents": []}
         
         k = top_k or self.top_k
-        query_tokens = query.lower().split()
+        query_tokens = self._tokenize(query)
         scores = self.bm25.get_scores(query_tokens)
         
         # Sort by score and get top k results

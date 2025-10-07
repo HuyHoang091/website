@@ -78,7 +78,8 @@ class HaystackRAGService:
             ```
 
             Tổng hợp tất cả thông tin quan trọng từ hội thoại: mã sản phẩm, size, màu sắc, cân nặng, chiều cao.
-            Tạo câu hỏi đầy đủ, súc tích, dùng để truy xuất tài liệu.""",
+            Tạo câu hỏi đầy đủ, súc tích, dùng để truy xuất tài liệu.
+            Nếu câu hỏi hiện tại không hỏi về sản phẩm, hãy giữ nguyên câu hỏi.""",
             required_variables=["question"]
         )
         
@@ -91,8 +92,9 @@ class HaystackRAGService:
         replies_to_query = OutputAdapter(template="{{ replies[0] }}", output_type=str)
         
         qa_prompt = PromptBuilder(
-            template="""Hãy trả lời câu hỏi CHỈ dựa trên thông tin từ các tài liệu dưới đây. Sử dụng số tham chiếu [n] khi trích dẫn thông tin cụ thể.
+            template="""Hãy trả lời câu hỏi CHỈ dựa trên thông tin về sản phẩm dưới đây.
             Nếu tài liệu không cung cấp đủ thông tin, hãy nói rõ rằng bạn không có thông tin đó.
+            Nếu câu hỏi không liên quan đến sản phẩm, hãy lịch sự trả lời khách hàng.
             Trả lời ngắn gọn, súc tích và chuyên nghiệp như một nhân viên bán quần áo.
 
             {%- for document in documents %}

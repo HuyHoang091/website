@@ -306,3 +306,82 @@ input:checked + .slider:before {
   50% { transform: translateY(-4px); opacity: 1; }
   100% { transform: translateY(0); opacity: 0.2; }
 }
+
+/* Thêm vào ChatWindow.module.css */
+.messagesSkeleton {
+  padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.skeletonMessage {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.skeletonMessage.skeletonRight {
+  flex-direction: row-reverse;
+  margin-left: auto;
+  width: fit-content;
+}
+
+.skeletonAvatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonBubble {
+  max-width: 250px;
+  min-width: 120px;
+  height: 40px;
+  border-radius: 18px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonRight .skeletonBubble {
+  background: linear-gradient(90deg, #e3f2fd 25%, #bbdefb 50%, #e3f2fd 75%);
+  background-size: 200% 100%;
+}
+
+.loadingMore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.loadingSpinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #0366d6;
+  border-radius: 50%;
+  margin-right: 8px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

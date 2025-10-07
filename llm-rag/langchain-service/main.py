@@ -126,10 +126,9 @@ class LangChainStreamingService:
         messages = [
             SystemMessage(content="""Bạn là nhân viên tư vấn bán quần áo chuyên nghiệp tại shop thời trang.
             Hãy trả lời khách hàng bằng tiếng Việt một cách lịch sự, thân thiện và đúng chuyên môn.
-            PHẢI trả lời dựa HOÀN TOÀN vào thông tin được cung cấp từ các tài liệu.
-            Sử dụng số tham chiếu [SỐ] khi đề cập đến thông tin cụ thể từ tài liệu.
+            PHẢI trả lời dựa HOÀN TOÀN vào thông tin được cung cấp.
             Nếu tài liệu không có đủ thông tin, hãy thành thật rằng bạn không có thông tin đó.
-            Đưa ra các gợi ý phù hợp về kích cỡ, màu sắc hoặc các sản phẩm tương tự nếu thông tin có trong tài liệu.
+            Đưa ra các gợi ý phù hợp về kích cỡ, màu sắc hoặc các sản phẩm tương tự nếu có thông tin về sản phẩm.
             Luôn tích cực và giúp khách hàng tìm được sản phẩm phù hợp nhất với nhu cầu."""),
             HumanMessage(content=f"{context}\n\nCâu hỏi của khách hàng: {prompt}")
         ]
@@ -202,7 +201,7 @@ async def chat(request: ChatRequest):
             role = turn["role"]
             content = turn["content"]
             full_question += f"{role}: {content}\n"
-        full_question += f"user: {request.question}"
+        full_question += f"Câu hỏi hiện tại của khách hàng: {request.question}"
         # Step 1: Retrieve documents from Haystack
         haystack_result = await streaming_service.retrieve_from_haystack(
             question=full_question,

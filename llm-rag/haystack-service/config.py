@@ -24,8 +24,8 @@ if OPENAI_API_KEY:
     os.environ["OPENAI_API_BASE"] = OPENAI_API_BASE
 
 # Constants
-EMBEDDING_MODEL = "intfloat/e5-base-v2"
-RERANKER_MODEL = "BAAI/bge-reranker-base"
+EMBEDDING_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+RERANKER_MODEL = "itdainb/PhoRanker"
 DEFAULT_TOP_K = 20
 
 # Check if BM25 is available

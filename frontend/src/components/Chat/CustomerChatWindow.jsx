@@ -138,6 +138,17 @@ export default function CustomerChatWindow({ userStr = localStorage.getItem("use
     subRef.current = client.subscribe("/user/queue/user", (message) => {
       try {
         const body = JSON.parse(message.body);
+
+        if (body.updatedMessageIds && body.status === "SEEN") {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              body.updatedMessageIds.includes(msg.id) && msg.isSender
+                ? { ...msg, status: "SEEN" }
+                : msg
+            )
+          );
+          return;
+        }
         
         // Handle AI streaming
         if (body.partial === true) {

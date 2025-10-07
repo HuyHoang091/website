@@ -10,7 +10,7 @@ from config import DEVICE
 class CrossEncoderReranker:
     """Cross-encoder reranker using sentence-transformers."""
     
-    def __init__(self, model_name: str = "BAAI/bge-reranker-base", top_k: int = 20):
+    def __init__(self, model_name: str = "itdainb/PhoRanker", top_k: int = 20):
         self.model = CrossEncoder(model_name)
         try:
             # move model to device (cuda or cpu)
