@@ -1,5 +1,7 @@
 import React from "react";
+import {Navigate, NavLink} from "react-router-dom";
 import "../../assets/styles/pages/Landding/HeroSection.css";
+import {ROUTE_PATHS} from "../../utils/appConst";
 
 export default function HeroBanner() {
   return (
@@ -26,7 +28,9 @@ export default function HeroBanner() {
                       <span class="highlight"> Độc quyền cho giới thượng lưu.</span>
                   </p>
                   <div class="hero-buttons">
+	                  <NavLink to={ROUTE_PATHS.SHOP}>
                       <button class="btn-primary">🛍️ SHOP LUXURY</button>
+	                  </NavLink>
                       <button class="btn-secondary">👑 VIP PREVIEW</button>
                   </div>
               </div>

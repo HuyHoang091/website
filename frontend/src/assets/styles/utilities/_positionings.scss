@@ -1,0 +1,162 @@
+// display
+.display-none {
+  display: none;
+}
+.display-block {
+  display: block;
+}
+
+.flex {
+  display: flex;
+}
+.flex-row {
+  display: flex;
+  flex-direction: row!important;
+}
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+.flex-wrap {
+  flex-wrap: wrap;
+}
+.flex-start {
+  justify-content: flex-start !important;
+}
+.flex-center {
+  justify-content: center;
+}
+.flex-end {
+  justify-content: flex-end;
+}
+.flex-space-between {
+  justify-content: space-between !important;
+}
+.flex-space-around {
+  justify-content: space-around;
+}
+.flex-space-evenly {
+  justify-content: space-evenly;
+}
+.flex-middle {
+  align-items: center;
+}
+.flex-align-items-start {
+  align-items: start;
+}
+.flex-align-items-end {
+  align-items: end;
+}
+.flex-top {
+  align-items: flex-start;
+}
+.flex-bottom {
+  align-items: flex-end;
+}
+.flex-stretch {
+  align-items: stretch;
+}
+.flex-grow-1 {
+  flex-grow: 1;
+}
+.flex-grow-2 {
+  flex-grow: 2;
+}
+.flex-grow-3 {
+  flex-grow: 3;
+}
+.overflow-auto {
+  overflow: auto !important;
+}
+.overflow-visible {
+  overflow: visible !important;
+}
+.overflow-hidden {
+  overflow: hidden;
+}
+.overflowY-auto {
+  overflow-y: auto;
+}
+.scroll-y {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+// postions
+.position-relative {
+  position: relative;
+}
+.position-absolute {
+  position: absolute;
+}
+.position-fixed {
+  position: fixed;
+}
+.position-sticky {
+  position: sticky;
+}
+.position-top-right {
+  position: absolute!important;
+  top: 0;
+  right: 0;
+}
+.position-bottom {
+  position: absolute;
+  bottom: 0;
+}
+.text-center {
+  text-align: center !important;
+}
+.text-middle {
+  vertical-align: middle;
+}
+.text-align-right {
+  text-align: right !important;
+}
+.text-align-left {
+  text-align: left;
+}
+.x-center {
+  left: 50%;
+  transform: translateX(-50%);
+}
+.y-center {
+  top: 50%;
+  transform: translateY(-50%);
+}
+.top-0 {
+  top: 0;
+}
+.bottom-0 {
+  bottom: 0;
+}
+.left-0 {
+  left: 0;
+}
+.right-0 {
+  right: 0;
+}
+.inset-0 {
+  inset: 0;
+}
+.float-right {
+  float: right;
+}
+.zIndex-9999 {
+  z-index: 9999;
+}
+.zIndex-1000 {
+  z-index: 1000;
+}
+
+// misc
+.cursor-pointer {
+  cursor: pointer;
+}
+.cursor-move {
+  cursor: move;
+}
+
+.hidden {
+  display: none;
+}

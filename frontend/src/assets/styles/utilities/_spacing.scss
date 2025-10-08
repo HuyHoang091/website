@@ -1,0 +1,61 @@
+@import "../mixins";
+$spaces: (
+  "cm-h3": 1.5cm,
+  // h3: half 3 => 1.5
+  "cm-2": 2cm,
+  "cm-3": 3cm,
+  auto: auto,
+);
+
+
+@for $i from -1000 through 1000 {
+  $spaces: map-merge($spaces, ($i: #{$i}px,));
+}
+
+@include spacing("m", $spaces);
+@include spacing("p", $spaces);
+@include spacing("g", $spaces);
+
+.w-10 {
+  width: 10%;
+}
+
+.w-20 {
+  width: 20%;
+}
+
+.w-30 {
+  width: 30%;
+}
+
+.w-35 {
+  width: 35%;
+}
+
+.w-45 {
+  width: 45%;
+}
+
+.w-50 {
+  width: 50%;
+}
+
+.w-75 {
+  width: 75%;
+}
+
+.w-80 {
+  width: 80%;
+}
+
+.w-85 {
+  width: 85%;
+}
+
+.w-90 {
+  width: 90% !important;
+}
+
+.w-100 {
+  width: 100%;
+}

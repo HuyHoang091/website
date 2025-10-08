@@ -1,0 +1,81 @@
+@mixin media($width) {
+  @media screen and (max-width: $width) {
+    @content;
+  }
+}
+
+@mixin keyframeMaker($name) {
+  @keyframes #{$name} {
+    @content;
+  }
+  @-webkit-keyframes #{$name} {
+    @content;
+  }
+  @-o-keyframes #{$name} {
+    @content;
+  }
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+}
+
+@mixin spacing($prefix: "m", $spaces) {
+  $prefix-key: "margin";
+  $sub-prefix: "";
+  @if ($prefix == "m") {
+    $prefix-key: "margin";
+  } @else if ($prefix == "p") {
+    $prefix-key: "padding";
+  } @else if ($prefix == "g") {
+    $prefix-key: "gap";
+  }
+
+  @each $name, $value in $spaces {
+    .#{$prefix}-#{$name} {
+      #{$prefix-key}: $value !important;
+    }
+    .#{$prefix}-n#{$name} {
+      #{$prefix-key}: -$value !important;
+    }
+    .#{$prefix}t-#{$name} {
+      #{$prefix-key}-top: $value !important;
+    }
+    .#{$prefix}t-n#{$name} {
+      #{$prefix-key}-top: -$value !important;
+    }
+    .#{$prefix}r-#{$name} {
+      #{$prefix-key}-right: $value !important;
+    }
+    .#{$prefix}r-n#{$name} {
+      #{$prefix-key}-right: -$value !important;
+    }
+    .#{$prefix}b-#{$name} {
+      #{$prefix-key}-bottom: $value !important;
+    }
+    .#{$prefix}b-n#{$name} {
+      #{$prefix-key}-bottom: -$value !important;
+    }
+    .#{$prefix}l-#{$name} {
+      #{$prefix-key}-left: $value !important;
+    }
+    .#{$prefix}l-n#{$name} {
+      #{$prefix-key}-left: -$value !important;
+    }
+    .#{$prefix}x-#{$name} {
+      #{$prefix-key}-left: $value !important;
+      #{$prefix-key}-right: $value !important;
+    }
+    .#{$prefix}y-#{$name} {
+      #{$prefix-key}-top: $value !important;
+      #{$prefix-key}-bottom: $value !important;
+    }
+    .#{$prefix}x-n#{$name} {
+      #{$prefix-key}-left: -$value !important;
+      #{$prefix-key}-right: -$value !important;
+    }
+    .#{$prefix}y-n#{$name} {
+      #{$prefix-key}-top: -$value !important;
+      #{$prefix-key}-bottom: -$value !important;
+    }
+  }
+}

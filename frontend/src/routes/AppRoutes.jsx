@@ -7,7 +7,8 @@ import LoginPage from "../pages/Auth/LoginPage";
 import ClientSocket from "../utils/ClientSocket";
 import ImageSearch from "../pages/ImageSearch";
 import CustomerChatWindow from "../components/Chat/CustomerChatWindow";
-// import ChatPage from "../pages/Chat/ChatPage";
+import {ROUTE_PATHS} from "../utils/appConst";
+import {ShopPage} from "../pages/Shop/ShopPage";
 
 const LandingPage = React.lazy(() =>
   new Promise((resolve) => {
@@ -28,24 +29,64 @@ const pageTransition = {
   transition: { duration: 0.3 },
 };
 
+const PrivateRoute = ({element, path }) => {
+	return  <Route
+		path={path}
+		element={
+			<Layout>
+				<Suspense fallback={<Loading message="Đang tải..." />}>
+					<motion.div {...pageTransition}>{element}</motion.div>
+				</Suspense>
+			</Layout>
+		}
+	/>
+};
+
+const appRoutes = [
+	{
+		path: ROUTE_PATHS.HOME,
+		element: <LandingPage />,
+	},
+	{
+		path: ROUTE_PATHS.LOGIN,
+		element: <LoginPage />,
+	},
+	{
+		path: ROUTE_PATHS.SHOP,
+		element: <ShopPage />,
+	},
+];
+
 const AppRoutes = () => {
   const location = useLocation();
 
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route
-          path="/"
-          element={
-            <Layout>
-              <Suspense fallback={<Loading message="Đang tải trang chủ..." />}>
-                <motion.div {...pageTransition}>
-                  <LandingPage />
-                </motion.div>
-              </Suspense>
-            </Layout>
-          }
-        />
+	      {appRoutes?.map((route, index) => (
+		      <Route
+			      path={route.path}
+			      element={
+				      <Layout>
+					      <Suspense fallback={<Loading message="Đang tải..." />}>
+						      <motion.div {...pageTransition}>{route.element}</motion.div>
+					      </Suspense>
+				      </Layout>
+			      }
+		      />
+	      ))}
+        {/*<Route*/}
+        {/*  path={ROUTE_PATHS.HOME}*/}
+        {/*  element={*/}
+        {/*    <Layout>*/}
+        {/*      <Suspense fallback={<Loading message="Đang tải..." />}>*/}
+        {/*        <motion.div {...pageTransition}>*/}
+        {/*          <LandingPage />*/}
+        {/*        </motion.div>*/}
+        {/*      </Suspense>*/}
+        {/*    </Layout>*/}
+        {/*  }*/}
+        {/*/>*/}
         <Route
           path="/login"
           element={

@@ -1,3 +1,5 @@
+@import "../../variables";
+
 .header {
   position: fixed;
   width: 100%;
@@ -20,7 +22,7 @@
   /* display: flex; */
   justify-content: space-between;
   align-items: center;
-  height: 5rem;
+  height: $header-height;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 5px;
