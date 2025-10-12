@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import AppRoutes from './routes/AppRoutes';
+import './assets/styles/_index.scss';
 import { v4 as uuidv4 } from 'uuid';
 
 const App = () => {
