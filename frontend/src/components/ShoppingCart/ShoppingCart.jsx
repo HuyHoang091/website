@@ -8,6 +8,7 @@ import { ShoppingCartIcon } from './Icons';
 import '../../assets/styles/components/ShoppingCart/ShoppingCart.css';
 import { useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const initialCartData = [];
 
@@ -16,6 +17,7 @@ const ShoppingCart = () => {
     const [selectedItems, setSelectedItems] = useState(new Set(initialCartData.map(item => item.id)));
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     const getUserIdentifier = () => {
         const tokenJWT = localStorage.getItem('tokenJWT');
@@ -89,11 +91,15 @@ const ShoppingCart = () => {
     };
 
     const handleContinueShopping = () => {
-        alert('Chuyển đến trang sản phẩm...');
+        navigate('/');
     };
 
     const handleCheckout = () => {
-        alert('Chuyển đến trang thanh toán...');
+        const selectedProducts = cartItems.filter(item => selectedItems.has(item.id));
+        if (selectedProducts.length === 0) {
+            return;
+        }
+        navigate('/order', { state: { items: selectedProducts } });
     };
 
     if (cartItems.length === 0) {

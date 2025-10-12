@@ -30,13 +30,13 @@ const ProductList = ({ items }) => {
                             <div className="product-specs">
                                 <span>Kích cỡ: {item.size}</span>
                                 <span>•</span>
-                                <span>Màu: {item.color}</span>
+                                <span>Màu: {item.color.split(",")[0].trim()}</span>
                             </div>
                         </div>
                         <div className="product-price">
-                            <p className="price-value">{formatCurrency(item.price)}</p>
+                            <p className="price-value">{formatCurrency(item.priceAtAdd)}</p>
                             <p className="price-total">
-                                Tổng: {formatCurrency(item.price * item.quantity)}
+                                Tổng: {formatCurrency(item.priceAtAdd * item.quantity)}
                             </p>
                         </div>
                     </div>

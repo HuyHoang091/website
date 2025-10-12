@@ -56,7 +56,7 @@ export default function Header() {
                 <input type="text" placeholder="Tìm kiếm luxury..." className={styles.searchInput} />
                 <div className={styles.searchIcon}>🔍</div>
             </div>
-            <button className={`${styles.cartButton} ${styles['col-1']}`}>
+            <button className={`${styles.cartButton} ${styles['col-1']}`} onClick={() => navigate('/cart')}>
                 🛒
                 <span className={styles.cartCount}>0</span>
             </button>

@@ -39,7 +39,7 @@ const ShippingMethod = ({ methods, selected, onSelect }) => {
                         <div className="shipping-content">
                             <div className="shipping-main">
                                 <span className="shipping-name">{method.name}</span>
-                                <span className="shipping-price">{formatCurrency(method.price)}</span>
+                                <span className="shipping-price">{formatCurrency(method.priceAtAdd)}</span>
                             </div>
                             <div className="shipping-details">
                                 <div className="shipping-time">

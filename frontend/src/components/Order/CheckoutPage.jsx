@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AddressSection from './AddressSection';
 import ProductList from './ProductList';
 import ShippingMethod from './ShippingMethod';
@@ -7,6 +8,11 @@ import OrderSummary from './OrderSummary';
 import '../../assets/styles/components/Order/CheckoutPage.css';
 
 const CheckoutPage = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const { items: incomingItems = [] } = location.state || {};
+
     const [selectedAddress, setSelectedAddress] = useState({
         id: 1,
         name: "Nguyễn Văn A",
@@ -16,28 +22,33 @@ const CheckoutPage = () => {
         isDefault: true
     });
 
-    const [orderItems] = useState([
-        {
-            id: 1,
-            name: "Áo Thun Nam Cotton Premium",
-            size: "L",
-            color: "Đen",
-            url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop&crop=center",
-            brand: "Coolmate",
-            quantity: 2,
-            price: 199000
-        },
-        {
-            id: 2,
-            name: "Quần Jeans Slim Fit",
-            size: "32",
-            color: "Xanh đậm",
-            url: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop&crop=center",
-            brand: "Levi's",
-            quantity: 1,
-            price: 899000
+    const [orderItems, setOrderItems] = useState(() => {
+        if (incomingItems.length > 0) {
+            return incomingItems;
         }
-    ]);
+        return [
+            {
+                id: 1,
+                name: "Áo Thun Nam Cotton Premium",
+                size: "L",
+                color: "Đen",
+                url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop&crop=center",
+                brand: "Coolmate",
+                quantity: 2,
+                priceAtAdd: 199000
+            },
+            {
+                id: 2,
+                name: "Quần Jeans Slim Fit",
+                size: "32",
+                color: "Xanh đậm",
+                url: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop&crop=center",
+                brand: "Levi's",
+                quantity: 1,
+                priceAtAdd: 899000
+            }
+        ];
+    });
 
     const [selectedShipping, setSelectedShipping] = useState('standard');
     const [selectedPayment, setSelectedPayment] = useState('cod');
@@ -47,21 +58,21 @@ const CheckoutPage = () => {
             id: 'standard',
             name: 'Giao hàng tiêu chuẩn',
             time: '3-5 ngày',
-            price: 30000,
+            priceAtAdd: 30000,
             description: 'Giao hàng trong giờ hành chính'
         },
         {
             id: 'express',
             name: 'Giao hàng nhanh',
             time: '1-2 ngày',
-            price: 50000,
+            priceAtAdd: 50000,
             description: 'Giao hàng ưu tiên, nhanh chóng'
         },
         {
             id: 'super_express',
             name: 'Giao hàng hỏa tốc',
             time: '2-4 giờ',
-            price: 100000,
+            priceAtAdd: 100000,
             description: 'Giao hàng trong ngày (nội thành)'
         }
     ];
@@ -97,9 +108,21 @@ const CheckoutPage = () => {
         alert('Đặt hàng thành công!');
     };
 
-    const subtotal = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const shippingFee = shippingMethods.find(m => m.id === selectedShipping)?.price || 0;
+    const subtotal = useMemo(
+        () => orderItems.reduce((sum, item) => sum + item.priceAtAdd * item.quantity, 0),
+        [orderItems]
+    );
+    const shippingFee = shippingMethods.find(m => m.id === selectedShipping)?.priceAtAdd || 0;
     const total = subtotal + shippingFee;
+
+    if (incomingItems.length === 0 && orderItems.length === 0) {
+        return (
+            <div className="checkout-page">
+                <p>Không có sản phẩm để thanh toán.</p>
+                <button onClick={() => navigate('/cart')}>Quay lại giỏ hàng</button>
+            </div>
+        );
+    }
 
     return (
         <div className="checkout-page">
