@@ -1,24 +1,86 @@
-import {BRANDS, CATEGORIES, COLORS, INIT_FILTERS, SIZES} from "../consts";
-import React from "react";
+import {BRANDS, CATEGORIES, COLORS, INIT_FILTERS, PRICE_RANGES, SIZES} from "../consts";
+import React, {useState, useEffect, useMemo} from "react";
 import {getColorCode} from "../helper";
+import Grid from "@mui/material/Grid";
+import PropTypes from "prop-types";
+import {getCategories, getProductVariantAggregation} from "../services";
+import {SimpleTreeView} from '@mui/x-tree-view/SimpleTreeView';
+import {TreeItem} from '@mui/x-tree-view/TreeItem';
 
-const FilterSidebar = ({filters, setFilters}) => {
-	const categories = CATEGORIES;
+const FilterSidebar = ({filters, setFilters, onFilterChange}) => {
+	const [categories, setCategories] = useState(CATEGORIES);
+	const [sizes, setSizes] = useState(SIZES);
+	const [colors, setColors] = useState(COLORS);
 	const brands = BRANDS;
-	const sizes = SIZES;
-	const colors = COLORS;
 	
-	const toggleFilter = (type, value) => {
+	useEffect(() => {
+		handleGetCategories();
+		handleGetProdAggregation()
+	}, []);
+	
+	const handleGetCategories = async () => {
+		try {
+			const response = await getCategories();
+			setCategories(Array.isArray(response.data) ? response.data : CATEGORIES);
+		} catch (error) {
+			console.error('Error fetching categories:', error);
+		}
+	}
+	
+	const handleGetProdAggregation = async () => {
+		try {
+			const response = await getProductVariantAggregation()
+			setSizes(response.data?.sizes || SIZES);
+			setColors(response.data?.colors || COLORS);
+		} catch (error) {
+			console.error('Error fetching categories:', error);
+		}
+	}
+	
+	const toggleFilter = (name, value, checked) => {
 		setFilters(prev => ({
 			...prev,
-			[type]: prev[type].includes(value)
-				? prev[type].filter(v => v !== value)
-				: [...prev[type], value]
+			[name]: checked
+				? [...(prev[name] || []), value]
+				: prev[name]?.filter(item => item !== value)
 		}));
+	};
+	
+	const handleCheckboxChange = (filterType, value, checked) => {
+		onFilterChange(filterType, value, checked);
+	};
+	
+	const handleSizeToggle = (size) => {
+		const isSelected = filters.sizes.includes(size);
+		onFilterChange('sizes', size, !isSelected);
+	};
+	
+	const handleColorToggle = (color) => {
+		const isSelected = filters.colors.includes(color);
+		onFilterChange('colors', color, !isSelected);
 	};
 	
 	const clearFilters = () => {
 		setFilters(INIT_FILTERS);
+	};
+	
+	const renderTree = (parentId = null) => {
+		// Lọc các item có parentId khớp với parentId hiện tại
+		const children = categories.filter(cat => cat.parentId === parentId);
+		
+		// Nếu không có children thì return null
+		if (children.length === 0) return null;
+		
+		// Render các TreeItem và đệ quy cho children của chúng
+		return children.map(cat => (
+			<TreeItem
+				key={cat.id}
+				itemId={String(cat.id)}
+				label={cat.name}
+			>
+				{renderTree(cat.id)}
+			</TreeItem>
+		));
 	};
 	
 	return (
@@ -29,18 +91,18 @@ const FilterSidebar = ({filters, setFilters}) => {
 			<div className="filter-group">
 				<h4 className="filter-group-title">Danh mục</h4>
 				<div className="filter-options">
-					{categories.map(cat => (
-						<label key={cat.id} className="filter-option">
-							<input
-								type="checkbox"
-								className="filter-checkbox"
-								checked={filters.categories.includes(cat.id)}
-								onChange={() => toggleFilter('categories', cat.id)}
-							/>
-							<span className="filter-label">{cat.name}</span>
-							<span className="filter-count">({cat.count})</span>
-						</label>
-					))}
+					<SimpleTreeView
+						checkboxSelection
+						multiSelect
+						onSelectedItemsChange={(event, itemIds) => {
+							console.log(event)
+							console.log(event.target)
+							setFilters(prev => ({...prev, categories: itemIds}));
+						}}
+					
+					>
+						{renderTree(null)}
+					</SimpleTreeView>
 				</div>
 			</div>
 			
@@ -53,8 +115,12 @@ const FilterSidebar = ({filters, setFilters}) => {
 							<input
 								type="checkbox"
 								className="filter-checkbox"
-								checked={filters.brands.includes(brand.id)}
-								onChange={() => toggleFilter('brands', brand.id)}
+								checked={filters?.brands?.includes(brand.id)}
+								onChange={(e) => handleCheckboxChange(
+									'brands',
+									brand.id,
+									e.target.checked
+								)}
 							/>
 							<span className="filter-label">{brand.name}</span>
 							<span className="filter-count">({brand.count})</span>
@@ -67,27 +133,29 @@ const FilterSidebar = ({filters, setFilters}) => {
 			<div className="filter-group">
 				<h4 className="filter-group-title">Khoảng giá</h4>
 				<div className="price-range">
-					<input
-						type="number"
-						className="price-input"
-						placeholder="Từ"
-						value={filters.priceRange.min}
-						onChange={(e) => setFilters(prev => ({
-							...prev,
-							priceRange: {...prev.priceRange, min: Number(e.target.value)}
-						}))}
-					/>
-					<span>-</span>
-					<input
-						type="number"
-						className="price-input"
-						placeholder="Đến"
-						value={filters.priceRange.max}
-						onChange={(e) => setFilters(prev => ({
-							...prev,
-							priceRange: {...prev.priceRange, max: Number(e.target.value)}
-						}))}
-					/>
+					<Grid container>
+						{PRICE_RANGES.map(priceRange => (
+							<Grid size={{xs: 12}}>
+								<div key={priceRange.value} className="filter-option">
+									<input
+										type="checkbox"
+										id={`price-${priceRange.value}`}
+										className="filter-checkbox"
+										checked={filters?.priceRanges?.includes(priceRange.value)}
+										onChange={(e) => handleCheckboxChange(
+											'priceRanges',
+											priceRange.value,
+											e.target.checked
+										)}
+									/>
+									<label htmlFor={`price-${priceRange.value}`} className="filter-label">
+										{priceRange.label}
+									</label>
+									<span className="filter-count">({priceRange.count})</span>
+								</div>
+							</Grid>
+						))}
+					</Grid>
 				</div>
 			</div>
 			
@@ -98,8 +166,8 @@ const FilterSidebar = ({filters, setFilters}) => {
 					{sizes.map(size => (
 						<div
 							key={size}
-							className={`size-option ${filters.sizes.includes(size) ? 'selected' : ''}`}
-							onClick={() => toggleFilter('sizes', size)}
+							className={`size-option ${filters?.sizes?.includes(size) ? 'selected' : ''}`}
+							onClick={() => handleSizeToggle(size)}
 						>
 							{size}
 						</div>
@@ -113,11 +181,11 @@ const FilterSidebar = ({filters, setFilters}) => {
 				<div className="color-grid">
 					{colors.map(color => (
 						<div
-							key={color}
-							className={`color-option ${filters.colors.includes(color) ? 'selected' : ''}`}
-							style={{backgroundColor: getColorCode(color)}}
-							onClick={() => toggleFilter('colors', color)}
-							title={color}
+							key={color.code}
+							className={`color-option ${filters?.colors?.includes(color.code) ? 'selected' : ''}`}
+							style={{backgroundColor: getColorCode(color.code)}}
+							onClick={() => handleColorToggle(color.code)}
+							title={color.name}
 						/>
 					))}
 				</div>
@@ -131,3 +199,6 @@ const FilterSidebar = ({filters, setFilters}) => {
 };
 
 export default FilterSidebar;
+FilterSidebar.propTypes = {
+	filters: PropTypes.shape({})
+};

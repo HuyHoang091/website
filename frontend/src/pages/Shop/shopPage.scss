@@ -1,3 +1,4 @@
+@import "../../assets/styles/variables";
 
 .shop-page {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -339,7 +340,7 @@
 
   .product-image {
     width: 100%;
-    height: 320px;
+    height: $product-card-img-height;
     background: linear-gradient(135deg, #f8fafc, #e2e8f0);
     display: flex;
     align-items: center;
@@ -415,6 +416,7 @@
 
   .product-info {
     padding: 1.5rem;
+    height: calc(100% - $product-card-img-height);
   }
 
   .product-brand {
