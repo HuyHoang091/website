@@ -27,4 +27,6 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
         "LEFT JOIN p.brand b " +
         "WHERE ci.cart.id = :cartId")
     List<CartItemDTO> findCartItemsByCartId(@Param("cartId") Long cartId);
+
+    CartItem findByCartIdAndProductVariantId(Long cartId, Long variantId);
 }

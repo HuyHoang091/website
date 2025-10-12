@@ -3,6 +3,7 @@ import Input from "../../components/Input/Input";
 import { login } from "../../services/authService";
 import styles from '../../assets/styles/layouts/LoginPage.module.css';
 import AuthLayout from "../../layouts/AuthLayout";
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ const LoginPage = () => {
     const [loading, setLoading] = useState('');
     const [focused, setFocused] = useState(false);
     const [displayText, setDisplayText] = useState("Đợi lát \n !...");
+    const navigate = useNavigate();
 
     const handleCover = () => {
         const shutter = document.getElementById("shutter");
@@ -24,7 +26,12 @@ const LoginPage = () => {
         setLoading(true);
         setError('');
         try {
-            await login(email, password);
+            const role = await login(email, password);
+            if (role === 'SALER') {
+                navigate("/test");
+            } else {
+                navigate("/");
+            }
         } catch (err) {
             setError(err.message);
         } finally {

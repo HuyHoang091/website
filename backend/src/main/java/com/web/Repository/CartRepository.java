@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.web.Model.Cart;
 
 public interface CartRepository extends JpaRepository<Cart, Long> {
-    List<Cart> findByUser_Id(Long userId);
+    Cart findByUser_Id(Long userId);
+    Cart findByToken(String token);
 }

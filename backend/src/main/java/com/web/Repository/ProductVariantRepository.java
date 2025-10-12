@@ -20,4 +20,6 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
     VariantAgg findAllAggregation();
 
     void deleteByProductId(Long productId);
+
+    ProductVariant findBySku(String sku);
 }

@@ -22,12 +22,12 @@ export async function login(username, password) {
     localStorage.setItem("user", JSON.stringify(data.user));
 
     const role = data.user.role;
-    if (role === 'SALER') {
-        window.location.href = "/test";
-    } else {
-        window.location.href = "/";
-    }
-    return data;
+    // if (role === 'SALER') {
+    //     window.location.href = "/test";
+    // } else {
+    //     window.location.href = "/";
+    // }
+    return role;
 }
 
 async function register(username, email) {

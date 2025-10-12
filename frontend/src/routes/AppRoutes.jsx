@@ -9,6 +9,8 @@ import ImageSearch from "../pages/ImageSearch";
 import CustomerChatWindow from "../components/Chat/CustomerChatWindow";
 import {ROUTE_PATHS} from "../utils/appConst";
 import {ShopPage} from "../pages/Shop/ShopPage";
+import ShoppingCart from "../components/ShoppingCart/ShoppingCart";
+import CheckoutPage from "../components/Order/CheckoutPage";
 
 const LandingPage = React.lazy(() =>
   new Promise((resolve) => {
@@ -55,6 +57,10 @@ const appRoutes = [
 		path: ROUTE_PATHS.SHOP,
 		element: <ShopPage />,
 	},
+  {
+    path: ROUTE_PATHS.CART,
+    element: <ShoppingCart />,
+  }
 ];
 
 const AppRoutes = () => {
@@ -99,6 +105,24 @@ const AppRoutes = () => {
         />
 
         {/* Các route không có Header */}
+        <Route
+          path="/order"
+          element={
+            <motion.div {...pageTransition}>
+              <CheckoutPage />
+            </motion.div>
+          }
+        />
+
+        <Route
+          path="/cart"
+          element={
+            <motion.div {...pageTransition}>
+              <ShoppingCart />
+            </motion.div>
+          }
+        />
+
         <Route
           path="/chat"
           element={
