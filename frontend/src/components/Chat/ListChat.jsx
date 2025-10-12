@@ -12,7 +12,7 @@ export default function ListChat({ onSelectChat, selectedChatId }) {
     const selectedChatIdRef = useRef(selectedChatId);
 
     useEffect(() => {
-        axios.get("http://localhost:8080/api/chat/list", {
+        axios.get(`${process.env.REACT_APP_API_URL}/api/chat/list`, {
         headers: { Authorization: "Bearer " + localStorage.getItem("tokenJWT") }
         })
         .then(res => setChats(res.data))
@@ -97,7 +97,7 @@ export default function ListChat({ onSelectChat, selectedChatId }) {
                 return [
                     {
                         userId: body.to,
-                        name: `Khách ${body.to}`,
+                        name: body.content.split(":")[0],
                         lastMessage: body.content,
                         time: body.createdAt,
                         unreadCount: selectedChatIdRef.current === body.to ? 0 : 1, // Nếu đang chọn, không tăng `unread`

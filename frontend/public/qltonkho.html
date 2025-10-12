@@ -4,202 +4,980 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản Lý Tồn Kho - Fashion Store</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(to bottom right, #eff6ff, #e0e7ff);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-bottom: 4px solid #4f46e5;
+        }
+
+        .header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header-left i {
+            font-size: 1.875rem;
+            color: #4f46e5;
+        }
+
+        .header-left h1 {
+            font-size: 1.875rem;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-right span {
+            color: #4b5563;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4338ca;
+        }
+
+        .btn-success {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #047857;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Page Title */
+        .page-title {
+            margin-bottom: 2rem;
+        }
+
+        .page-title h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title p {
+            color: #6b7280;
+        }
+
+        /* Card */
+        .card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 28rem;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        select {
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f9fafb;
+        }
+
+        th {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+        }
+
+        td {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .product-img {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .product-details .name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .product-details .id {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 9999px;
+        }
+
+        .status-in-stock {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-low-stock {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-out-of-stock {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .action-buttons button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .action-buttons button:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-edit {
+            color: #4f46e5;
+        }
+
+        .btn-delete {
+            color: #dc2626;
+        }
+
+        .btn-delete-product {
+            color: #7f1d1d;
+        }
+
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-icon.blue {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .stat-icon.green {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .stat-icon.yellow {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .stat-icon.red {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .stat-info .label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-info .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            max-width: 56rem;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-header h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #4b5563;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .input-group {
+            display: flex;
+        }
+
+        .input-group select {
+            flex: 1;
+            border-radius: 0.5rem 0 0 0.5rem;
+        }
+
+        .input-group button {
+            border-radius: 0 0.5rem 0.5rem 0;
+            padding: 0.5rem 0.75rem;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 4rem;
+        }
+
+        /* Category Tree */
+        .category-tree {
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            max-height: 12rem;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+
+        .category-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .category-select-item {
+            display: flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            cursor: pointer;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+
+        .category-select-item:hover {
+            background: #f3f4f6;
+        }
+
+        .category-select-item:hover .category-name {
+            color: #4f46e5;
+        }
+
+        .category-item.selected > .category-select-item {
+            background: #e0e7ff;
+            font-weight: 500;
+        }
+
+        .category-toggle {
+            width: 1rem;
+            display: inline-block;
+            text-align: center;
+            margin-right: 0.25rem;
+            color: #6b7280;
+        }
+
+        .category-toggle:hover {
+            color: #4f46e5;
+        }
+
+        .category-children {
+            margin-left: 0.75rem;
+            border-left: 1px dotted #d1d5db;
+            display: none;
+        }
+
+        .selected-category {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #4f46e5;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Image Upload */
+        .image-upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .image-upload-btn:hover {
+            background: #2563eb;
+        }
+
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .image-preview-item {
+            position: relative;
+        }
+
+        .image-preview-item img {
+            width: 4rem;
+            height: 4rem;
+            object-fit: cover;
+            border-radius: 0.5rem;
+        }
+
+        .image-preview-item button {
+            position: absolute;
+            top: -0.5rem;
+            right: -0.5rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+
+        /* Variants */
+        .variants-section {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+
+        .variants-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .variants-header h4 {
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        .variant-item {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .variant-grid {
+            display: grid;
+            grid-template-columns: 2fr 3fr 2fr 4fr 1fr;
+            gap: 0.75rem;
+            align-items: end;
+        }
+
+        .variant-image-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .variant-preview {
+            flex: 1;
+        }
+
+        .variant-preview img {
+            height: 1.5rem;
+            width: 1.5rem;
+            border-radius: 0.25rem;
+            object-fit: cover;
+        }
+
+        .btn-small {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                max-width: 100%;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .variant-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading state */
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            padding: 2rem;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            color: #6b7280;
+            padding: 2rem;
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+<body>
     <!-- Header -->
-    <header class="bg-white shadow-lg border-b-4 border-indigo-500">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
-                <div class="flex items-center">
-                    <i class="fas fa-store text-3xl text-indigo-600 mr-3"></i>
-                    <h1 class="text-3xl font-bold text-gray-900">Fashion Store</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-gray-600">Xin chào, Admin</span>
-                    <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition duration-200">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Đăng xuất
-                    </button>
-                </div>
+    <header>
+        <div class="header-container">
+            <div class="header-left">
+                <i class="fas fa-store"></i>
+                <h1>Fashion Store</h1>
+            </div>
+            <div class="header-right">
+                <span>Xin chào, Admin</span>
+                <button class="btn btn-primary">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Đăng xuất
+                </button>
             </div>
         </div>
     </header>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="container">
         <!-- Page Title -->
-        <div class="mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">Quản Lý Tồn Kho</h2>
-            <p class="text-gray-600">Quản lý sản phẩm quần áo trong kho</p>
+        <div class="page-title">
+            <h2>Quản Lý Tồn Kho</h2>
+            <p>Quản lý sản phẩm quần áo trong kho</p>
         </div>
 
         <!-- Controls -->
-        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-            <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                <!-- Search -->
-                <div class="flex-1 max-w-md">
-                    <div class="relative">
-                        <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." 
-                               class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    </div>
+        <div class="card">
+            <div class="controls">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm...">
+                    <i class="fas fa-search"></i>
                 </div>
 
-                <!-- Filter -->
-                <div class="flex items-center space-x-4">
-                    <select id="categoryFilter" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                <div class="filter-group">
+                    <select id="categoryFilter">
                         <option value="">Tất cả danh mục</option>
-                        <option value="Áo">Áo</option>
-                        <option value="Quần">Quần</option>
-                        <option value="Váy">Váy</option>
-                        <option value="Phụ kiện">Phụ kiện</option>
                     </select>
 
-                    <button id="addProductBtn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition duration-200">
-                        <i class="fas fa-plus mr-2"></i>Thêm sản phẩm
+                    <button id="addProductBtn" class="btn btn-success">
+                        <i class="fas fa-plus"></i>
+                        Thêm sản phẩm
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- Inventory Table -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+        <div class="card">
+            <div class="table-container">
+                <table>
+                    <thead>
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sản phẩm</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Danh mục</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Màu sắc</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số lượng</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+                            <th>Sản phẩm</th>
+                            <th>Thương hiệu</th>
+                            <th>Danh mục</th>
+                            <th>SKU</th>
+                            <th>Size</th>
+                            <th>Màu sắc</th>
+                            <th>Số lượng</th>
+                            <th>Giá</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
                         </tr>
                     </thead>
-                    <tbody id="inventoryTable" class="bg-white divide-y divide-gray-200">
-                        <!-- Products will be inserted here -->
+                    <tbody id="inventoryTable">
+                        <tr>
+                            <td colspan="10" class="loading">Đang tải dữ liệu...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
         <!-- Statistics -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-                        <i class="fas fa-boxes text-xl"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Tổng sản phẩm</p>
-                        <p id="totalProducts" class="text-2xl font-bold text-gray-900">0</p>
-                    </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="label">Tổng sản phẩm</div>
+                    <div class="value" id="totalProducts">0</div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-full bg-green-100 text-green-600">
-                        <i class="fas fa-check-circle text-xl"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Còn hàng</p>
-                        <p id="inStockProducts" class="text-2xl font-bold text-gray-900">0</p>
-                    </div>
+            <div class="stat-card">
+                <div class="stat-icon green">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="label">Còn hàng</div>
+                    <div class="value" id="inStockProducts">0</div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                        <i class="fas fa-exclamation-triangle text-xl"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Sắp hết</p>
-                        <p id="lowStockProducts" class="text-2xl font-bold text-gray-900">0</p>
-                    </div>
+            <div class="stat-card">
+                <div class="stat-icon yellow">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="label">Sắp hết</div>
+                    <div class="value" id="lowStockProducts">0</div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-full bg-red-100 text-red-600">
-                        <i class="fas fa-times-circle text-xl"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Hết hàng</p>
-                        <p id="outOfStockProducts" class="text-2xl font-bold text-gray-900">0</p>
-                    </div>
+            <div class="stat-card">
+                <div class="stat-icon red">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="label">Hết hàng</div>
+                    <div class="value" id="outOfStockProducts">0</div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Add/Edit Product Modal -->
-    <div id="productModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 id="modalTitle" class="text-xl font-bold text-gray-900">Thêm sản phẩm mới</h3>
-                    <button id="closeModal" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Thêm sản phẩm mới</h3>
+                <button id="closeModal" class="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
 
-                <form id="productForm" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Tên sản phẩm</label>
-                        <input type="text" id="productName" required 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+            <div class="modal-body">
+                <form id="productForm">
+                    <input type="hidden" id="productId" value="">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Tên sản phẩm</label>
+                        <input type="text" id="productName" class="form-input" required>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Danh mục</label>
-                            <select id="productCategory" required 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
-                                <option value="">Chọn danh mục</option>
-                                <option value="Áo">Áo</option>
-                                <option value="Quần">Quần</option>
-                                <option value="Váy">Váy</option>
-                                <option value="Phụ kiện">Phụ kiện</option>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Thương hiệu</label>
+                            <div class="input-group">
+                                <select id="brandSelect" class="form-input" required>
+                                    <option value="">Chọn thương hiệu</option>
+                                </select>
+                                <button type="button" id="addBrandBtn" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Danh mục sản phẩm</label>
+                            <div class="category-header">
+                                <div id="selectedCategoryName" class="selected-category">
+                                    Chưa chọn danh mục
+                                </div>
+                                <button type="button" id="addCategoryBtn" class="btn btn-primary btn-small">
+                                    <i class="fas fa-plus"></i> Thêm danh mục
+                                </button>
+                            </div>
+                            <div id="categoryTree" class="category-tree">
+                                <div class="loading">Đang tải danh mục...</div>
+                            </div>
+                            <input type="hidden" id="selectedCategoryId" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Giá cơ bản (VNĐ)</label>
+                            <input type="number" id="productPrice" class="form-input" required min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Trạng thái</label>
+                            <select id="productStatus" class="form-input" required>
+                                <option value="active">Active</option>
+                                <option value="draft">Draft</option>
                             </select>
                         </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Giá cơ bản (VNĐ)</label>
-                            <input type="number" id="productPrice" required min="0" 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Mô tả</label>
+                        <textarea id="productDescription" class="form-input" rows="3"></textarea>
+                    </div>
+                    
+                    <!-- Product Images Section -->
+                    <div class="form-group">
+                        <label class="form-label">Ảnh sản phẩm</label>
+                        <input type="file" id="productImageUpload" accept="image/*" multiple style="display: none;">
+                        <button type="button" id="uploadProductImagesBtn" class="image-upload-btn">
+                            <i class="fas fa-upload"></i>Tải lên ảnh
+                        </button>
+                        <div id="productImagesPreview" class="image-preview"></div>
+                        <input type="hidden" id="productImageUrls">
                     </div>
 
                     <!-- Variants Section -->
-                    <div class="border-t pt-4">
-                        <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-lg font-medium text-gray-900">Biến thể sản phẩm</h4>
-                            <button type="button" id="addVariantBtn" 
-                                    class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm">
-                                <i class="fas fa-plus mr-1"></i>Thêm biến thể
+                    <div class="variants-section">
+                        <div class="variants-header">
+                            <h4>Biến thể sản phẩm</h4>
+                            <button type="button" id="addVariantBtn" class="btn btn-success btn-small">
+                                <i class="fas fa-plus"></i>Thêm biến thể
                             </button>
                         </div>
                         
-                        <div id="variantsList" class="space-y-3">
-                            <!-- Variants will be added here -->
-                        </div>
+                        <div id="variantsList"></div>
                     </div>
 
-                    <div class="flex justify-end space-x-3 pt-6">
-                        <button type="button" id="cancelBtn" 
-                                class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200">
-                            Hủy
-                        </button>
-                        <button type="submit" 
-                                class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition duration-200">
-                            Lưu
-                        </button>
+                    <div class="form-actions">
+                        <button type="button" id="cancelBtn" class="btn btn-secondary">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Brand Modal -->
+    <div id="addBrandModal" class="modal">
+        <div class="modal-content" style="max-width: 28rem;">
+            <div class="modal-header">
+                <h3>Thêm thương hiệu mới</h3>
+                <button id="closeBrandModal" class="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form id="brandForm">
+                    <div class="form-group">
+                        <label class="form-label">Tên thương hiệu</label>
+                        <input type="text" id="brandName" class="form-input" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="cancelBrandBtn" class="btn btn-secondary">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Thêm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div id="addCategoryModal" class="modal">
+        <div class="modal-content" style="max-width: 28rem;">
+            <div class="modal-header">
+                <h3>Thêm danh mục mới</h3>
+                <button id="closeCategoryModal" class="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form id="categoryForm">
+                    <div class="form-group">
+                        <label class="form-label">Tên danh mục</label>
+                        <input type="text" id="categoryName" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Danh mục cha</label>
+                        <select id="parentCategorySelect" class="form-input">
+                            <option value="">Không có</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="cancelCategoryBtn" class="btn btn-secondary">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Thêm</button>
                     </div>
                 </form>
             </div>
@@ -207,83 +985,25 @@
     </div>
 
     <script>
-        // Sample data with variants
-        let products = [
-            {
-                id: 1,
-                name: "Áo thun nam basic",
-                category: "Áo",
-                basePrice: 199000,
-                variants: [
-                    { size: "S", color: "Trắng", quantity: 15, sku: "AT001-S-W" },
-                    { size: "M", color: "Trắng", quantity: 25, sku: "AT001-M-W" },
-                    { size: "L", color: "Trắng", quantity: 12, sku: "AT001-L-W" },
-                    { size: "S", color: "Đen", quantity: 8, sku: "AT001-S-B" },
-                    { size: "M", color: "Đen", quantity: 20, sku: "AT001-M-B" },
-                    { size: "L", color: "Đen", quantity: 5, sku: "AT001-L-B" }
-                ]
-            },
-            {
-                id: 2,
-                name: "Quần jeans nữ skinny",
-                category: "Quần",
-                basePrice: 450000,
-                variants: [
-                    { size: "S", color: "Xanh đen", quantity: 8, sku: "QJ002-S-DB" },
-                    { size: "M", color: "Xanh đen", quantity: 12, sku: "QJ002-M-DB" },
-                    { size: "L", color: "Xanh đen", quantity: 6, sku: "QJ002-L-DB" },
-                    { size: "S", color: "Xanh nhạt", quantity: 0, sku: "QJ002-S-LB" },
-                    { size: "M", color: "Xanh nhạt", quantity: 3, sku: "QJ002-M-LB" }
-                ]
-            },
-            {
-                id: 3,
-                name: "Váy maxi hoa",
-                category: "Váy",
-                basePrice: 320000,
-                variants: [
-                    { size: "S", color: "Hoa đỏ", quantity: 4, sku: "VM003-S-RF" },
-                    { size: "M", color: "Hoa đỏ", quantity: 0, sku: "VM003-M-RF" },
-                    { size: "L", color: "Hoa đỏ", quantity: 2, sku: "VM003-L-RF" },
-                    { size: "S", color: "Hoa xanh", quantity: 6, sku: "VM003-S-BF" },
-                    { size: "M", color: "Hoa xanh", quantity: 8, sku: "VM003-M-BF" }
-                ]
-            },
-            {
-                id: 4,
-                name: "Túi xách da",
-                category: "Phụ kiện",
-                basePrice: 680000,
-                variants: [
-                    { size: "One Size", color: "Nâu", quantity: 15, sku: "TX004-OS-BR" },
-                    { size: "One Size", color: "Đen", quantity: 10, sku: "TX004-OS-BL" },
-                    { size: "One Size", color: "Đỏ", quantity: 5, sku: "TX004-OS-RD" }
-                ]
-            }
-        ];
-
-        let editingId = null;
+        // API endpoints
+        const API = {
+            BASE_URL: 'http://localhost:8080/api',
+            INVENTORY: 'http://localhost:8080/api/products/inventory',
+            PRODUCT: 'http://localhost:8080/api/products',
+            BRANDS: 'http://localhost:8080/api/brands/',
+            CATEGORIES: 'http://localhost:8080/api/categorys/',
+            UPLOAD: 'http://localhost:8080/api/upload/image'
+        };
+        
+        // Variables
         let variantCounter = 0;
-
-        // DOM elements
-        const inventoryTable = document.getElementById('inventoryTable');
-        const searchInput = document.getElementById('searchInput');
-        const categoryFilter = document.getElementById('categoryFilter');
-        const addProductBtn = document.getElementById('addProductBtn');
-        const productModal = document.getElementById('productModal');
-        const closeModal = document.getElementById('closeModal');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const productForm = document.getElementById('productForm');
-        const modalTitle = document.getElementById('modalTitle');
-        const addVariantBtn = document.getElementById('addVariantBtn');
-        const variantsList = document.getElementById('variantsList');
-
-        // Statistics elements
-        const totalProducts = document.getElementById('totalProducts');
-        const inStockProducts = document.getElementById('inStockProducts');
-        const lowStockProducts = document.getElementById('lowStockProducts');
-        const outOfStockProducts = document.getElementById('outOfStockProducts');
-
+        let categories = [];
+        let brands = [];
+        let productImages = [];
+        const selectedCategoryName = document.getElementById('selectedCategoryName');
+        const categoryTree = document.getElementById('categoryTree');
+        const selectedCategoryId = document.getElementById('selectedCategoryId');
+        
         // Format currency
         function formatCurrency(amount) {
             return new Intl.NumberFormat('vi-VN', {
@@ -294,136 +1014,335 @@
 
         // Get stock status
         function getStockStatus(quantity) {
-            if (quantity === 0) return { text: 'Hết hàng', class: 'bg-red-100 text-red-800' };
-            if (quantity <= 5) return { text: 'Sắp hết', class: 'bg-yellow-100 text-yellow-800' };
-            return { text: 'Còn hàng', class: 'bg-green-100 text-green-800' };
+            if (quantity === 0) return { text: 'Hết hàng', class: 'status-out-of-stock' };
+            if (quantity <= 5) return { text: 'Sắp hết', class: 'status-low-stock' };
+            return { text: 'Còn hàng', class: 'status-in-stock' };
         }
 
-        // Generate SKU
-        function generateSKU(productName, size, color) {
-            const nameCode = productName.substring(0, 3).toUpperCase();
-            const sizeCode = size.substring(0, 2).toUpperCase();
-            const colorCode = color.substring(0, 2).toUpperCase();
-            const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-            return `${nameCode}${randomNum}-${sizeCode}-${colorCode}`;
+        // Build category tree recursively
+        function buildCategoryTree(categories, parentId = null, depth = 0) {
+            const indent = '- '.repeat(depth);
+            let result = [];
+            
+            categories
+                .filter(c => (parentId === null && !c.parent_id) || (c.parent_id === parentId))
+                .forEach(category => {
+                    result.push({
+                        id: category.id,
+                        name: `${indent}${category.name}`,
+                        parent_id: category.parent_id
+                    });
+                    
+                    const children = buildCategoryTree(categories, category.id, depth + 1);
+                    result = [...result, ...children];
+                });
+                
+            return result;
         }
 
-        // Update statistics
-        function updateStatistics() {
-            let totalVariants = 0;
+        // Render category tree
+        function renderCategoryTree(categories, parentId = null, level = 0) {
+            const indent = level * 12;
+            let html = '';
+            
+            const filteredCategories = categories.filter(cat => 
+                (parentId === null && !cat.parent_id) || 
+                (cat.parent_id === parentId)
+            );
+            
+            if (filteredCategories.length === 0) return '';
+            
+            filteredCategories.forEach(category => {
+                const hasChildren = categories.some(c => c.parent_id === category.id);
+                
+                html += `
+                    <div class="category-item" data-id="${category.id}" data-name="${category.name}">
+                        <div class="category-select-item" style="margin-left: ${indent}px">
+                            ${hasChildren ? 
+                                `<i class="fas fa-caret-right category-toggle"></i>` : 
+                                `<span style="width: 1rem; display: inline-block;"></span>`
+                            }
+                            <span class="category-name">${category.name}</span>
+                        </div>
+                        <div class="category-children">
+                            ${renderCategoryTree(categories, category.id, level + 1)}
+                        </div>
+                    </div>
+                `;
+            });
+                
+            return html;
+        }
+        
+        // Render category tree view
+        function renderCategoryTreeView() {
+            if (categories.length === 0) {
+                categoryTree.innerHTML = '<div style="color: #6b7280;">Không có danh mục nào</div>';
+                return;
+            }
+            
+            categoryTree.innerHTML = renderCategoryTree(categories);
+            addCategoryTreeListeners();
+        }
+        
+        // Add event listeners for the category tree
+        function addCategoryTreeListeners() {
+            document.querySelectorAll('.category-toggle').forEach(toggle => {
+                toggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const categoryItem = toggle.closest('.category-item');
+                    const children = categoryItem.querySelector('.category-children');
+                    
+                    if (toggle.classList.contains('fa-caret-right')) {
+                        toggle.classList.replace('fa-caret-right', 'fa-caret-down');
+                        children.style.display = 'block';
+                    } else {
+                        toggle.classList.replace('fa-caret-down', 'fa-caret-right');
+                        children.style.display = 'none';
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.category-select-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const categoryItem = item.closest('.category-item');
+                    const categoryId = categoryItem.dataset.id;
+                    const categoryName = categoryItem.dataset.name;
+                    
+                    document.querySelectorAll('.category-item').forEach(i => {
+                        i.classList.remove('selected');
+                    });
+                    
+                    categoryItem.classList.add('selected');
+                    selectedCategoryId.value = categoryId;
+                    selectedCategoryName.textContent = categoryName;
+                });
+            });
+        }
+
+        // Load categories
+        async function loadCategories() {
+            try {
+                const response = await axios.get(API.CATEGORIES);
+                categories = response.data;
+                
+                categoryFilter.innerHTML = '<option value="">Tất cả danh mục</option>';
+                const categoryTree = buildCategoryTree(categories);
+                categoryTree.forEach(category => {
+                    categoryFilter.innerHTML += `<option value="${category.id}">${category.name}</option>`;
+                });
+                
+                renderCategoryTreeView();
+                
+                parentCategorySelect.innerHTML = '<option value="">Không có</option>';
+                categoryTree.forEach(category => {
+                    parentCategorySelect.innerHTML += `<option value="${category.id}">${category.name}</option>`;
+                });
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+        
+        // Load brands
+        async function loadBrands() {
+            try {
+                const response = await axios.get(API.BRANDS);
+                brands = response.data;
+                
+                brandSelect.innerHTML = '<option value="">Chọn thương hiệu</option>';
+                brands.forEach(brand => {
+                    brandSelect.innerHTML += `<option value="${brand.id}">${brand.name}</option>`;
+                });
+            } catch (error) {
+                console.error('Error loading brands:', error);
+            }
+        }
+        
+        // Load inventory data
+        async function loadInventoryData() {
+            try {
+                const response = await axios.get(API.INVENTORY);
+                renderInventoryTable(response.data);
+            } catch (error) {
+                console.error('Error loading inventory data:', error);
+                inventoryTable.innerHTML = `
+                    <tr>
+                        <td colspan="10" style="text-align: center; color: #dc2626;">
+                            Lỗi khi tải dữ liệu. Vui lòng thử lại sau.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        // Render inventory table 
+        function renderInventoryTable(data) {
+            if (!data || data.length === 0) {
+                inventoryTable.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="empty-state">Không có dữ liệu sản phẩm</td>
+                    </tr>
+                `;
+                updateStatistics(0, 0, 0, 0);
+                return;
+            }
+            
+            inventoryTable.innerHTML = '';
+            let total = 0;
             let inStock = 0;
             let lowStock = 0;
             let outOfStock = 0;
-
-            products.forEach(product => {
-                product.variants.forEach(variant => {
-                    totalVariants++;
-                    if (variant.quantity === 0) outOfStock++;
-                    else if (variant.quantity <= 5) lowStock++;
-                    else inStock++;
-                });
+            
+            data.forEach(item => {
+                const status = getStockStatus(item.stock);
+                const row = document.createElement('tr');
+                
+                total++;
+                if (item.stock === 0) outOfStock++;
+                else if (item.stock <= 5) lowStock++;
+                else inStock++;
+                
+                row.innerHTML = `
+                    <td>
+                        <div class="product-info">
+                            <img class="product-img" src="${item.imageUrl || '/placeholder.png'}" alt="">
+                            <div class="product-details">
+                                <div class="name">${item.name}</div>
+                                <div class="id">ID: ${item.productId}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${item.brand}</td>
+                    <td>${item.category}</td>
+                    <td style="color: #6b7280;">${item.sku}</td>
+                    <td>${item.size}</td>
+                    <td>${item.color}</td>
+                    <td style="font-weight: 500;">${item.stock}</td>
+                    <td>${formatCurrency(item.price)}</td>
+                    <td>
+                        <span class="status-badge ${status.class}">
+                            ${status.text}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button onclick="editProduct(${item.productId})" class="btn-edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteVariant(${item.variantId}, '${item.sku}')" class="btn-delete">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                            <button onclick="deleteProduct(${item.productId}, '${item.name}')" class="btn-delete-product">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                inventoryTable.appendChild(row);
             });
-
-            totalProducts.textContent = totalVariants;
+            
+            updateStatistics(total, inStock, lowStock, outOfStock);
+        }
+        
+        // Update statistics
+        function updateStatistics(total, inStock, low, outOfStock) {
+            totalProducts.textContent = total;
             inStockProducts.textContent = inStock;
-            lowStockProducts.textContent = lowStock;
+            lowStockProducts.textContent = low;
             outOfStockProducts.textContent = outOfStock;
         }
-
-        // Render products table
-        function renderProducts(productsToRender = products) {
-            inventoryTable.innerHTML = '';
-            
-            productsToRender.forEach(product => {
-                product.variants.forEach((variant, index) => {
-                    const status = getStockStatus(variant.quantity);
-                    const row = document.createElement('tr');
-                    row.className = 'hover:bg-gray-50';
-                    
-                    row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">${product.name}</div>
-                            <div class="text-sm text-gray-500">ID: ${product.id}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${product.category}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${variant.sku}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${variant.size}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${variant.color}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${variant.quantity}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(product.basePrice)}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${status.class}">
-                                ${status.text}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <button onclick="editVariant('${product.id}', '${variant.sku}')" class="text-indigo-600 hover:text-indigo-900 mr-3">
-                                <i class="fas fa-edit"></i> Sửa
-                            </button>
-                            <button onclick="deleteVariant('${product.id}', '${variant.sku}')" class="text-red-600 hover:text-red-900">
-                                <i class="fas fa-trash"></i> Xóa
-                            </button>
-                        </td>
-                    `;
-                    
-                    inventoryTable.appendChild(row);
-                });
-            });
-            
-            updateStatistics();
-        }
-
-        // Filter products
-        function filterProducts() {
+        
+        // Filter inventory table
+        function filterInventory() {
             const searchTerm = searchInput.value.toLowerCase();
-            const categoryTerm = categoryFilter.value;
+            const categoryId = categoryFilter.value;
             
-            const filtered = products.filter(product => {
-                const matchesSearch = product.name.toLowerCase().includes(searchTerm) ||
-                                    product.variants.some(v => v.color.toLowerCase().includes(searchTerm) || v.sku.toLowerCase().includes(searchTerm));
-                const matchesCategory = !categoryTerm || product.category === categoryTerm;
+            const rows = inventoryTable.querySelectorAll('tr');
+            let total = 0;
+            let inStock = 0;
+            let lowStock = 0;
+            let outOfStock = 0;
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length === 0) return;
                 
-                return matchesSearch && matchesCategory;
+                const productName = cells[0].textContent.toLowerCase();
+                const brand = cells[1].textContent.toLowerCase();
+                const category = cells[2].textContent.toLowerCase();
+                const sku = cells[3].textContent.toLowerCase();
+                const color = cells[5].textContent.toLowerCase();
+                const stock = parseInt(cells[6].textContent);
+                
+                const matchesSearch = productName.includes(searchTerm) || 
+                                    brand.includes(searchTerm) || 
+                                    category.includes(searchTerm) || 
+                                    sku.includes(searchTerm) ||
+                                    color.includes(searchTerm);
+                                    
+                const isCategoryMatch = () => {
+                    if (!categoryId) return true;
+                    const selectedCategory = categories.find(c => c.id.toString() === categoryId);
+                    if (!selectedCategory) return false;
+                    return category.includes(selectedCategory.name.toLowerCase());
+                };
+                
+                if (matchesSearch && isCategoryMatch()) {
+                    row.style.display = '';
+                    total++;
+                    if (stock === 0) outOfStock++;
+                    else if (stock <= 5) lowStock++;
+                    else inStock++;
+                } else {
+                    row.style.display = 'none';
+                }
             });
             
-            renderProducts(filtered);
+            updateStatistics(total, inStock, lowStock, outOfStock);
         }
-
+        
         // Add variant row
         function addVariantRow(variant = null) {
             variantCounter++;
             const variantDiv = document.createElement('div');
-            variantDiv.className = 'bg-gray-50 p-4 rounded-lg';
-            variantDiv.id = `variant-${variantCounter}`;
+            variantDiv.className = 'variant-item';
+            variantDiv.dataset.id = variant?.id || '';
             
             variantDiv.innerHTML = `
-                <div class="grid grid-cols-4 gap-3">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Size</label>
-                        <select class="variant-size w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500" required>
-                            <option value="">Chọn size</option>
-                            <option value="XS" ${variant && variant.size === 'XS' ? 'selected' : ''}>XS</option>
-                            <option value="S" ${variant && variant.size === 'S' ? 'selected' : ''}>S</option>
-                            <option value="M" ${variant && variant.size === 'M' ? 'selected' : ''}>M</option>
-                            <option value="L" ${variant && variant.size === 'L' ? 'selected' : ''}>L</option>
-                            <option value="XL" ${variant && variant.size === 'XL' ? 'selected' : ''}>XL</option>
-                            <option value="XXL" ${variant && variant.size === 'XXL' ? 'selected' : ''}>XXL</option>
-                            <option value="One Size" ${variant && variant.size === 'One Size' ? 'selected' : ''}>One Size</option>
-                        </select>
+                <div class="variant-grid">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="font-size: 0.75rem;">Size</label>
+                        <input type="text" class="variant-size form-input" 
+                               value="${variant?.size || ''}" required style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">
                     </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Màu sắc</label>
-                        <input type="text" class="variant-color w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500" 
-                               value="${variant ? variant.color : ''}" required>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="font-size: 0.75rem;">Màu sắc</label>
+                        <input type="text" class="variant-color form-input" 
+                               value="${variant?.color || ''}" required style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">
                     </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Số lượng</label>
-                        <input type="number" class="variant-quantity w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500" 
-                               value="${variant ? variant.quantity : ''}" min="0" required>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="font-size: 0.75rem;">Số lượng</label>
+                        <input type="number" class="variant-quantity form-input" 
+                               value="${variant?.stock || ''}" min="0" required style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">
                     </div>
-                    <div class="flex items-end">
-                        <button type="button" onclick="removeVariant('variant-${variantCounter}')" 
-                                class="w-full bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="font-size: 0.75rem;">Ảnh biến thể</label>
+                        <div class="variant-image-group">
+                            <input type="file" class="variant-file-upload" accept="image/*" style="display: none;">
+                            <button type="button" class="upload-variant-img-btn btn btn-primary btn-small">
+                                <i class="fas fa-upload"></i>Upload
+                            </button>
+                            <div class="variant-preview">
+                                ${variant?.url ? `<img src="${variant.url}">
+                                    <input type="hidden" class="variant-url" value="${variant.url}">` : 
+                                    `<input type="hidden" class="variant-url" value="">`}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-end;">
+                        <button type="button" onclick="removeVariantRow(this)" 
+                                class="btn btn-danger btn-small" style="width: 100%;">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -431,146 +1350,443 @@
             `;
             
             variantsList.appendChild(variantDiv);
+            
+            const uploadBtn = variantDiv.querySelector('.upload-variant-img-btn');
+            const fileInput = variantDiv.querySelector('.variant-file-upload');
+            const variantPreview = variantDiv.querySelector('.variant-preview');
+            const variantUrlInput = variantDiv.querySelector('.variant-url');
+            
+            uploadBtn.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', async (e) => {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    try {
+                        variantPreview.innerHTML = `<span style="color: #3b82f6;"><i class="fas fa-spinner fa-spin"></i> Uploading...</span>`;
+                        
+                        const formData = new FormData();
+                        formData.append('image', file);
+                        const response = await axios.post(API.UPLOAD, formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                                Authorization: "Bearer " + localStorage.getItem("tokenJWT"),
+                            }
+                        });
+                        
+                        const imageUrl = response.data.url;
+                        variantPreview.innerHTML = `<img src="${imageUrl}">`;
+                        variantUrlInput.value = imageUrl;
+                        
+                    } catch (error) {
+                        console.error('Error uploading variant image:', error);
+                        variantPreview.innerHTML = `<span style="color: #dc2626;">Upload failed</span>`;
+                        variantUrlInput.value = '';
+                    }
+                }
+            });
         }
-
-        // Remove variant
-        function removeVariant(variantId) {
-            const variantDiv = document.getElementById(variantId);
+        
+        // Remove variant row
+        function removeVariantRow(button) {
+            const variantDiv = button.closest('.variant-item');
             if (variantDiv) {
                 variantDiv.remove();
             }
         }
-
-        // Show modal
-        function showModal(title = 'Thêm sản phẩm mới') {
-            modalTitle.textContent = title;
-            variantsList.innerHTML = '';
-            variantCounter = 0;
-            addVariantRow(); // Add one default variant row
-            productModal.classList.remove('hidden');
-            productModal.classList.add('flex');
-        }
-
-        // Hide modal
-        function hideModal() {
-            productModal.classList.add('hidden');
-            productModal.classList.remove('flex');
-            productForm.reset();
-            variantsList.innerHTML = '';
-            editingId = null;
-        }
-
-        // Add product
-        function addProduct(productData) {
-            const newId = Math.max(...products.map(p => p.id)) + 1;
-            products.push({
-                id: newId,
-                ...productData
-            });
-            renderProducts();
-        }
-
-        // Edit variant
-        function editVariant(productId, sku) {
-            const product = products.find(p => p.id == productId);
-            const variant = product.variants.find(v => v.sku === sku);
-            if (!product || !variant) return;
-            
-            editingId = productId;
-            showModal('Chỉnh sửa sản phẩm');
-            
-            document.getElementById('productName').value = product.name;
-            document.getElementById('productCategory').value = product.category;
-            document.getElementById('productPrice').value = product.basePrice;
-            
-            // Clear variants list and add existing variants
-            variantsList.innerHTML = '';
-            variantCounter = 0;
-            product.variants.forEach(v => addVariantRow(v));
-        }
-
-        // Update product
-        function updateProduct(id, productData) {
-            const index = products.findIndex(p => p.id == id);
-            if (index !== -1) {
-                products[index] = { id: parseInt(id), ...productData };
-                renderProducts();
+        
+        // Handle product image upload
+        async function uploadProductImage(file) {
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+                const response = await axios.post(API.UPLOAD, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: "Bearer " + localStorage.getItem("tokenJWT"),
+                    }
+                });
+                return response.data.url;
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                throw error;
             }
         }
-
-        // Delete variant
-        function deleteVariant(productId, sku) {
-            if (confirm('Bạn có chắc chắn muốn xóa biến thể này?')) {
-                const product = products.find(p => p.id == productId);
-                if (product) {
-                    product.variants = product.variants.filter(v => v.sku !== sku);
-                    if (product.variants.length === 0) {
-                        products = products.filter(p => p.id != productId);
+        
+        // Add product image to preview
+        function addProductImagePreview(imageUrl, isNew = true) {
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'image-preview-item';
+            
+            imageContainer.innerHTML = `
+                <img src="${imageUrl}">
+                <button type="button">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            if (isNew && !productImages.includes(imageUrl)) {
+                productImages.push(imageUrl);
+                updateProductImagesInput();
+            }
+            
+            const deleteBtn = imageContainer.querySelector('button');
+            deleteBtn.addEventListener('click', () => {
+                const index = productImages.indexOf(imageUrl);
+                if (index !== -1) {
+                    productImages.splice(index, 1);
+                    updateProductImagesInput();
+                }
+                imageContainer.remove();
+            });
+            
+            productImagesPreview.appendChild(imageContainer);
+        }
+        
+        // Update hidden input with product image URLs
+        function updateProductImagesInput() {
+            productImageUrls.value = productImages.join(',');
+        }
+        
+        // Add new brand
+        async function addNewBrand() {
+            const brandName = document.getElementById('brandName').value.trim();
+            if (!brandName) {
+                alert('Vui lòng nhập tên thương hiệu');
+                return;
+            }
+            
+            try {
+                const response = await axios.post(API.BRANDS, { name: brandName });
+                const newBrand = response.data;
+                
+                brands.push(newBrand);
+                brandSelect.innerHTML += `<option value="${newBrand.id}">${newBrand.name}</option>`;
+                brandSelect.value = newBrand.id;
+                
+                hideAddBrandModal();
+            } catch (error) {
+                console.error('Error adding brand:', error);
+                alert('Không thể thêm thương hiệu. Vui lòng thử lại sau.');
+            }
+        }
+        
+        // Add new category
+        async function addNewCategory() {
+            const categoryName = document.getElementById('categoryName').value.trim();
+            if (!categoryName) {
+                alert('Vui lòng nhập tên danh mục');
+                return;
+            }
+            
+            const parentId = parentCategorySelect.value || null;
+            
+            try {
+                const response = await axios.post(API.CATEGORIES, { 
+                    name: categoryName,
+                    parent_id: parentId || null
+                });
+                const newCategory = response.data;
+                
+                await loadCategories();
+                categorySelect.value = newCategory.id;
+                
+                hideAddCategoryModal();
+            } catch (error) {
+                console.error('Error adding category:', error);
+                alert('Không thể thêm danh mục. Vui lòng thử lại sau.');
+            }
+        }
+        
+        // Show modal
+        function showModal() {
+            productModal.classList.add('show');
+        }
+        
+        // Hide modal
+        function hideModal() {
+            productModal.classList.remove('show');
+            productForm.reset();
+            productId.value = '';
+            selectedCategoryId.value = '';
+            
+            document.querySelectorAll('.category-item').forEach(i => {
+                i.classList.remove('selected');
+            });
+            
+            productImages = [];
+            productImagesPreview.innerHTML = '';
+            variantsList.innerHTML = '';
+            variantCounter = 0;
+        }
+        
+        // Show add brand modal
+        function showAddBrandModal() {
+            addBrandModal.classList.add('show');
+        }
+        
+        // Hide add brand modal
+        function hideAddBrandModal() {
+            addBrandModal.classList.remove('show');
+            document.getElementById('brandName').value = '';
+        }
+        
+        // Show add category modal
+        function showAddCategoryModal() {
+            addCategoryModal.classList.add('show');
+        }
+        
+        // Hide add category modal
+        function hideAddCategoryModal() {
+            addCategoryModal.classList.remove('show');
+            document.getElementById('categoryName').value = '';
+        }
+        
+        // Edit product
+        async function editProduct(id) {
+            try {
+                const response = await axios.get(`${API.PRODUCT}/${id}/edit`);
+                const product = response.data;
+                
+                productImages = product.url || [];
+                
+                modalTitle.textContent = 'Chỉnh sửa sản phẩm';
+                productId.value = product.id;
+                
+                document.getElementById('productName').value = product.name;
+                document.getElementById('brandSelect').value = product.brand_id || '';
+                document.getElementById('productPrice').value = product.price || '';
+                document.getElementById('productStatus').value = product.status.toLowerCase();
+                document.getElementById('productDescription').value = product.description || '';
+                
+                if (product.categories_id) {
+                    selectedCategoryId.value = product.categories_id;
+                    
+                    const category = categories.find(c => c.id == product.categories_id);
+                    if (category) {
+                        selectedCategoryName.textContent = category.name;
                     }
-                    renderProducts();
+                    
+                    setTimeout(() => {
+                        const categoryItems = document.querySelectorAll('.category-item');
+                        for (let item of categoryItems) {
+                            if (item.dataset.id == product.categories_id) {
+                                item.classList.add('selected');
+                                const selectItem = item.querySelector('.category-select-item');
+                                
+                                let parent = item.parentElement;
+                                while (parent && parent.classList.contains('category-children')) {
+                                    parent.style.display = 'block';
+                                    const parentItem = parent.closest('.category-item');
+                                    if (parentItem) {
+                                        const toggle = parentItem.querySelector('.category-toggle');
+                                        if (toggle) {
+                                            toggle.classList.replace('fa-caret-right', 'fa-caret-down');
+                                        }
+                                    }
+                                    parent = parentItem ? parentItem.parentElement : null;
+                                }
+                                
+                                selectItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                break;
+                            }
+                        }
+                    }, 100);
+                }
+                
+                productImagesPreview.innerHTML = '';
+                if (product.url && product.url.length > 0) {
+                    product.url.forEach(url => {
+                        addProductImagePreview(url, false);
+                    });
+                    updateProductImagesInput();
+                }
+                
+                variantsList.innerHTML = '';
+                variantCounter = 0;
+                
+                if (product.variant && product.variant.length > 0) {
+                    product.variant.forEach(variant => {
+                        addVariantRow(variant);
+                    });
+                } else {
+                    addVariantRow();
+                }
+                
+                showModal();
+            } catch (error) {
+                console.error('Error fetching product data:', error);
+                alert('Không thể tải thông tin sản phẩm. Vui lòng thử lại sau.');
+            }
+        }
+        
+        // Delete variant
+        async function deleteVariant(variantId, sku) {
+            if (confirm(`Bạn có chắc chắn muốn xóa biến thể ${sku}?`)) {
+                try {
+                    await axios.delete(`${API.PRODUCT}/variant/${variantId}`);
+                    loadInventoryData();
+                } catch (error) {
+                    console.error('Error deleting variant:', error);
+                    alert('Không thể xóa biến thể. Vui lòng thử lại sau.');
                 }
             }
         }
 
-        // Event listeners
-        searchInput.addEventListener('input', filterProducts);
-        categoryFilter.addEventListener('change', filterProducts);
-        addProductBtn.addEventListener('click', () => showModal());
-        closeModal.addEventListener('click', hideModal);
-        cancelBtn.addEventListener('click', hideModal);
-        addVariantBtn.addEventListener('click', () => addVariantRow());
-
-        productForm.addEventListener('submit', (e) => {
-            e.preventDefault();
+        // Delete product
+        async function deleteProduct(productId, productName) {
+            if (confirm(`Bạn có chắc chắn muốn xóa sản phẩm "${productName}" và tất cả biến thể của nó?`)) {
+                try {
+                    await axios.delete(`${API.PRODUCT}/${productId}`);
+                    loadInventoryData();
+                    alert('Sản phẩm đã được xóa thành công!');
+                } catch (error) {
+                    console.error('Error deleting product:', error);
+                    alert('Không thể xóa sản phẩm. Vui lòng thử lại sau.');
+                }
+            }
+        }
+        
+        // Submit form
+        async function submitForm(event) {
+            event.preventDefault();
             
-            const variants = [];
-            const variantDivs = variantsList.querySelectorAll('[id^="variant-"]');
+            if (!productForm.checkValidity()) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc.');
+                return;
+            }
+            
+            if (!selectedCategoryId.value) {
+                alert('Vui lòng chọn danh mục sản phẩm.');
+                return;
+            }
+            
+            const id = productId.value;
+            const name = document.getElementById('productName').value;
+            const brand_id = document.getElementById('brandSelect').value;
+            const categories_id = selectedCategoryId.value;
+            const price = document.getElementById('productPrice').value;
+            const status = document.getElementById('productStatus').value;
+            const description = document.getElementById('productDescription').value;
+            
+            const variantDivs = variantsList.querySelectorAll('.variant-item');
+            const variant = [];
             
             variantDivs.forEach(div => {
+                const variantId = div.dataset.id || null;
                 const size = div.querySelector('.variant-size').value;
                 const color = div.querySelector('.variant-color').value;
-                const quantity = parseInt(div.querySelector('.variant-quantity').value);
+                const stock = div.querySelector('.variant-quantity').value;
+                const variantUrl = div.querySelector('.variant-url').value;
                 
-                if (size && color && quantity >= 0) {
-                    variants.push({
+                if (size && color && stock !== '') {
+                    variant.push({
+                        id: variantId ? parseInt(variantId) : null,
                         size,
                         color,
-                        quantity,
-                        sku: generateSKU(document.getElementById('productName').value, size, color)
+                        stock: parseInt(stock),
+                        url: variantUrl
                     });
                 }
             });
             
-            if (variants.length === 0) {
+            if (variant.length === 0) {
                 alert('Vui lòng thêm ít nhất một biến thể!');
                 return;
             }
             
-            const productData = {
-                name: document.getElementById('productName').value,
-                category: document.getElementById('productCategory').value,
-                basePrice: parseInt(document.getElementById('productPrice').value),
-                variants: variants
+            const requestData = {
+                name,
+                brand_id: parseInt(brand_id),
+                categories_id: parseInt(categories_id),
+                description,
+                status,
+                price: parseFloat(price),
+                url: productImages,
+                variant
             };
             
-            if (editingId) {
-                updateProduct(editingId, productData);
-            } else {
-                addProduct(productData);
-            }
-            
-            hideModal();
-        });
-
-        // Close modal when clicking outside
-        productModal.addEventListener('click', (e) => {
-            if (e.target === productModal) {
+            try {
+                let response;
+                if (id) {
+                    response = await axios.put(`${API.PRODUCT}/update/${id}`, requestData);
+                    alert('Cập nhật sản phẩm thành công!');
+                } else {
+                    response = await axios.post(`${API.PRODUCT}/create`, requestData);
+                    alert('Thêm sản phẩm mới thành công!');
+                }
+                
+                console.log('Product saved:', response.data);
+                
                 hideModal();
+                loadInventoryData();
+            } catch (error) {
+                console.error('Error saving product:', error);
+                alert('Lỗi khi lưu sản phẩm: ' + (error.response?.data?.message || error.message));
             }
-        });
+        }
 
-        // Initial render
-        renderProducts();
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCategories();
+            loadBrands();
+            loadInventoryData();
+            
+            searchInput.addEventListener('input', filterInventory);
+            categoryFilter.addEventListener('change', filterInventory);
+            
+            addProductBtn.addEventListener('click', () => {
+                modalTitle.textContent = 'Thêm sản phẩm mới';
+                productId.value = '';
+                productForm.reset();
+                productImages = [];
+                productImagesPreview.innerHTML = '';
+                variantsList.innerHTML = '';
+                addVariantRow();
+                showModal();
+            });
+            
+            closeModal.addEventListener('click', hideModal);
+            cancelBtn.addEventListener('click', hideModal);
+            addVariantBtn.addEventListener('click', () => addVariantRow());
+            
+            uploadProductImagesBtn.addEventListener('click', () => {
+                productImageUpload.click();
+            });
+            
+            productImageUpload.addEventListener('change', async (e) => {
+                if (e.target.files.length > 0) {
+                    const files = Array.from(e.target.files);
+                    for (let file of files) {
+                        try {
+                            const imageUrl = await uploadProductImage(file);
+                            addProductImagePreview(imageUrl);
+                        } catch (error) {
+                            console.error('Error uploading image:', error);
+                        }
+                    }
+                    e.target.value = null;
+                }
+            });
+            
+            addBrandBtn.addEventListener('click', showAddBrandModal);
+            closeBrandModal.addEventListener('click', hideAddBrandModal);
+            cancelBrandBtn.addEventListener('click', hideAddBrandModal);
+            brandForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                addNewBrand();
+            });
+            
+            addCategoryBtn.addEventListener('click', showAddCategoryModal);
+            closeCategoryModal.addEventListener('click', hideAddCategoryModal);
+            cancelCategoryBtn.addEventListener('click', hideAddCategoryModal);
+            categoryForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                addNewCategory();
+            });
+            productForm.addEventListener('submit', submitForm);
+        });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b2bf1224dd045d',t:'MTc1NzIxMTgzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

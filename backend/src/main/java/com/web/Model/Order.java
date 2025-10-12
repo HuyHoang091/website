@@ -22,13 +22,15 @@ public class Order {
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
+    private String note;
+
     private String orderNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private STATUS status;
 
-    @Column(precision = 12, scale = 2, nullable = false)
+    @Column(precision = 12, scale = 2)
     private BigDecimal totalAmount;
     
     private String createBy;

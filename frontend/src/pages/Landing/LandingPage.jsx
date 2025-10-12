@@ -110,7 +110,7 @@ const LandingPage = () => {
         ))}
       </FeaturedProduct>
       <AiFeaturesBanner />
-      <SaleLayout endTime="2025-08-20T23:59:59+07:00">
+      <SaleLayout endTime="2025-10-20T23:59:59+07:00">
         {saleCards.map((item, idx) => (
           <SaleProduct items={item} key={idx} />
         ))}

@@ -18,7 +18,11 @@ public class AddressService {
     private AddressRepository addressRepository;
 
     @Cacheable(value = "addresses", key = "#userId")
-    public List<Address> getAddressByUserId(Long userId) {
+    public List<Address> getAddressByUserId(Long userId, Boolean isDefault) {
+        return addressRepository.findByUser_IdAndIsDefault(userId, isDefault);
+    }
+    
+    public List<Address> getAllAddressByUserId(Long userId) {
         return addressRepository.findByUser_Id(userId);
     }
 

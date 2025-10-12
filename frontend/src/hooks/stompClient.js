@@ -34,7 +34,7 @@ export function getStompClient(onConnectCallback) {
     let userId = generateID();
     let isSale = JSON.parse(localStorage.getItem("user")).role === "SALER";
 
-    const socket = new SockJS("http://localhost:8080/ws?" + userId);
+    const socket = new SockJS(`${process.env.REACT_APP_API_URL}/ws?` + userId);
 
     client = new Client({
       webSocketFactory: () => socket,

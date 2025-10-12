@@ -10,7 +10,7 @@ export default function useFileUpload(createMessage, addMessage, sendMessage) {
     fd.append("file", file);
     
     try {
-      const res = await axios.post("http://localhost:8080/api/upload/chat", fd, {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/upload/chat`, fd, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: "Bearer " + localStorage.getItem("tokenJWT"),

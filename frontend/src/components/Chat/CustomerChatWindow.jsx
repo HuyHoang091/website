@@ -31,7 +31,7 @@ export default function CustomerChatWindow({ userStr = localStorage.getItem("use
   // Load initial messages
   useEffect(() => {
     if (!user.id) return;
-    axios.get(`http://localhost:8080/api/chat/${user.id}/saler`, {
+    axios.get(`${process.env.REACT_APP_API_URL}/api/chat/${user.id}/saler`, {
       headers: { Authorization: "Bearer " + localStorage.getItem("tokenJWT") }
     })
     .then(res => setMessages(res.data))
@@ -89,7 +89,7 @@ export default function CustomerChatWindow({ userStr = localStorage.getItem("use
       const formData = new FormData();
       formData.append("file", file);
       
-      const res = await axios.post("http://localhost:8080/api/upload/chat", formData, {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/upload/chat`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: "Bearer " + localStorage.getItem("tokenJWT"),
@@ -290,7 +290,7 @@ export default function CustomerChatWindow({ userStr = localStorage.getItem("use
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <img src="http://localhost:8080/images/logo192.png" alt="avatar" className={styles.avatar} />
+        <img src={`${process.env.REACT_APP_API_URL}/images/logo192.png`} alt="avatar" className={styles.avatar} />
         <div className={styles.headerInfo}>
           <h2>Tư vấn viên</h2>
           <div className={styles.connectionStatus}>
@@ -314,7 +314,7 @@ export default function CustomerChatWindow({ userStr = localStorage.getItem("use
             isSender={msg.isSender}
             status={msg.status}
             type={msg.type}
-            avatar="http://localhost:8080/images/logo192.png"
+            avatar={`${process.env.REACT_APP_API_URL}/images/logo192.png`}
             streaming={msg.streaming}
           />
         ))}

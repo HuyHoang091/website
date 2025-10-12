@@ -4,6 +4,8 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Data
 @Entity
 @Table(name = "products")
@@ -18,10 +20,12 @@ public class Product {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id", nullable = false)
+    @JsonIgnore
     private Brand brand;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categories_id", nullable = false)
+    @JsonIgnore
     private Category categories;
 
     @Enumerated(EnumType.STRING)

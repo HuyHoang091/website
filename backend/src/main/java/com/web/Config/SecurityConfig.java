@@ -38,7 +38,8 @@ public class SecurityConfig {
                 "/api/auth/forgot-password", "/api/auth/reset-password", "/ws/**", 
                 "/images/**", "/fb/**", "/api/products/info", "/api/categorys/", 
                 "/api/brands/", "/api/products/variants/aggregation", "/api/products/slug/**", "/api/reviews/**",
-                "/api/reviews/**", "/api/cart/list/**").permitAll()
+                "/api/reviews/**", "/api/cart/list/**", "/api/products/all", "/api/products/create",
+                "/api/products/update/**", "/api/products/**", "/api/orders/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/map/**")
                 .hasAnyRole("USER", "ADMIN")
                 .antMatchers("/api/chat/**").hasAnyRole("ADMIN", "SALER", "USER")

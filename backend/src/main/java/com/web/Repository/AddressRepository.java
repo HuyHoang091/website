@@ -8,4 +8,5 @@ import com.web.Model.Address;
 
 public interface AddressRepository extends JpaRepository<Address, Long> {
     List<Address> findByUser_Id(Long userId);
+    List<Address> findByUser_IdAndIsDefault(Long userId, boolean isDefault);
 }

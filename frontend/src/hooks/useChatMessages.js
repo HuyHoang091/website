@@ -57,7 +57,7 @@ export default function useChatMessages(chatId, chatName) {
     const currentSessionId = chatSessionIdRef.current;
     
     axios.post(
-      `http://localhost:8080/api/chat/markAsRead`,
+      `${process.env.REACT_APP_API_URL}/api/chat/markAsRead`,
       { userId: chatId },
       { headers: { Authorization: `Bearer ${localStorage.getItem("tokenJWT")}` } }
     ).catch(err => {
@@ -112,7 +112,7 @@ export default function useChatMessages(chatId, chatName) {
     const scrollInterval = setupScrollInterval();
 
     axios.get(
-      `http://localhost:8080/api/chat/saler/${chatId}`, 
+      `${process.env.REACT_APP_API_URL}/api/chat/saler/${chatId}`, 
       { headers: { Authorization: `Bearer ${localStorage.getItem("tokenJWT")}` } }
     ).then(res => {
       // Check if the chat/session has changed since we started loading

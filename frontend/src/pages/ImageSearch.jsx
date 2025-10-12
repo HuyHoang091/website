@@ -130,7 +130,7 @@ export default function ImageSearch() {
           {results.map((item, idx) => (
             <div key={idx} className="result-card">
               <img
-                src={`http://localhost:8080/images/logo192.png`}
+                src={`${process.env.REACT_APP_API_URL}/images/logo192.png`}
                 alt={`Product ${item.product_id}`}
               />
               <div className="card-info">

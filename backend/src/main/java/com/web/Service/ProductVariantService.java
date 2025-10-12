@@ -19,7 +19,7 @@ public class ProductVariantService {
 
     @Cacheable(value = "productVariants", key = "#productId")
     public List<ProductVariant> getProductVariantsByProductId(Long productId) {
-        return productVariantRepository.findByProduct_Id(productId);
+        return productVariantRepository.findByProductId(productId);
     }
 
     @CacheEvict(value = "productVariants", key = "#productVariant.product.id")

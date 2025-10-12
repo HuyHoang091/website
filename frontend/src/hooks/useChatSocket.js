@@ -29,7 +29,7 @@ export default function useChat() {
   const [isSale] = useState(isSaleUser());
 
   useEffect(() => {
-    const socket = new SockJS("http://localhost:8080/ws?" + userId);
+    const socket = new SockJS(`${process.env.REACT_APP_API_URL}/ws?` + userId);
 
     const client = new Client({
       webSocketFactory: () => socket,

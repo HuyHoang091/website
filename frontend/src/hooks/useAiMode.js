@@ -9,7 +9,7 @@ export default function useAiMode(chatId) {
     if (!chatId) return;
     
     axios
-      .get(`http://localhost:8080/api/user-ai/${chatId}`, {
+      .get(`${process.env.REACT_APP_API_URL}/api/user-ai/${chatId}`, {
         headers: { Authorization: "Bearer " + localStorage.getItem("tokenJWT") },
       })
       .then((res) => {
@@ -25,7 +25,7 @@ export default function useAiMode(chatId) {
     const newAiMode = !aiMode;
     
     axios
-      .put(`http://localhost:8080/api/user-ai/${chatId}?aiEnabled=${newAiMode}`, {}, {
+      .put(`${process.env.REACT_APP_API_URL}/api/user-ai/${chatId}?aiEnabled=${newAiMode}`, {}, {
         headers: { Authorization: "Bearer " + localStorage.getItem("tokenJWT") },
       })
       .then(() => setAiMode(newAiMode))

@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.web.Model.ProductVariant;
 
 public interface ProductVariantRepository extends JpaRepository<ProductVariant, Long> {
-    List<ProductVariant> findByProduct_Id(Long productId);
+    List<ProductVariant> findByProductId(Long productId);
 
     interface VariantAgg {
         String getSizes();
@@ -18,4 +18,6 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
     @Query(value = "SELECT GROUP_CONCAT(DISTINCT pv.size) AS sizes, GROUP_CONCAT(DISTINCT pv.color) AS colors " +
             "FROM product_variants pv", nativeQuery = true)
     VariantAgg findAllAggregation();
+
+    void deleteByProductId(Long productId);
 }

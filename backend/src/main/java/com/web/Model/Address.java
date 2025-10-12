@@ -3,6 +3,7 @@ package com.web.Model;
 import lombok.Data;
 import java.time.LocalDateTime;
 import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 @Entity
@@ -14,8 +15,10 @@ public class Address {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
-    
+
+    private Long customerId;
     private String fullName;
     private String phone;
     private String city;

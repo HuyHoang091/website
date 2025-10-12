@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng của bạn</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .header-info {
+            color: #64748b;
+            font-size: 16px;
+            margin: 4px 0 0 0;
+        }
+
+        .continue-shopping {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .continue-shopping:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 24px;
+        }
+
+        .cart-items {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .cart-item {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            display: grid;
+            grid-template-columns: 120px 1fr auto;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .cart-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .item-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #64748b;
+        }
+
+        .item-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .item-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .item-brand {
+            color: #3b82f6;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .item-specs {
+            display: flex;
+            gap: 16px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .item-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #dc2626;
+            margin: 8px 0;
+        }
+
+        .item-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 8px;
+        }
+
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #3b82f6;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .quantity-btn:hover {
+            background: #2563eb;
+            transform: scale(1.1);
+        }
+
+        .quantity-display {
+            font-weight: 600;
+            color: #1e293b;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .remove-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .remove-btn:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+
+        .cart-summary {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .summary-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 20px 0;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            color: #64748b;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            padding-top: 16px;
+            border-top: 2px solid #e2e8f0;
+            margin-top: 16px;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .empty-cart-icon {
+            font-size: 64px;
+            color: #cbd5e1;
+            margin-bottom: 16px;
+        }
+
+        .empty-cart-text {
+            font-size: 18px;
+            color: #64748b;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .cart-item {
+                grid-template-columns: 80px 1fr;
+                gap: 16px;
+            }
+            
+            .item-actions {
+                grid-column: 1 / -1;
+                flex-direction: row;
+                justify-content: space-between;
+                margin-top: 16px;
+            }
+            
+            .item-image {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+            
+            .header {
+                text-align: center;
+            }
+            
+            .header-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Mock data
+        const initialCartData = [
+            {
+                id: 1,
+                name: "Áo Thun Nam Cotton Premium",
+                size: "L",
+                color: "Đen",
+                url: "https://example.com/image1.jpg",
+                brand: "Coolmate",
+                quantity: 2,
+                price_at_add: 199000
+            },
+            {
+                id: 2,
+                name: "Quần Jeans Slim Fit",
+                size: "32",
+                color: "Xanh đậm",
+                url: "https://example.com/image2.jpg",
+                brand: "Levi's",
+                quantity: 1,
+                price_at_add: 899000
+            },
+            {
+                id: 3,
+                name: "Giày Sneaker Trắng",
+                size: "42",
+                color: "Trắng",
+                url: "https://example.com/image3.jpg",
+                brand: "Nike",
+                quantity: 1,
+                price_at_add: 2199000
+            }
+        ];
+
+        // Format currency
+        const formatCurrency = (amount) => {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(amount);
+        };
+
+        // Cart Item Component
+        const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
+            return (
+                <div className="cart-item">
+                    <div className="item-image">
+                        👕
+                    </div>
+                    <div className="item-details">
+                        <h3 className="item-name">{item.name}</h3>
+                        <div className="item-brand">{item.brand}</div>
+                        <div className="item-specs">
+                            <span>Size: {item.size}</span>
+                            <span>Màu: {item.color}</span>
+                        </div>
+                        <div className="item-price">{formatCurrency(item.price_at_add)}</div>
+                    </div>
+                    <div className="item-actions">
+                        <div className="quantity-controls">
+                            <button 
+                                className="quantity-btn"
+                                onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                            >
+                                −
+                            </button>
+                            <span className="quantity-display">{item.quantity}</span>
+                            <button 
+                                className="quantity-btn"
+                                onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                            >
+                                +
+                            </button>
+                        </div>
+                        <button 
+                            className="remove-btn"
+                            onClick={() => onRemove(item.id)}
+                        >
+                            🗑️ Xóa
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // Main Shopping Cart Component
+        const ShoppingCart = () => {
+            const [cartItems, setCartItems] = useState(initialCartData);
+
+            const updateQuantity = (id, newQuantity) => {
+                if (newQuantity < 1) return;
+                setCartItems(items => 
+                    items.map(item => 
+                        item.id === id ? { ...item, quantity: newQuantity } : item
+                    )
+                );
+            };
+
+            const removeItem = (id) => {
+                setCartItems(items => items.filter(item => item.id !== id));
+            };
+
+            const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+            const subtotal = cartItems.reduce((sum, item) => sum + (item.price_at_add * item.quantity), 0);
+            const shipping = subtotal > 500000 ? 0 : 30000;
+            const total = subtotal + shipping;
+
+            if (cartItems.length === 0) {
+                return (
+                    <div className="container">
+                        <div className="empty-cart">
+                            <div className="empty-cart-icon">🛒</div>
+                            <div className="empty-cart-text">Giỏ hàng của bạn đang trống</div>
+                            <button className="continue-shopping">
+                                🛍️ Bắt đầu mua sắm
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="container">
+                    <header className="header">
+                        <div>
+                            <h1 className="header-title">Giỏ hàng của bạn</h1>
+                            <p className="header-info">{totalItems} sản phẩm</p>
+                        </div>
+                        <button className="continue-shopping">
+                            ← Tiếp tục mua sắm
+                        </button>
+                    </header>
+
+                    <div className="main-content">
+                        <div className="cart-items">
+                            {cartItems.map(item => (
+                                <CartItemCard
+                                    key={item.id}
+                                    item={item}
+                                    onUpdateQuantity={updateQuantity}
+                                    onRemove={removeItem}
+                                />
+                            ))}
+                        </div>
+
+                        <div className="cart-summary">
+                            <h2 className="summary-title">Tổng kết đơn hàng</h2>
+                            <div className="summary-row">
+                                <span>Tạm tính ({totalItems} sản phẩm)</span>
+                                <span>{formatCurrency(subtotal)}</span>
+                            </div>
+                            <div className="summary-row">
+                                <span>Phí vận chuyển</span>
+                                <span>{shipping === 0 ? 'Miễn phí' : formatCurrency(shipping)}</span>
+                            </div>
+                            <div className="summary-total">
+                                <span>Tổng cộng</span>
+                                <span>{formatCurrency(total)}</span>
+                            </div>
+                            <button className="checkout-btn">
+                                💳 Thanh toán ngay
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Render the app
+        ReactDOM.render(<ShoppingCart />, document.getElementById('root'));
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98b7c60d50d403e9',t:'MTc1OTk0ODg5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -1,16 +1,19 @@
 package com.web.Repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.web.Dto.ProductInfo;
+import com.web.Dto.ProductListDTO;
 import com.web.Model.Product;
-
-import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
+    boolean existsBySlug(String slug);
+    
     @Query(value = "SELECT " +
             "p.id AS id, " +
             "b.name AS brand, " +
@@ -79,4 +82,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     ProductDetailInfo getProductInfoBySlug(@Param("slug") String slug);
 
     Product findBySlug(String slug);
+
+    @Query("SELECT new com.web.Dto.ProductListDTO(p.id, b.name, p.name, p.description, c.name, p.status) " +
+            "FROM Product p " +
+            "LEFT JOIN p.brand b " +
+            "LEFT JOIN p.categories c")
+    List<ProductListDTO> findAllProductSummaries();
 }
