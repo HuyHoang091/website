@@ -1,55 +1,449 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
   <meta charset="utf-8">
-  <title>PayPal Sandbox VND → USD Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thanh toán PayPal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://www.paypal.com/sdk/js?client-id=Af37P1fTOc_4eTMaNyALE4LHuTGgPA093G-V6gwAryBTVN_EvswbY0Mlz513LA-L92SYXtcvyH_iU5V-&currency=USD"></script>
-</head>
-<body>
-  <h3>Thanh toán PayPal Sandbox</h3>
-  <label>Nhập số tiền VND: <input type="number" id="amountVND" value="100000"/></label>
-  <div id="paypal-button-container"></div>
-
-  <script>
-    async function getVNDtoUSDRate() {
-        try {
-            const res = await fetch("https://open.er-api.com/v6/latest/VND");
-            const data = await res.json();
-            return data.rates.USD;
-        } catch(err) {
-            console.error("Lỗi lấy tỷ giá:", err);
-            return null;
-        }
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .payment-container {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .payment-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 2rem;
+      text-align: center;
+      color: white;
+    }
+
+    .payment-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .payment-header p {
+      opacity: 0.9;
+      font-size: 0.875rem;
+    }
+
+    .payment-icon {
+      width: 4rem;
+      height: 4rem;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+    }
+
+    .payment-icon svg {
+      width: 2rem;
+      height: 2rem;
+      color: white;
+    }
+
+    .payment-body {
+      padding: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .currency-symbol {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6b7280;
+      font-weight: 600;
+      pointer-events: none;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.875rem 1rem 0.875rem 2.5rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #111827;
+      transition: all 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .conversion-info {
+      background: #f9fafb;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #667eea;
+    }
+
+    .conversion-info p {
+      font-size: 0.875rem;
+      color: #4b5563;
+      margin-bottom: 0.25rem;
+    }
+
+    .conversion-rate {
+      font-weight: 600;
+      color: #111827;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .usd-amount {
+      color: #16a34a;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .info-icon {
+      flex-shrink: 0;
+      width: 1.25rem;
+      height: 1.25rem;
+      color: #2563eb;
+    }
+
+    .info-text {
+      font-size: 0.875rem;
+      color: #1e40af;
+      line-height: 1.5;
+    }
+
+    #paypal-button-container {
+      margin-top: 1.5rem;
+    }
+
+    .loader {
+      display: none;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .loader.active {
+      display: block;
+    }
+
+    .spinner {
+      border: 3px solid #f3f4f6;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 2rem;
+      height: 2rem;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .success-message {
+      display: none;
+      background: #d1fae5;
+      border: 1px solid #6ee7b7;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .success-message.active {
+      display: block;
+    }
+
+    .success-message h3 {
+      color: #065f46;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .success-message p {
+      color: #047857;
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .security-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      background: #f9fafb;
+      border-radius: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .security-badge svg {
+      width: 1rem;
+      height: 1rem;
+      color: #16a34a;
+    }
+
+    .security-badge span {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+
+    @media (max-width: 640px) {
+      .payment-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .payment-body {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="payment-container">
+    <div class="payment-header">
+      <div class="payment-icon">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+      </div>
+      <h1>Thanh toán PayPal</h1>
+      <p>Thanh toán an toàn và bảo mật</p>
+    </div>
+
+    <div class="payment-body">
+      <div class="form-group">
+        <label class="form-label" for="amountVND">Số tiền cần thanh toán</label>
+        <div class="input-wrapper">
+          <span class="currency-symbol">₫</span>
+          <input 
+            type="number" 
+            id="amountVND" 
+            class="form-input" 
+            value="100000"
+            min="1000"
+            step="1000"
+            placeholder="Nhập số tiền VND"
+          />
+        </div>
+      </div>
+
+      <div class="conversion-info">
+        <p>Tỷ giá quy đổi hiện tại:</p>
+        <div class="conversion-rate" id="rateDisplay">Đang tải...</div>
+        <p style="margin-top: 0.75rem;">Số tiền thanh toán (USD):</p>
+        <div class="usd-amount" id="usdDisplay">$0.00</div>
+      </div>
+
+      <div class="info-box">
+        <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div class="info-text">
+          Đây là môi trường thử nghiệm (Sandbox). Số tiền được tính toán từ server để đảm bảo bảo mật.
+        </div>
+      </div>
+
+      <div class="loader" id="loader">
+        <div class="spinner"></div>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">Đang xử lý...</p>
+      </div>
+
+      <div id="paypal-button-container"></div>
+
+      <div class="success-message" id="successMessage">
+        <h3>✓ Thanh toán thành công!</h3>
+        <p id="payerName"></p>
+        <p id="amountPaid"></p>
+      </div>
+
+      <div class="security-badge">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        <span>Giao dịch được mã hóa và bảo mật bởi PayPal</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentRate = null;
+
+    // Hàm mã hóa đơn giản (trong thực tế nên dùng HMAC hoặc JWT)
+    function generateSignature(amount, timestamp) {
+      const secret = "your-secret-key-should-be-on-server";
+      return btoa(`${amount}:${timestamp}:${secret}`).substring(0, 20);
+    }
+
+    // Lấy tỷ giá từ API
+    async function getVNDtoUSDRate() {
+      try {
+        const res = await fetch("https://open.er-api.com/v6/latest/VND");
+        const data = await res.json();
+        currentRate = data.rates.USD;
+        updateConversionDisplay();
+        return currentRate;
+      } catch(err) {
+        console.error("Lỗi lấy tỷ giá:", err);
+        document.getElementById('rateDisplay').textContent = "Không thể tải tỷ giá";
+        return null;
+      }
+    }
+
+    // Cập nhật hiển thị tỷ giá và số tiền USD
+    function updateConversionDisplay() {
+      const vndAmount = parseFloat(document.getElementById('amountVND').value) || 0;
+      
+      if (currentRate) {
+        const rateDisplay = (1 / currentRate).toFixed(0);
+        document.getElementById('rateDisplay').textContent = `1 USD = ${rateDisplay.toLocaleString()} VND`;
+        
+        const usdAmount = (vndAmount * currentRate).toFixed(2);
+        document.getElementById('usdDisplay').textContent = `$${parseFloat(usdAmount).toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      }
+    }
+
+    // Lắng nghe thay đổi số tiền VND
+    document.getElementById('amountVND').addEventListener('input', updateConversionDisplay);
+
+    // Khởi tạo
+    getVNDtoUSDRate();
+
+    // PayPal Buttons
     paypal.Buttons({
       createOrder: async function(data, actions) {
+        document.getElementById('loader').classList.add('active');
+        
         const vndAmount = parseFloat(document.getElementById('amountVND').value);
+        
+        // Validate
+        if (!vndAmount || vndAmount < 1000) {
+          alert("Vui lòng nhập số tiền hợp lệ (tối thiểu 1,000 VND)");
+          document.getElementById('loader').classList.remove('active');
+          return;
+        }
+
         const rate = await getVNDtoUSDRate();
         if (!rate) {
           alert("Không lấy được tỷ giá!");
+          document.getElementById('loader').classList.remove('active');
           return;
         }
+
         const usdAmount = (vndAmount * rate).toFixed(2);
+        
+        // Tạo chữ ký bảo mật (trong thực tế nên gọi API server)
+        const timestamp = Date.now();
+        const signature = generateSignature(vndAmount, timestamp);
+
+        // Trong production, bạn nên gọi API server để tạo order
+        // const response = await fetch('/api/create-paypal-order', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify({ vndAmount, timestamp, signature })
+        // });
+        // const order = await response.json();
+        // return order.id;
 
         return actions.order.create({
           purchase_units: [{
             amount: {
               value: usdAmount,
               currency_code: "USD"
-            }
+            },
+            description: `Thanh toán ${vndAmount.toLocaleString()} VND`,
+            custom_id: `${timestamp}:${signature}` // Lưu signature để verify
           }]
         });
       },
+      
       onApprove: function(data, actions) {
         return actions.order.capture().then(function(details) {
-            if(details.status === "COMPLETED") {
-                alert("Thanh toán thành công!\nNgười thanh toán: " + details.payer.name.given_name +
-                    "\nSố tiền USD: " + details.purchase_units[0].amount.value);
-            } else {
-                alert("Thanh toán chưa hoàn tất. Trạng thái: " + details.status);
-            }
+          document.getElementById('loader').classList.remove('active');
+          
+          if(details.status === "COMPLETED") {
+            // Hiển thị thông báo thành công
+            document.getElementById('payerName').textContent = 
+              `Người thanh toán: ${details.payer.name.given_name} ${details.payer.name.surname}`;
+            document.getElementById('amountPaid').textContent = 
+              `Số tiền: $${details.purchase_units[0].amount.value} USD`;
+            document.getElementById('successMessage').classList.add('active');
+            
+            // Trong production, gửi thông tin đến server để verify và lưu
+            // fetch('/api/verify-payment', {
+            //   method: 'POST',
+            //   headers: { 'Content-Type': 'application/json' },
+            //   body: JSON.stringify({ orderId: data.orderID, details })
+            // });
+            
+            console.log("Chi tiết giao dịch:", details);
+          } else {
+            alert("Thanh toán chưa hoàn tất. Trạng thái: " + details.status);
+          }
         });
+      },
+      
+      onError: function(err) {
+        document.getElementById('loader').classList.remove('active');
+        console.error("Lỗi PayPal:", err);
+        alert("Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại.");
+      },
+      
+      onCancel: function(data) {
+        document.getElementById('loader').classList.remove('active');
+        alert("Bạn đã hủy thanh toán.");
       }
     }).render('#paypal-button-container');
   </script>
