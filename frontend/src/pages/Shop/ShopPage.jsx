@@ -1,83 +1,17 @@
-import React, {useState, useMemo} from "react";
+import React, {useState, useMemo, useEffect} from "react";
 import './shopPage.scss';
-import {filterProduct, formatPrice} from "./helper";
+import {checkPriceRange, filterProduct, formatPrice} from "./helper";
 import Grid from '@mui/material/Grid';
 import FilterSidebar from "./components/FilterSidebar";
-import {INITIAL_FILTERS, SORT_OPTIONS} from "./consts";
+import {INITIAL_FILTERS, INITIAL_PRODUCT, SORT_OPTIONS} from "./consts";
 import ProductCard from "./components/ProductCard";
 import {Autocomplete, TextField} from '@mui/material';
+import {getListProduct, getProductVariantAggregation} from "./services";
 
-
-const initialProducts = [
-	{
-		id: 1,
-		name: "Áo Sơ Mi Oxford Premium",
-		category: "ao-so-mi",
-		brand: "zara",
-		price: 450000,
-		originalPrice: 600000,
-		image: "👔",
-		rating: 4.5,
-		reviews: 128,
-		badge: "sale",
-		isNew: false,
-		colors: ["white", "blue", "black"],
-		sizes: ["S", "M", "L", "XL"],
-		description: "Áo sơ mi Oxford cao cấp, chất liệu cotton 100%"
-	},
-	{
-		id: 2,
-		name: "Quần Jean Slim Fit Dark Blue",
-		category: "quan-jean",
-		brand: "uniqlo",
-		price: 750000,
-		originalPrice: null,
-		image: "👖",
-		rating: 4.8,
-		reviews: 95,
-		badge: null,
-		isNew: true,
-		colors: ["blue", "black"],
-		sizes: ["29", "30", "31", "32", "33"],
-		description: "Quần jean slim fit co giãn, phù hợp mọi dáng người"
-	},
-	{
-		id: 3,
-		name: "Áo Thun Cotton Organic",
-		category: "ao-thun",
-		brand: "hm",
-		price: 320000,
-		originalPrice: 400000,
-		image: "👕",
-		rating: 4.3,
-		reviews: 203,
-		badge: "sale",
-		isNew: false,
-		colors: ["white", "black", "gray", "navy"],
-		sizes: ["XS", "S", "M", "L", "XL"],
-		description: "Áo thun cotton organic, thân thiện với môi trường"
-	},
-	{
-		id: 4,
-		name: "Váy Đầm Hoa Vintage",
-		category: "vay-dam",
-		brand: "mango",
-		price: 890000,
-		originalPrice: null,
-		image: "👗",
-		rating: 4.7,
-		reviews: 67,
-		badge: null,
-		isNew: true,
-		colors: ["pink", "yellow", "green"],
-		sizes: ["XS", "S", "M", "L"],
-		description: "Váy đầm họa tiết hoa vintage, phong cách nữ tính"
-	}
-];
 
 // Main ShopPage Component
 export const ShopPage = () => {
-	const [products, setProducts] = useState(initialProducts);
+	const [products, setProducts] = useState(INITIAL_PRODUCT);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [sortBy, setSortBy] = useState(SORT_OPTIONS[0]);
 	const [currentPage, setCurrentPage] = useState(1);
@@ -87,6 +21,19 @@ export const ShopPage = () => {
 	const productsPerPage = 12;
 	console.log(products)
 	
+	useEffect(() => {
+		handleGetListProduct();
+	}, []);
+	
+	const handleGetListProduct = async () => {
+		try {
+			const response = await getListProduct();
+			setProducts(Array.isArray(response.data) ? response.data : INITIAL_PRODUCT);
+		} catch (error) {
+			console.error('Error fetching categories:', error);
+		}
+	}
+	
 	const filtered = useMemo(
 		() => products?.filter(product => {
 			// Search filter
@@ -95,18 +42,18 @@ export const ShopPage = () => {
 			}
 			
 			// Category filter
-			if (filters.categories.length > 0 && !filters.categories.includes(product.category)) {
+			if (filters.categories.length > 0 && !filters.categories.includes(product.categoriesId.toString())) {
 				return false;
 			}
 			
 			// Brand filter
-			if (filters.brands.length > 0 && !filters.brands.includes(product.brand)) {
+			if (filters.brands.length > 0 && !filters.brands.includes(product.brand.toLowerCase())) {
 				return false;
 			}
 			
 			// Price filter
-			if (product.price < filters.priceRange.min || product.price > filters.priceRange.max) {
-				return false;
+			if (filters.priceRanges.length > 0) {
+				return checkPriceRange({filters, product});
 			}
 			
 			// Size filter
@@ -121,15 +68,7 @@ export const ShopPage = () => {
 			
 			return true;
 		}) || [],
-		[products,
-			searchTerm,
-			filters.categories,
-			filters.brands,
-			filters.priceRange.min,
-			filters.priceRange.max,
-			filters.sizes,
-			filters.colors
-		]
+		[products, searchTerm, filters, filters.brands, filters.priceRanges.length]
 	)
 	
 	// Filter and sort products
@@ -170,11 +109,22 @@ export const ShopPage = () => {
 		);
 	};
 	
+	const handleFilterChange = (filterType = "", value, checked) => {
+		console.log(filterType, value, checked)
+		setFilters(prev => ({
+			...prev,
+			[filterType]: checked
+				? [...prev[filterType], value]
+				: prev[filterType].filter(item => item !== value)
+		}));
+	};
+	
 	return (
 		<div className="shop-page">
-			<Grid container spacing={4} className="py-16 px-12">
+			<Grid container spacing={3} className="py-16 px-24">
+				{/*<Grid size={{xs: 12, md: 1}}></Grid>*/}
 				<Grid size={{xs: 12, md: 3}}>
-					<FilterSidebar filters={filters} setFilters={setFilters}/>
+					<FilterSidebar filters={filters} setFilters={setFilters} onFilterChange={handleFilterChange}/>
 				</Grid>
 				<Grid size={{xs: 12, md: 9}}>
 					<main className="products-section">

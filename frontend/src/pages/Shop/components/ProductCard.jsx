@@ -1,5 +1,7 @@
 import React from "react";
 import {formatPrice, generateStars, getBrandName, getColorCode} from "../helper";
+import {BASE_API_URL} from "../../../services/appServices";
+import clsx from "clsx";
 
 const ProductCard = ({product, addToCart, isInCart}) => {
 	const discountPercent = product.originalPrice
@@ -8,7 +10,14 @@ const ProductCard = ({product, addToCart, isInCart}) => {
 	
 	return (
 		<div className="product-card">
-			<div className="product-image">
+			<div className="product-image"
+				style={{
+					backgroundImage: `url(${product.url?.replace("http://localhost:8080", BASE_API_URL)})`,
+					backgroundRepeat: "no-repeat",
+					backgroundSize: "cover",
+					backgroundPosition: "center top",
+				}}
+			>
 				{product.image}
 				<div className="product-badges">
 					{product.badge === 'sale' && (
@@ -23,7 +32,7 @@ const ProductCard = ({product, addToCart, isInCart}) => {
 					<button className="action-btn" title="Xem nhanh">👁️</button>
 				</div>
 			</div>
-			<div className="product-info">
+			<div className="product-info flex flex-column">
 				<div className="product-brand">{getBrandName(product.brand)}</div>
 				<h3 className="product-name">{product.name}</h3>
 				<p className="product-description">{product.description}</p>
@@ -45,10 +54,10 @@ const ProductCard = ({product, addToCart, isInCart}) => {
 				<div className="product-variants">
 					{product.colors.map(color => (
 						<div
-							key={color}
+							key={color.code}
 							className="variant-color"
-							style={{backgroundColor: getColorCode(color)}}
-							title={color}
+							style={{backgroundColor: getColorCode(color.code)}}
+							title={color.name}
 						/>
 					))}
 				</div>
@@ -59,7 +68,10 @@ const ProductCard = ({product, addToCart, isInCart}) => {
 					{product.sizes.length > 5 && <span className="size-tag">+{product.sizes.length - 5}</span>}
 				</div>
 				<button
-					className={`add-to-cart ${isInCart ? 'added' : ''}`}
+					className={clsx(
+						"add-to-cart mt-auto",
+						{"added": isInCart}
+					)}
 					onClick={() => addToCart(product.id)}
 				>
 					{isInCart ? '✓ Đã thêm vào giỏ' : '🛒 Thêm vào giỏ hàng'}

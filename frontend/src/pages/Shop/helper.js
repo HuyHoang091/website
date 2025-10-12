@@ -68,5 +68,28 @@ export const generateStars = (rating) => {
 };
 
 export const getColorCode = (color) => {
+	if (color.startsWith('#')) return color;
 	return COLOR_CODES[color] || '#cccccc';
 };
+
+export const checkPriceRange = ({filters, product}) => {
+	let matchesPrice = false;
+	filters.priceRanges.forEach(range => {
+		switch (range) {
+			case 'under-300':
+				if (product.price < 300000) matchesPrice = true;
+				break;
+			case '300-500':
+				if (product.price >= 300000 && product.price <= 500000) matchesPrice = true;
+				break;
+			case '500-1000':
+				if (product.price >= 500000 && product.price <= 1000000) matchesPrice = true;
+				break;
+			case 'over-1000':
+				if (product.price > 1000000) matchesPrice = true;
+				break;
+		}
+	});
+	
+	if (!matchesPrice) return false;
+}
