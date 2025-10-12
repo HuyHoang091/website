@@ -53,21 +53,37 @@ const ShoppingCart = () => {
     const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
     const selectedItemsCount = Array.from(selectedItems).length;
 
-    const handleUpdateQuantity = (itemId, newQuantity) => {
-        setCartItems(items =>
-            items.map(item =>
-                item.id === itemId ? { ...item, quantity: newQuantity } : item
-            )
-        );
+    const handleUpdateQuantity = async (itemId, newQuantity) => {
+        try {
+            setCartItems(items =>
+                items.map(item =>
+                    item.id === itemId ? { ...item, quantity: newQuantity } : item
+                )
+            );
+
+            await axios.put(`http://localhost:8080/api/cart/items/${itemId}/quantity`, {
+                quantity: newQuantity
+            });
+        } catch (error) {
+            console.error('Update quantity failed', error);
+            fetchCartItems();
+        }
     };
 
-    const handleRemoveItem = (itemId) => {
-        setCartItems(items => items.filter(item => item.id !== itemId));
-        setSelectedItems(prev => {
-            const newSet = new Set(prev);
-            newSet.delete(itemId);
-            return newSet;
-        });
+    const handleRemoveItem = async (itemId) => {
+        try {
+            setCartItems(items => items.filter(item => item.id !== itemId));
+            setSelectedItems(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(itemId);
+                return newSet;
+            });
+
+            await axios.delete(`http://localhost:8080/api/cart/items/${itemId}`);
+        } catch (error) {
+            console.error('Remove item failed', error);
+            fetchCartItems();
+        }
     };
 
     const handleSelectItem = (itemId, isSelected) => {

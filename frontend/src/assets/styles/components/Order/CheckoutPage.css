@@ -16,6 +16,10 @@
 /* Header */
 .checkout-page .checkout-header {
     margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
 }
 
 .checkout-page .checkout-header h1 {
@@ -222,6 +226,23 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+.continue-shopping-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #2563eb;
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    font-size: 1rem;
+}
+
+.continue-shopping-btn:hover {
+    color: #1d4ed8;
 }
 
 .checkout-page .product-brand {

@@ -1334,10 +1334,9 @@
                                 <i class="fas fa-upload"></i>Upload
                             </button>
                             <div class="variant-preview">
-                                ${variant?.url ? `<img src="${variant.url}">
-                                    <input type="hidden" class="variant-url" value="${variant.url}">` : 
-                                    `<input type="hidden" class="variant-url" value="">`}
+                                ${variant?.url ? `<img src="${variant.url}">` : `<span>Chưa có ảnh</span>`}
                             </div>
+                            <input type="hidden" class="variant-url" value="${variant?.url || ''}">
                         </div>
                     </div>
                     <div style="display: flex; align-items: flex-end;">
@@ -1674,18 +1673,27 @@
             const variant = [];
             
             variantDivs.forEach(div => {
+                const sizeInput = div.querySelector('.variant-size');
+                const colorInput = div.querySelector('.variant-color');
+                const quantityInput = div.querySelector('.variant-quantity');
+                const urlInput = div.querySelector('.variant-url');
+
+                if (!sizeInput || !colorInput || !quantityInput || !urlInput) {
+                    return;
+                }
+
                 const variantId = div.dataset.id || null;
-                const size = div.querySelector('.variant-size').value;
-                const color = div.querySelector('.variant-color').value;
-                const stock = div.querySelector('.variant-quantity').value;
-                const variantUrl = div.querySelector('.variant-url').value;
-                
+                const size = sizeInput.value.trim();
+                const color = colorInput.value.trim();
+                const stock = quantityInput.value;
+                const variantUrl = urlInput.value;
+
                 if (size && color && stock !== '') {
                     variant.push({
-                        id: variantId ? parseInt(variantId) : null,
+                        id: variantId ? parseInt(variantId, 10) : null,
                         size,
                         color,
-                        stock: parseInt(stock),
+                        stock: parseInt(stock, 10),
                         url: variantUrl
                     });
                 }

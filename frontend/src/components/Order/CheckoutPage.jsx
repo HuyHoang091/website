@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { ArrowLeftIcon } from '../ShoppingCart/Icons';
 import AddressSection from './AddressSection';
 import ProductList from './ProductList';
 import ShippingMethod from './ShippingMethod';
@@ -127,9 +128,15 @@ const CheckoutPage = () => {
     return (
         <div className="checkout-page">
             <div className="checkout-container">
-                <div className="checkout-header">
-                    <h1>Thanh toán đơn hàng</h1>
-                    <p>Vui lòng kiểm tra thông tin trước khi đặt hàng</p>
+                <div className="checkout-header" >
+                    <p>
+                        <h1>Thanh toán đơn hàng</h1>
+                        <p>Vui lòng kiểm tra thông tin trước khi đặt hàng</p>
+                    </p>
+                    <button onClick={() => navigate('/cart')} className="continue-shopping-btn">
+                        <ArrowLeftIcon />
+                        Quay lại giỏ hàng
+                    </button>
                 </div>
 
                 <div className="checkout-grid">
