@@ -46,11 +46,7 @@ const appRoutes = [
 	{
 		path: ROUTE_PATHS.SHOP,
 		element: <ShopPage />,
-	},
-  {
-    path: ROUTE_PATHS.CART,
-    element: <ShoppingCart />,
-  }
+	}
 ];
 
 const AppRoutes = () => {

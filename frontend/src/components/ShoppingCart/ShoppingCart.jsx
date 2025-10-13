@@ -32,7 +32,7 @@ const ShoppingCart = () => {
             setError(null);
             
             const userIdentifier = getUserIdentifier();
-            const response = await axios.get(`http://localhost:8080/api/cart/list/${userIdentifier}/items`);
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/cart/list/${userIdentifier}/items`);
             
             const items = response.data || [];
             setCartItems(items);
@@ -61,7 +61,7 @@ const ShoppingCart = () => {
                 )
             );
 
-            await axios.put(`http://localhost:8080/api/cart/items/${itemId}/quantity`, {
+            await axios.put(`${process.env.REACT_APP_API_URL}/api/cart/items/${itemId}/quantity`, {
                 quantity: newQuantity
             });
         } catch (error) {
@@ -79,7 +79,7 @@ const ShoppingCart = () => {
                 return newSet;
             });
 
-            await axios.delete(`http://localhost:8080/api/cart/items/${itemId}`);
+            await axios.delete(`${process.env.REACT_APP_API_URL}/api/cart/items/${itemId}`);
         } catch (error) {
             console.error('Remove item failed', error);
             fetchCartItems();

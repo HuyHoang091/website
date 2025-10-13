@@ -5,6 +5,7 @@ import ShippingForm from './ShippingForm';
 import { getShopInfo, matchAddressWithGHN } from './ghnService';
 import axios from 'axios';
 import './ShippingAddress.css';
+import { ArrowLeftIcon } from '../ShoppingCart/Icons';
 
 const ShippingAddressPage = () => {
     const navigate = useNavigate();
@@ -48,7 +49,7 @@ const ShippingAddressPage = () => {
         
         try {
             const userId = JSON.parse(localStorage.getItem("user")).id; // Lấy userId từ localStorage
-            const response = await axios.post('http://localhost:8080/api/addresses/create', {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/addresses/create`, {
                 user: {
                     id: userId
                 },
@@ -61,7 +62,6 @@ const ShippingAddressPage = () => {
             });
 
             console.log("Address created successfully:", response.data);
-            alert(`Địa chỉ đã được thêm thành công!\n\nHọ tên: ${formData.fullName}\nSĐT: ${formData.phone}\nĐịa chỉ: ${formData.detailAddress}\nPhí ship: ${feeText}`);
 
             navigate(-1);
         } catch (error) {
@@ -73,9 +73,15 @@ const ShippingAddressPage = () => {
     return (
         <div className="shipping-address-page">
             <div className="shipping-address-container">
-                <div className="page-header">
-                    <h1>📍 Chọn địa chỉ giao hàng</h1>
-                    <p>Tìm kiếm và chọn địa chỉ chính xác trên bản đồ</p>
+                <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <p>
+                        <h1>📍 Chọn địa chỉ giao hàng</h1>
+                        <p>Tìm kiếm và chọn địa chỉ chính xác trên bản đồ</p>
+                    </p>
+                    <button onClick={() => navigate(-1)} className="continue-shopping-btn">
+                        <ArrowLeftIcon />
+                        Tiếp tục đặt hàng
+                    </button>
                 </div>
 
                 <div className="content-grid">

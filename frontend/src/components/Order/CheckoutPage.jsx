@@ -98,13 +98,37 @@ const CheckoutPage = () => {
         setShowConfirmation(true); // Hiển thị bảng xác nhận
     };
 
-    const confirmOrder = () => {
+    const confirmOrder = async () => {
         setShowConfirmation(false); // Ẩn bảng xác nhận
 
         // Với COD (thanh toán khi nhận hàng)
         if (selectedPayment === 'cod') {
-            alert('Đặt hàng thành công! Bạn sẽ thanh toán khi nhận hàng.');
-            return;
+            try {
+                const userId = JSON.parse(localStorage.getItem("user")).id;
+                const name = JSON.parse(localStorage.getItem("user")).fullName;
+                const addressId = selectedAddress.id;
+                // Tạo đơn hàng
+                const orderResponse = await axios.post(`${process.env.REACT_APP_API_URL}/api/orders/create`, {
+                    userId: userId,
+                    addressId: addressId,
+                    status: 'pending',
+                    createBy: name,
+                    note: '',
+                    items: orderItems.map(item => ({
+                        id: item.id.toString(),
+                        variantId: item.variantId.toString(),
+                        quantity: item.quantity.toString()
+                    }))
+                });
+                const orderId = orderResponse.data; // Lấy order_id từ phản hồi API
+                console.log('Order created successfully:', orderResponse.data);
+                navigate('/');
+                return;
+            } catch (error) {
+                console.error('Error creating order:', error);
+                alert('Đã xảy ra lỗi khi tạo đơn hàng. Vui lòng thử lại.');
+                return;
+            }
         }
 
         // Với thanh toán online (thẻ tín dụng hoặc ví điện tử)
@@ -134,7 +158,7 @@ const CheckoutPage = () => {
         const fetchAddresses = async () => {
             try {
                 const userId = JSON.parse(localStorage.getItem("user")).id;
-                const response = await axios.get(`http://localhost:8080/api/addresses/user/${userId}`);
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/addresses/user/${userId}`);
                 const addressList = response.data || [];
                 setSelectedAddress(addressList);
 
