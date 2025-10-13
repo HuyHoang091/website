@@ -6,6 +6,8 @@ import PropTypes from "prop-types";
 import {getCategories, getProductVariantAggregation} from "../services";
 import {SimpleTreeView} from '@mui/x-tree-view/SimpleTreeView';
 import {TreeItem} from '@mui/x-tree-view/TreeItem';
+import {Checkbox} from "@mui/material";
+import {cyan, deepPurple, indigo, pink, purple} from "@mui/material/colors";
 
 const FilterSidebar = ({filters, setFilters, onFilterChange}) => {
 	const [categories, setCategories] = useState(CATEGORIES);
@@ -77,6 +79,23 @@ const FilterSidebar = ({filters, setFilters, onFilterChange}) => {
 				key={cat.id}
 				itemId={String(cat.id)}
 				label={cat.name}
+				slotProps={{
+					checkbox: {
+						size: 'small',
+						// icon: <FavoriteBorder />,
+						// checkedIcon: <Favorite />,
+						
+						sx: {
+							color: cyan[100],
+							'&.Mui-checked': {
+								color: deepPurple[100],
+							},
+							'&.MuiCheckbox-indeterminate': {
+								color: cyan[100],
+							},
+						}
+					},
+				}}
 			>
 				{renderTree(cat.id)}
 			</TreeItem>
@@ -109,18 +128,26 @@ const FilterSidebar = ({filters, setFilters, onFilterChange}) => {
 			{/* Brands */}
 			<div className="filter-group">
 				<h4 className="filter-group-title">Thương hiệu</h4>
-				<div className="filter-options">
+				<div>
 					{brands.map(brand => (
 						<label key={brand.id} className="filter-option">
-							<input
-								type="checkbox"
-								className="filter-checkbox"
+							<Checkbox
+								size="small"
 								checked={filters?.brands?.includes(brand.id)}
 								onChange={(e) => handleCheckboxChange(
 									'brands',
 									brand.id,
 									e.target.checked
 								)}
+								sx={{
+									color: cyan[100],
+									'&.Mui-checked': {
+										color: deepPurple[100],
+									},
+									'&.MuiCheckbox-root': {
+										padding: "4px",
+									},
+								}}
 							/>
 							<span className="filter-label">{brand.name}</span>
 							<span className="filter-count">({brand.count})</span>
@@ -132,30 +159,34 @@ const FilterSidebar = ({filters, setFilters, onFilterChange}) => {
 			{/* Price Range */}
 			<div className="filter-group">
 				<h4 className="filter-group-title">Khoảng giá</h4>
-				<div className="price-range">
-					<Grid container>
-						{PRICE_RANGES.map(priceRange => (
-							<Grid size={{xs: 12}}>
-								<div key={priceRange.value} className="filter-option">
-									<input
-										type="checkbox"
-										id={`price-${priceRange.value}`}
-										className="filter-checkbox"
-										checked={filters?.priceRanges?.includes(priceRange.value)}
-										onChange={(e) => handleCheckboxChange(
-											'priceRanges',
-											priceRange.value,
-											e.target.checked
-										)}
-									/>
-									<label htmlFor={`price-${priceRange.value}`} className="filter-label">
-										{priceRange.label}
-									</label>
-									<span className="filter-count">({priceRange.count})</span>
-								</div>
-							</Grid>
-						))}
-					</Grid>
+				<div>
+					{PRICE_RANGES.map(priceRange => (
+						<div key={priceRange.value} className="filter-option">
+							<Checkbox
+								size="small"
+								id={`price-${priceRange.value}`}
+								checked={filters?.priceRanges?.includes(priceRange.value)}
+								onChange={(e) => handleCheckboxChange(
+									'priceRanges',
+									priceRange.value,
+									e.target.checked
+								)}
+								sx={{
+									color: cyan[100],
+									'&.Mui-checked': {
+										color: deepPurple[100],
+									},
+									'&.MuiCheckbox-root': {
+										padding: "4px",
+									},
+								}}
+							/>
+							<label htmlFor={`price-${priceRange.value}`} className="filter-label">
+								{priceRange.label}
+							</label>
+							<span className="filter-count">({priceRange.count})</span>
+						</div>
+					))}
 				</div>
 			</div>
 			

@@ -34,19 +34,6 @@ const pageTransition = {
   transition: { duration: 0.3 },
 };
 
-const PrivateRoute = ({element, path }) => {
-	return  <Route
-		path={path}
-		element={
-			<Layout>
-				<Suspense fallback={<Loading message="Đang tải..." />}>
-					<motion.div {...pageTransition}>{element}</motion.div>
-				</Suspense>
-			</Layout>
-		}
-	/>
-};
-
 const appRoutes = [
 	{
 		path: ROUTE_PATHS.HOME,
