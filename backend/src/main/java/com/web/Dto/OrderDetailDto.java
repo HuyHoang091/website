@@ -1,6 +1,8 @@
 package com.web.Dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 import com.web.Model.Order;
 
 public class OrderDetailDto {
@@ -12,10 +14,11 @@ public class OrderDetailDto {
     private String source;
     private BigDecimal totalAmount;
     private String createBy;
+    private LocalDateTime createdAt;
 
     // Constructor matching JPQL constructor expression types
     public OrderDetailDto(long id, String fullName, String fullAddress, String orderNumber, String source,
-            Order.STATUS status, BigDecimal totalAmount, String createBy) {
+            Order.STATUS status, BigDecimal totalAmount, String createBy, LocalDateTime createdAt) {
         this.id = id;
         this.fullName = fullName;
         this.fullAddress = fullAddress;
@@ -24,6 +27,7 @@ public class OrderDetailDto {
         this.status = status;
         this.totalAmount = totalAmount;
         this.createBy = createBy;
+        this.createdAt = createdAt;
     }
 
     // Getters
@@ -57,5 +61,9 @@ public class OrderDetailDto {
 
     public String getCreateBy() {
         return createBy;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 }

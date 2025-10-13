@@ -1,0 +1,314 @@
+/* Wrapper cho Shipping Address Page */
+.shipping-address-page {
+    min-height: 100vh;
+    background-color: #f9fafb;
+    font-family: 'Inter', sans-serif;
+    color: #111827;
+}
+
+.shipping-address-page .shipping-address-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* Page Header */
+.shipping-address-page .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.shipping-address-page .page-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 0.5rem 0;
+}
+
+.shipping-address-page .page-header p {
+    color: #6b7280;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Content Grid */
+.shipping-address-page .content-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+/* Map Section */
+.shipping-address-page .map-section {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.shipping-address-page .section-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.shipping-address-page .section-header svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #2563eb;
+}
+
+.shipping-address-page .section-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+/* Search */
+.shipping-address-page .search-wrapper {
+    padding: 1rem 1.5rem;
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.shipping-address-page .search-container {
+    position: relative;
+}
+
+.search-container {
+    padding: 0px 32px 0px 32px !important;
+}
+
+.shipping-address-page .search-input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.shipping-address-page .search-input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.shipping-address-page .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #6b7280;
+    pointer-events: none;
+}
+
+.shipping-address-page .suggestions-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    list-style: none;
+    padding: 0;
+    margin-left: 0;
+}
+
+.shipping-address-page .suggestion-item {
+    padding: 0.875rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.shipping-address-page .suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.shipping-address-page .suggestion-item:hover {
+    background-color: #f3f4f6;
+}
+
+/* Map Container */
+.shipping-address-page .map-container {
+    height: 500px;
+    width: 100%;
+}
+
+/* Form Section */
+.shipping-address-page .form-section {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.shipping-address-page .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.shipping-address-page .form-label {
+    display: block;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.shipping-address-page .form-label .required {
+    color: #dc2626;
+    margin-left: 0.25rem;
+}
+
+.shipping-address-page .form-input,
+.shipping-address-page .form-textarea {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+}
+
+.shipping-address-page .form-input:focus,
+.shipping-address-page .form-textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.shipping-address-page .form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Info Box */
+.shipping-address-page .info-box {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.shipping-address-page .info-box-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.shipping-address-page .info-box-header svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #2563eb;
+}
+
+.shipping-address-page .info-box-header h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1e40af;
+    margin: 0;
+}
+
+.shipping-address-page .info-content {
+    font-size: 0.875rem;
+    color: #1e40af;
+    line-height: 1.5;
+}
+
+/* Shipping Info */
+.shipping-address-page .shipping-info {
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.shipping-address-page .shipping-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #bbf7d0;
+}
+
+.shipping-address-page .shipping-info-row:last-child {
+    border-bottom: none;
+}
+
+.shipping-address-page .shipping-info-label {
+    font-size: 0.875rem;
+    color: #15803d;
+    font-weight: 500;
+}
+
+.shipping-address-page .shipping-info-value {
+    font-size: 0.875rem;
+    color: #166534;
+    font-weight: 600;
+}
+
+/* Submit Button */
+.shipping-address-page .submit-btn {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background-color: #2563eb;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.shipping-address-page .submit-btn:hover:not(:disabled) {
+    background-color: #1d4ed8;
+}
+
+.shipping-address-page .submit-btn:disabled {
+    background-color: #d1d5db;
+    cursor: not-allowed;
+}
+
+/* Leaflet Overrides */
+.shipping-address-page .leaflet-popup-content-wrapper {
+    border-radius: 0.5rem;
+}
+
+/* Responsive */
+@media (min-width: 1024px) {
+    .shipping-address-page .content-grid {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .shipping-address-page .page-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .shipping-address-page .map-container {
+        height: 400px;
+    }
+
+    .shipping-address-page .shipping-address-container {
+        padding: 1rem;
+    }
+}

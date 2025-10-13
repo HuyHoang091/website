@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon } from '../ShoppingCart/Icons';
 import AddressSection from './AddressSection';
@@ -6,6 +6,7 @@ import ProductList from './ProductList';
 import ShippingMethod from './ShippingMethod';
 import PaymentMethod from './PaymentMethod';
 import OrderSummary from './OrderSummary';
+import axios from 'axios';
 import '../../assets/styles/components/Order/CheckoutPage.css';
 
 const CheckoutPage = () => {
@@ -57,24 +58,17 @@ const CheckoutPage = () => {
     const shippingMethods = [
         {
             id: 'standard',
-            name: 'Giao hàng tiêu chuẩn',
+            name: 'Giao hàng tiết kiệm',
             time: '3-5 ngày',
-            priceAtAdd: 30000,
+            priceAtAdd: selectedAddress.priceShip * 0.8,
             description: 'Giao hàng trong giờ hành chính'
         },
         {
             id: 'express',
             name: 'Giao hàng nhanh',
             time: '1-2 ngày',
-            priceAtAdd: 50000,
+            priceAtAdd: selectedAddress.priceShip,
             description: 'Giao hàng ưu tiên, nhanh chóng'
-        },
-        {
-            id: 'super_express',
-            name: 'Giao hàng hỏa tốc',
-            time: '2-4 giờ',
-            priceAtAdd: 100000,
-            description: 'Giao hàng trong ngày (nội thành)'
         }
     ];
 
@@ -85,20 +79,20 @@ const CheckoutPage = () => {
             description: 'Thanh toán bằng tiền mặt khi nhận hàng',
             icon: '💵'
         },
+        // {
+        //     id: 'bank_transfer',
+        //     name: 'Chuyển khoản ngân hàng',
+        //     description: 'Chuyển khoản qua ATM/Internet Banking',
+        //     icon: '🏦'
+        // },
         {
-            id: 'bank_transfer',
-            name: 'Chuyển khoản ngân hàng',
-            description: 'Chuyển khoản qua ATM/Internet Banking',
-            icon: '🏦'
-        },
-        {
-            id: 'credit_card',
+            id: 'bank',
             name: 'Thẻ tín dụng/Ghi nợ',
-            description: 'Visa, Mastercard, JCB',
+            description: 'Visa, Mastercard',
             icon: '💳'
         },
         {
-            id: 'e_wallet',
+            id: 'paypal',
             name: 'Ví điện tử',
             description: 'MoMo, ZaloPay, VNPay',
             icon: '📱'
@@ -106,7 +100,23 @@ const CheckoutPage = () => {
     ];
 
     const handlePlaceOrder = () => {
-        alert('Đặt hàng thành công!');
+        // Với COD (thanh toán khi nhận hàng)
+        if (selectedPayment === 'cod') {
+            // Gọi API để tạo đơn hàng với phương thức thanh toán COD
+            alert('Đặt hàng thành công! Bạn sẽ thanh toán khi nhận hàng.');
+            return;
+        }
+        
+        // Với thanh toán online (thẻ tín dụng hoặc ví điện tử)
+        navigate('/payment', { 
+            state: { 
+                amount: total,
+                paymentMethod: selectedPayment,
+                orderItems,
+                shippingAddress: selectedAddress,
+                shippingMethod: shippingMethods.find(m => m.id === selectedShipping)
+            } 
+        });
     };
 
     const subtotal = useMemo(
@@ -115,6 +125,27 @@ const CheckoutPage = () => {
     );
     const shippingFee = shippingMethods.find(m => m.id === selectedShipping)?.priceAtAdd || 0;
     const total = subtotal + shippingFee;
+
+    useEffect(() => {
+        const fetchAddresses = async () => {
+            try {
+                const userId = JSON.parse(localStorage.getItem("user")).id; // Assuming userId is stored in localStorage
+                const response = await axios.get(`http://localhost:8080/api/addresses/user/${userId}`);
+                const addressList = response.data || [];
+                setSelectedAddress(addressList);
+
+                // Set default address
+                const defaultAddress = addressList.find(addr => addr.isDefault) || addressList[0];
+                if (defaultAddress) {
+                    setSelectedAddress(defaultAddress);
+                }
+            } catch (error) {
+                console.error('Error fetching addresses:', error);
+            }
+        };
+
+        fetchAddresses();
+    }, []);
 
     if (incomingItems.length === 0 && orderItems.length === 0) {
         return (
@@ -143,7 +174,7 @@ const CheckoutPage = () => {
                     <div className="checkout-left">
                         <AddressSection 
                             selectedAddress={selectedAddress}
-                            onChangeAddress={() => alert('Mở modal chọn địa chỉ')}
+                            onChangeAddress={() => navigate('/address')}
                         />
 
                         <ProductList items={orderItems} />

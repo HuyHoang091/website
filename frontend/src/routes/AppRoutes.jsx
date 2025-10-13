@@ -11,6 +11,9 @@ import {ROUTE_PATHS} from "../utils/appConst";
 import {ShopPage} from "../pages/Shop/ShopPage";
 import ShoppingCart from "../components/ShoppingCart/ShoppingCart";
 import CheckoutPage from "../components/Order/CheckoutPage";
+import ShippingAddressPage from "../components/Address/ShippingAddressPage";
+import PayPalPaymentPage from "../components/Payment/PayPalPaymentPage";
+
 
 const LandingPage = React.lazy(() =>
   new Promise((resolve) => {
@@ -105,6 +108,24 @@ const AppRoutes = () => {
         />
 
         {/* Các route không có Header */}
+        <Route
+          path="/payment"
+          element={
+            <motion.div {...pageTransition}>
+              <PayPalPaymentPage />
+            </motion.div>
+          }
+        />
+
+        <Route
+          path="/address"
+          element={
+            <motion.div {...pageTransition}>
+              <ShippingAddressPage />
+            </motion.div>
+          }
+        />
+
         <Route
           path="/order"
           element={

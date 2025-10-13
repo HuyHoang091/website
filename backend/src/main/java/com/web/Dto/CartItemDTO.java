@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 public class CartItemDTO {
     private Long id;
+    private Long variantId;
     private String name;
     private String size;
     private String color;
@@ -12,9 +13,10 @@ public class CartItemDTO {
     private Long quantity;
     private BigDecimal priceAtAdd;
 
-    public CartItemDTO(Long id, String name, String size, String color, String url, String brand, Long quantity,
+    public CartItemDTO(Long id, Long variantId, String name, String size, String color, String url, String brand, Long quantity,
             BigDecimal priceAtAdd) {
         this.id = id;
+        this.variantId = variantId;
         this.name = name;
         this.size = size;
         this.color = color;
@@ -30,6 +32,12 @@ public class CartItemDTO {
     }
     public void setId(Long id) {
         this.id = id;
+    }
+    public Long getVariantId() {
+        return variantId;
+    }
+    public void setVariantId(Long variantId) {
+        this.variantId = variantId;
     }
     public String getName() {
         return name;

@@ -1,0 +1,313 @@
+/* Wrapper cho PayPal Payment Page */
+.paypal-payment-page {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.paypal-payment-page .payment-container {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Header */
+.paypal-payment-page .payment-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+    text-align: center;
+    color: white;
+}
+
+.paypal-payment-page .payment-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+}
+
+.paypal-payment-page .payment-header p {
+    opacity: 0.9;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.paypal-payment-page .payment-icon {
+    width: 4rem;
+    height: 4rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.paypal-payment-page .payment-icon svg {
+    width: 2rem;
+    height: 2rem;
+    color: white;
+}
+
+/* Body */
+.paypal-payment-page .payment-body {
+    padding: 2rem;
+}
+
+/* Form Group */
+.paypal-payment-page .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.paypal-payment-page .form-label {
+    display: block;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Input Wrapper */
+.paypal-payment-page .input-wrapper {
+    position: relative;
+}
+
+.paypal-payment-page .currency-symbol {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.paypal-payment-page .form-input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 2.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    transition: all 0.2s;
+}
+
+.paypal-payment-page .form-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Conversion Info */
+.paypal-payment-page .conversion-info {
+    background: #f9fafb;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #667eea;
+}
+
+.paypal-payment-page .conversion-info p {
+    font-size: 0.875rem;
+    color: #4b5563;
+    margin: 0 0 0.25rem 0;
+}
+
+.paypal-payment-page .conversion-rate {
+    font-weight: 600;
+    color: #111827;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}
+
+.paypal-payment-page .usd-amount {
+    color: #16a34a;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* Info Box */
+.paypal-payment-page .info-box {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.paypal-payment-page .info-icon {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #2563eb;
+}
+
+.paypal-payment-page .info-text {
+    font-size: 0.875rem;
+    color: #1e40af;
+    line-height: 1.5;
+}
+
+/* PayPal Button Container */
+.paypal-payment-page #paypal-button-container {
+    margin-top: 1.5rem;
+}
+
+/* Loader */
+.paypal-payment-page .loader {
+    display: none;
+    text-align: center;
+    padding: 1rem;
+}
+
+.paypal-payment-page .loader.active {
+    display: block;
+}
+
+.paypal-payment-page .spinner {
+    border: 3px solid #f3f4f6;
+    border-top: 3px solid #667eea;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success Message */
+.paypal-payment-page .success-message {
+    display: none;
+    background: #d1fae5;
+    border: 1px solid #6ee7b7;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.paypal-payment-page .success-message.active {
+    display: block;
+}
+
+.paypal-payment-page .success-message h3 {
+    color: #065f46;
+    font-size: 1rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.paypal-payment-page .success-message p {
+    color: #047857;
+    font-size: 0.875rem;
+    margin: 0 0 0.25rem 0;
+}
+
+/* Security Badge */
+.paypal-payment-page .security-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: #f9fafb;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+}
+
+.paypal-payment-page .security-badge svg {
+    width: 1rem;
+    height: 1rem;
+    color: #16a34a;
+}
+
+.paypal-payment-page .security-badge span {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+/* Order Summary */
+.order-summary {
+    background-color: #f9fafb;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    border: 1px solid #e5e7eb;
+}
+
+.order-summary h3 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: #4b5563;
+    margin-bottom: 12px;
+}
+
+.summary-items p {
+    margin: 8px 0;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.back-button {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.back-button:hover {
+    color: #111827;
+}
+
+.payment-amount {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.payment-amount h3 {
+    font-size: 1rem;
+    color: #4b5563;
+    margin-bottom: 8px;
+}
+
+.amount-display {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.loading-message {
+    text-align: center;
+    padding: 16px;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .paypal-payment-page .payment-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .paypal-payment-page .payment-body {
+        padding: 1.5rem;
+    }
+}

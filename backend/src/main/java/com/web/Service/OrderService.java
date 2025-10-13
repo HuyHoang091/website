@@ -127,7 +127,7 @@ public class OrderService {
             newOrder.setOrderNumber("NH" + time + "-" + newOrder.getId());
         }
         orderRepository.save(newOrder);
-        return "Order created successfully";
+        return newOrder.getId().toString();
     }
 
     public String updateOrder(Long orderId, OrderDTO orderDTO) {

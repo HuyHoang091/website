@@ -121,7 +121,7 @@ export const ShopPage = () => {
 	
 	return (
 		<div className="shop-page">
-			<Grid container spacing={3} className="py-16 px-24">
+			<Grid container spacing={4} className="py-16 px-24">
 				{/*<Grid size={{xs: 12, md: 1}}></Grid>*/}
 				<Grid size={{xs: 12, md: 3}}>
 					<FilterSidebar filters={filters} setFilters={setFilters} onFilterChange={handleFilterChange}/>

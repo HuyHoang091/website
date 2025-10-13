@@ -24,12 +24,12 @@ const AddressSection = ({ selectedAddress, onChangeAddress }) => {
             <div className="address-card">
                 <div className="address-info">
                     <div className="address-name-phone">
-                        <span className="address-name">{selectedAddress.name}</span>
+                        <span className="address-name">{selectedAddress.fullName}</span>
                         <span className="address-divider">|</span>
                         <span className="address-phone">{selectedAddress.phone}</span>
                     </div>
                     <p className="address-detail">
-                        {selectedAddress.address}, {selectedAddress.city}
+                        {selectedAddress.detail}
                     </p>
                     {selectedAddress.isDefault && (
                         <span className="default-badge">Mặc định</span>

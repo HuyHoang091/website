@@ -54,7 +54,7 @@ public class OrderController {
         if (create == null) {
             return ResponseEntity.badRequest().body("Failed to create order");
         }
-        return ResponseEntity.ok("Order created successfully");
+        return ResponseEntity.ok(create);
     }
 
     @PutMapping("{orderId}/update")

@@ -10,12 +10,17 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.web.Model.Address;
+import com.web.Model.User;
 import com.web.Repository.AddressRepository;
+import com.web.Repository.UserRepository;
 
 @Service
 public class AddressService {
     @Autowired
     private AddressRepository addressRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Cacheable(value = "addresses", key = "#userId")
     public List<Address> getAddressByUserId(Long userId, Boolean isDefault) {
@@ -26,8 +31,34 @@ public class AddressService {
         return addressRepository.findByUser_Id(userId);
     }
 
-    @CacheEvict(value = "addresses", key = "#address.user.id")
+    @CacheEvict(value = "addresses", key = "#address.user?.id")
+    @Transactional
     public Address createAddress(Address address) {
+        Long userId = (address.getUser() != null) ? address.getUser().getId() : null;
+
+        if (userId == null) {
+            return null;
+        }
+
+        User user = userRepository.findById(userId).orElse(null);
+
+        if (user == null) {
+            address.setCustomerId(userId);
+            address.setUser(null);
+        } else {
+            address.setUser(user);
+
+            List<Address> list = addressRepository.findByUser_Id(userId);
+            for (Address addr : list) {
+                if (Boolean.TRUE.equals(addr.getIsDefault())) {
+                    addr.setIsDefault(false);
+                }
+            }
+            addressRepository.saveAll(list);
+        }
+
+        address.setIsDefault(true);
+
         return addressRepository.save(address);
     }
 

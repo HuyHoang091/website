@@ -18,6 +18,7 @@
     "axios": "^1.12.2",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.12",
+    "leaflet": "^1.9.4",
     "live2d-widget": "^3.1.4",
     "pixi-live2d-display": "^0.4.0",
     "pixi.js": "^8.11.0",
