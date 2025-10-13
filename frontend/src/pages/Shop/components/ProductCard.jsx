@@ -9,16 +9,17 @@ const ProductCard = ({product, addToCart, isInCart}) => {
 		: 0;
 	
 	return (
-		<div className="product-card">
+		<div className="product-card position-relative">
 			<div className="product-image"
 				style={{
-					backgroundImage: `url(${product.url?.replace("http://localhost:8080", BASE_API_URL)})`,
+					backgroundImage: product.url ? `url(${product.url?.replace("http://localhost:8080", BASE_API_URL)})` : "none",
+					background: "var(--bg-color-grad-pink)",
 					backgroundRepeat: "no-repeat",
 					backgroundSize: "cover",
 					backgroundPosition: "center top",
+					backgroundBlendMode: "multiply",
 				}}
 			>
-				{product.image}
 				<div className="product-badges">
 					{product.badge === 'sale' && (
 						<span className="product-badge badge-sale">Sale</span>

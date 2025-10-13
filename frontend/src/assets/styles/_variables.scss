@@ -1,7 +1,11 @@
 :root {
   --header-height: 5rem;
   --product-card-img-height: 320px;
+  --bg-color-gradient-main: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --bg-color-grad-pink: linear-gradient(to bottom right, #fbcfe8, #e9d5ff, #c7d2fe);
 }
 
 $header-height: var(--header-height);
 $product-card-img-height: var(--product-card-img-height);
+$bg-main: var(--bg-color-gradient-main);
+$bg-pink: var(--bg-color-grad-pink);
