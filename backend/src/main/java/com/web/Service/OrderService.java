@@ -3,7 +3,6 @@ package com.web.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +11,6 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import org.aspectj.weaver.ast.Var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,10 +19,10 @@ import org.springframework.stereotype.Service;
 import com.web.Model.Address;
 import com.web.Model.Order;
 import com.web.Model.OrderItem;
-import com.web.Model.Product;
 import com.web.Model.ProductVariant;
 import com.web.Model.User;
 import com.web.Repository.AddressRepository;
+import com.web.Repository.CartItemRepository;
 import com.web.Repository.OrderItemRepository;
 import com.web.Repository.OrderRepository;
 import com.web.Repository.ProductVariantRepository;
@@ -49,6 +47,9 @@ public class OrderService {
 
     @Autowired
     private OrderItemRepository orderItemRepository;
+
+    @Autowired
+    private CartItemRepository cartItemRepository;
 
     @Cacheable(value = "orders", key = "#userId")
     public List<Order> getOrdersByUserId(Long userId) {
@@ -84,6 +85,7 @@ public class OrderService {
         return orderRepository.findAllOrderDetails();
     }
 
+    @Transactional
     public String createOrder(OrderDTO orderDTO) {
         User user = userRepository.findById(orderDTO.getUserId()).orElse(null);
         if (user == null) {
@@ -119,6 +121,7 @@ public class OrderService {
             item.setLineTotal(variant.getPrice().multiply(java.math.BigDecimal.valueOf(itemDto.getQuantity())));
 
             orderItemRepository.save(item);
+            cartItemRepository.deleteById(itemDto.getId());
             totalAmount = totalAmount.add(item.getLineTotal());
         }
         newOrder.setTotalAmount(totalAmount);
@@ -130,6 +133,7 @@ public class OrderService {
         return newOrder.getId().toString();
     }
 
+    @Transactional
     public String updateOrder(Long orderId, OrderDTO orderDTO) {
         // 1. Kiểm tra user
         User user = userRepository.findById(orderDTO.getUserId()).orElse(null);

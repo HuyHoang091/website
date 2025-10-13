@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MapSection from './MapSection';
 import ShippingForm from './ShippingForm';
 import { getShopInfo, matchAddressWithGHN } from './ghnService';
+import axios from 'axios';
 import './ShippingAddress.css';
 
 const ShippingAddressPage = () => {
+    const navigate = useNavigate();
     const [shopInfo, setShopInfo] = useState(null);
     const [currentShippingInfo, setCurrentShippingInfo] = useState({});
     const [selectedAddress, setSelectedAddress] = useState('');
@@ -29,7 +32,7 @@ const ShippingAddressPage = () => {
         }
     };
 
-    const handleFormSubmit = (formData) => {
+    const handleFormSubmit = async (formData) => {
         const submissionData = {
             ...formData,
             shippingInfo: currentShippingInfo
@@ -43,7 +46,28 @@ const ShippingAddressPage = () => {
             currency: 'VND'
         }).format(fee);
         
-        alert(`Thông tin đã được xác nhận!\n\nHọ tên: ${formData.fullName}\nSĐT: ${formData.phone}\nĐịa chỉ: ${formData.detailAddress}\nPhí ship: ${feeText}`);
+        try {
+            const userId = JSON.parse(localStorage.getItem("user")).id; // Lấy userId từ localStorage
+            const response = await axios.post('http://localhost:8080/api/addresses/create', {
+                user: {
+                    id: userId
+                },
+                fullName: formData.fullName,
+                phone: formData.phone,
+                city: currentShippingInfo.province?.ProvinceName || "Không xác định",
+                district: currentShippingInfo.district?.DistrictName || "Không xác định",
+                priceShip: fee,
+                detail: formData.detailAddress
+            });
+
+            console.log("Address created successfully:", response.data);
+            alert(`Địa chỉ đã được thêm thành công!\n\nHọ tên: ${formData.fullName}\nSĐT: ${formData.phone}\nĐịa chỉ: ${formData.detailAddress}\nPhí ship: ${feeText}`);
+
+            navigate(-1);
+        } catch (error) {
+            console.error("Error creating address:", error.response?.data || error.message);
+            alert("Đã xảy ra lỗi khi thêm địa chỉ. Vui lòng thử lại.");
+        }
     };
 
     return (

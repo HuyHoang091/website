@@ -54,6 +54,7 @@ const CheckoutPage = () => {
 
     const [selectedShipping, setSelectedShipping] = useState('standard');
     const [selectedPayment, setSelectedPayment] = useState('cod');
+    const [showConfirmation, setShowConfirmation] = useState(false); // State để hiển thị bảng xác nhận
 
     const shippingMethods = [
         {
@@ -79,12 +80,6 @@ const CheckoutPage = () => {
             description: 'Thanh toán bằng tiền mặt khi nhận hàng',
             icon: '💵'
         },
-        // {
-        //     id: 'bank_transfer',
-        //     name: 'Chuyển khoản ngân hàng',
-        //     description: 'Chuyển khoản qua ATM/Internet Banking',
-        //     icon: '🏦'
-        // },
         {
             id: 'bank',
             name: 'Thẻ tín dụng/Ghi nợ',
@@ -100,13 +95,18 @@ const CheckoutPage = () => {
     ];
 
     const handlePlaceOrder = () => {
+        setShowConfirmation(true); // Hiển thị bảng xác nhận
+    };
+
+    const confirmOrder = () => {
+        setShowConfirmation(false); // Ẩn bảng xác nhận
+
         // Với COD (thanh toán khi nhận hàng)
         if (selectedPayment === 'cod') {
-            // Gọi API để tạo đơn hàng với phương thức thanh toán COD
             alert('Đặt hàng thành công! Bạn sẽ thanh toán khi nhận hàng.');
             return;
         }
-        
+
         // Với thanh toán online (thẻ tín dụng hoặc ví điện tử)
         navigate('/payment', { 
             state: { 
@@ -119,6 +119,10 @@ const CheckoutPage = () => {
         });
     };
 
+    const cancelOrder = () => {
+        setShowConfirmation(false); // Ẩn bảng xác nhận
+    };
+
     const subtotal = useMemo(
         () => orderItems.reduce((sum, item) => sum + item.priceAtAdd * item.quantity, 0),
         [orderItems]
@@ -129,12 +133,11 @@ const CheckoutPage = () => {
     useEffect(() => {
         const fetchAddresses = async () => {
             try {
-                const userId = JSON.parse(localStorage.getItem("user")).id; // Assuming userId is stored in localStorage
+                const userId = JSON.parse(localStorage.getItem("user")).id;
                 const response = await axios.get(`http://localhost:8080/api/addresses/user/${userId}`);
                 const addressList = response.data || [];
                 setSelectedAddress(addressList);
 
-                // Set default address
                 const defaultAddress = addressList.find(addr => addr.isDefault) || addressList[0];
                 if (defaultAddress) {
                     setSelectedAddress(defaultAddress);
@@ -159,7 +162,7 @@ const CheckoutPage = () => {
     return (
         <div className="checkout-page">
             <div className="checkout-container">
-                <div className="checkout-header" >
+                <div className="checkout-header">
                     <p>
                         <h1>Thanh toán đơn hàng</h1>
                         <p>Vui lòng kiểm tra thông tin trước khi đặt hàng</p>
@@ -203,6 +206,20 @@ const CheckoutPage = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Bảng xác nhận */}
+            {showConfirmation && (
+                <div className="confirmation-modal">
+                    <div className="modal-content">
+                        <h3>Xác nhận đặt hàng</h3>
+                        <p>Bạn có chắc chắn muốn đặt hàng với tổng số tiền là {total.toLocaleString('vi-VN')} VND không?</p>
+                        <div className="modal-actions">
+                            <button onClick={confirmOrder} className="confirm-btn">Xác nhận</button>
+                            <button onClick={cancelOrder} className="cancel-btn">Hủy</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
