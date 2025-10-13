@@ -3,8 +3,9 @@
 .shop-page {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
-  color: #1a1a1a;
-  background-color: #fafafa;
+  color: #fff;
+  background-color: #1C113B;
+  padding-top: calc($header-height / 2);
 
   * {
     margin: 0;
@@ -121,31 +122,40 @@
 
   /* Filter Sidebar */
   .filter-sidebar {
-    background: white;
+    //background: white;
     border-radius: 12px;
     padding: 1.5rem;
     height: fit-content;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     border: 1px solid #e5e7eb;
+    position: sticky;
+    top: calc(5rem + 24px);
+    //background: linear-gradient(
+    //                302deg,
+    //                rgb(51 15 81 / 63%) 0%,
+    //                rgb(76 75 162 / 12%) 30%,
+    //                rgb(76 75 162 / 12%) 60%,
+    //                rgb(71 18 66 / 45%) 100%
+    //);
+    backdrop-filter: blur(17px);
+    background-image: linear-gradient(314deg, rgb(62 206 213 / 30%) 11.2%, rgb(208 188 251 / 60%) 100.6%);
   }
 
   .filter-title {
     font-size: 1.125rem;
     font-weight: 600;
-    color: #111827;
     margin-bottom: 1.5rem;
     padding-bottom: 0.75rem;
     border-bottom: 1px solid #e5e7eb;
   }
 
   .filter-group {
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
   }
 
   .filter-group-title {
     font-weight: 600;
-    color: #374151;
-    margin-bottom: 1rem;
+    margin-bottom: .5rem;
     font-size: 0.875rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -172,22 +182,16 @@
   }
 
   .filter-label {
-    color: #374151;
     font-size: 0.875rem;
     cursor: pointer;
     flex: 1;
   }
 
   .filter-count {
-    color: #9ca3af;
     font-size: 0.75rem;
   }
 
-  .price-range {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-  }
+  .price-range {}
 
   .price-input {
     flex: 1;
@@ -204,7 +208,7 @@
   }
 
   .size-option {
-    padding: 0.5rem;
+    padding: 0.2rem;
     border: 1px solid #d1d5db;
     border-radius: 4px;
     text-align: center;
@@ -212,14 +216,15 @@
     transition: all 0.2s ease;
     font-size: 0.875rem;
 
-    &:hover {
-      border-color: #111827;
+    &:hover:not(.selected) {
+      border-color: #1d082d;
+      box-shadow: 0 0 22px 1px #1d082d inset;
     }
 
     &.selected {
-      background: #111827;
+      background: #1d082d;
       color: white;
-      border-color: #111827;
+        border-color: #4f2d73;
     }
   }
 
@@ -269,19 +274,15 @@
   }
 
   .page-header {
-    margin-bottom: 2rem;
   }
 
   .page-title {
-    font-size: 2.25rem;
     font-weight: 700;
-    color: #111827;
     margin-bottom: 0.5rem;
     letter-spacing: -0.025em;
   }
 
   .page-subtitle {
-    color: #6b7280;
     font-size: 1.125rem;
   }
 
@@ -293,12 +294,23 @@
     padding: .5rem;
     background: white;
     border-radius: 8px;
-    border: 1px solid #e5e7eb;
-  }
+    //border: 1px solid #e5e7eb;
+    top: calc(5rem + 24px);
+    position: sticky;
+    z-index: 10;
+    background: linear-gradient(308deg, #66e0ea29 0%, #4c4ba233 50%, #fa93fb2e 100%);
+    backdrop-filter: blur(17px);
+    -webkit-backdrop-filter: blur(17px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 0px 0px rgba(255, 255, 255, 0);
 
-  .results-info {
-    color: #6b7280;
-    font-size: 0.875rem;
+    .results-info {
+      color: #e5e5e5;
+      font-weight: 600;
+    }
   }
 
   .sort-select {
@@ -313,19 +325,20 @@
   /* Products Grid */
   .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(276px, 1fr));
     gap: 2rem;
     margin-bottom: 3rem;
   }
 
   .product-card {
-    background: white;
-    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
     overflow: hidden;
-    border: 1px solid #e5e7eb;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
     &:hover {
       transform: translateY(-4px);
@@ -335,6 +348,17 @@
       .product-actions {
         opacity: 1;
       }
+    }
+
+    .image-overlay {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: $product-card-img-height;
+      //background: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1;
     }
   }
 
@@ -415,31 +439,37 @@
   }
 
   .product-info {
-    padding: 1.5rem;
+    padding: 24px;
+    color: white;
     height: calc(100% - $product-card-img-height);
+    position: relative;
+    z-index: 0;
+
+    &:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(332deg, rgb(66 28 197 / 51%) 11.2%, rgb(225 174 245 / 48%) 100.6%);
+      opacity: 0.5;
+      z-index: -1;
+    }
   }
 
   .product-brand {
-    color: #6b7280;
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    margin-bottom: 0.5rem;
+    margin-bottom: 5px;
     font-weight: 500;
   }
 
   .product-name {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #111827;
     margin-bottom: 0.5rem;
-    line-height: 1.4;
   }
 
   .product-description {
-    color: #6b7280;
     font-size: 0.875rem;
-    margin-bottom: 1rem;
+    margin-bottom: .5rem;
     line-height: 1.5;
   }
 
@@ -447,18 +477,16 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-bottom: 1rem;
   }
 
   .current-price {
-    font-size: 1.25rem;
+    font-size: 28px;
+    text-shadow: 0 0 15px #31122bb3;
     font-weight: 700;
-    color: #111827;
   }
 
   .original-price {
     font-size: 1rem;
-    color: #9ca3af;
     text-decoration: line-through;
   }
 
@@ -484,7 +512,6 @@
   }
 
   .rating-text {
-    color: #6b7280;
     font-size: 0.875rem;
   }
 
@@ -514,7 +541,6 @@
     border: 1px solid #d1d5db;
     border-radius: 4px;
     font-size: 0.75rem;
-    color: #6b7280;
   }
 
   .add-to-cart {
@@ -528,6 +554,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 0.875rem;
+    box-shadow: 0 0 12px 0 rgb(67 23 91 / 86%);
 
     &:hover {
       background: #374151;
@@ -625,6 +652,30 @@
 
     .filter-sidebar {
       padding: 1rem;
+    }
+  }
+
+  .MuiAutocomplete-root {
+    .MuiAutocomplete-inputRoot {
+      color: white;
+
+      &:hover {
+        fieldset {
+          border-color: rgba(255, 255, 255, 0.5);
+        }
+      }
+
+      fieldset {
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+    }
+
+    button {
+      color: inherit;
+    }
+
+    .MuiSvgIcon-root {
+      color: inherit;
     }
   }
 }

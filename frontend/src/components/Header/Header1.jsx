@@ -3,6 +3,7 @@ import Menu from '../Menu/Menu';
 import styles from '../../assets/styles/components/Header/Header1.module.scss';
 import { faHouse, faCartShopping, faFontAwesome, faBook, faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from 'react-router-dom';
+import {ROUTE_PATHS} from "../../utils/appConst";
 
 const menuItems = [
     { icon: faHouse, label: "Trang chủ", href: "/" },
@@ -42,7 +43,9 @@ export default function Header() {
         <Menu items={menuItems} />
         <div className={styles.headerContent}>
             <div className={`${styles.slideIn} ${styles['col-3']}`}>
+	            <Link to={ROUTE_PATHS.HOME}>
                 <div className={styles.luxuryText}>✨ LUXE FASHION</div>
+	            </Link>
             </div>
 
             <div className={`${styles.navLinks} ${styles['col-4']}`}>

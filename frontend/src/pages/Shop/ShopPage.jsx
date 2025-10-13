@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid';
 import FilterSidebar from "./components/FilterSidebar";
 import {INITIAL_FILTERS, INITIAL_PRODUCT, SORT_OPTIONS} from "./consts";
 import ProductCard from "./components/ProductCard";
-import {Autocomplete, TextField} from '@mui/material';
+import {Autocomplete, Divider, TextField} from '@mui/material';
 import {getListProduct, getProductVariantAggregation} from "./services";
 
 
@@ -19,6 +19,7 @@ export const ShopPage = () => {
 	const [filters, setFilters] = useState(INITIAL_FILTERS);
 	
 	const productsPerPage = 12;
+	
 	console.log(products)
 	
 	useEffect(() => {
@@ -101,6 +102,8 @@ export const ShopPage = () => {
 		(currentPage - 1) * productsPerPage,
 		currentPage * productsPerPage
 	);
+	const startIndex = (currentPage - 1) * productsPerPage + 1;
+	const endIndex = Math.min(currentPage * productsPerPage, filteredProducts.length);
 	
 	const addToCart = (productId) => {
 		setCart(prev => prev.includes(productId)
@@ -121,93 +124,77 @@ export const ShopPage = () => {
 	
 	return (
 		<div className="shop-page">
-			<Grid container spacing={4} className="py-16 px-24">
-				{/*<Grid size={{xs: 12, md: 1}}></Grid>*/}
-				<Grid size={{xs: 12, md: 3}}>
+			<Grid container spacing={3} className="p-24 container" justifyContent="center">
+				<Grid size={{xs: 12, lg: 12}} className="page-header text-center">
+					<h1 className="page-title featured-title">Bộ Sưu Tập Thời Trang</h1>
+					<p className="featured-subtitle">
+						Khám phá những xu hướng thời trang mới nhất từ các thương hiệu hàng đầu
+					</p>
+				</Grid>
+				<Grid size={{xs: 12, lg: 12}} className="results-info text-white">
+					<Divider style={{borderColor: '#fff'}} variant="middle" className="mt-16"/>
+				</Grid>
+				<Grid size={{xs: 12, lg: 3}}>
 					<FilterSidebar filters={filters} setFilters={setFilters} onFilterChange={handleFilterChange}/>
 				</Grid>
-				<Grid size={{xs: 12, md: 9}}>
-					<main className="products-section">
-						<div className="page-header">
-							<h1 className="page-title">Bộ Sưu Tập Thời Trang</h1>
-							<p className="page-subtitle">
-								Khám phá những xu hướng thời trang mới nhất
-							</p>
-						</div>
-						
-						<Grid size={{xs: 12}} className="sort-bar">
-							<Grid size={{xs: 12, md: 3}}>
-								<div className="results-info">
-									Hiển thị {currentProducts.length} / {filteredProducts.length} sản phẩm
-								</div>
-							</Grid>
-							<Grid size={{xs: 12, md: 3}}>
-								<Autocomplete
-									disablePortal
-									options={SORT_OPTIONS}
-									getOptionLabel={(option) => option.label}
-									getOptionKey={option => option.label}
-									fullWidth
-									value={sortBy || null}
-									onChange={(e, value) => setSortBy(value)}
-									size="small"
-									renderInput={
-										(params) => <TextField {...params} label="" />
-									}
-								/>
-							</Grid>
-						</Grid>
-						<div>
-							{/*<select*/}
-							{/*	className="sort-select"*/}
-							{/*	value={sortBy}*/}
-							{/*	onChange={(e) => setSortBy(e.target.value)}*/}
-							{/*>*/}
-							{/*	<option value="featured">Nổi bật</option>*/}
-							{/*	<option value="price-low">Giá: Thấp đến cao</option>*/}
-							{/*	<option value="price-high">Giá: Cao đến thấp</option>*/}
-							{/*	<option value="name">Tên: A-Z</option>*/}
-							{/*	<option value="rating">Đánh giá cao nhất</option>*/}
-							{/*</select>*/}
-						</div>
-						
-						<div className="products-grid">
-							{currentProducts.map(product => (
-								<ProductCard
-									key={product.id}
-									product={product}
-									addToCart={addToCart}
-									isInCart={cart.includes(product.id)}
-								/>
-							))}
-						</div>
-						
-						{totalPages > 1 && (
-							<div className="pagination">
-								<button
-									disabled={currentPage === 1}
-									onClick={() => setCurrentPage(prev => prev - 1)}
-								>
-									← Trước
-								</button>
-								{[...Array(totalPages)].map((_, i) => (
-									<button
-										key={i}
-										className={currentPage === i + 1 ? 'active' : ''}
-										onClick={() => setCurrentPage(i + 1)}
-									>
-										{i + 1}
-									</button>
-								))}
-								<button
-									disabled={currentPage === totalPages}
-									onClick={() => setCurrentPage(prev => prev + 1)}
-								>
-									Sau →
-								</button>
+				<Grid size={{xs: 12, lg: 9}}>
+					<Grid size={{xs: 12}} className="sort-bar p-12">
+						<Grid size={{xs: 12, md: 3}}>
+							<div className="results-info">
+								Hiển thị {currentProducts.length} / {filteredProducts.length} sản phẩm
 							</div>
-						)}
-					</main>
+						</Grid>
+						<Grid size={{xs: 12, md: 3}}>
+							<Autocomplete
+								disablePortal
+								options={SORT_OPTIONS}
+								getOptionLabel={(option) => option.label}
+								getOptionKey={option => option.label}
+								fullWidth
+								value={sortBy || null}
+								onChange={(e, value) => setSortBy(value)}
+								size="small"
+								renderInput={
+									(params) => <TextField {...params} label="" />
+								}
+							/>
+						</Grid>
+					</Grid>
+					<div className="products-grid">
+						{currentProducts.map(product => (
+							<ProductCard
+								key={product.id}
+								product={product}
+								addToCart={addToCart}
+								isInCart={cart.includes(product.id)}
+							/>
+						))}
+					</div>
+					{totalPages > 1 && (
+						<div className="pagination">
+							<button
+								disabled={currentPage === 1}
+								onClick={() => setCurrentPage(prev => prev - 1)}
+							>
+								← Trước
+							</button>
+							{[...Array(totalPages)].map((_, i) => (
+								<button
+									key={i}
+									className={currentPage === i + 1 ? 'active' : ''}
+									onClick={() => setCurrentPage(i + 1)}
+								>
+									{i + 1}
+								</button>
+							))}
+							<button
+								disabled={currentPage === totalPages}
+								onClick={() => setCurrentPage(prev => prev + 1)}
+							>
+								Sau →
+							</button>
+						</div>
+					)}
 				</Grid>
 			</Grid>
 		</div>
