@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import Menu from '../Menu/Menu';
 import styles from '../../assets/styles/components/Header/Header1.module.scss';
 import { faHouse, faCartShopping, faFontAwesome, faBook, faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {ROUTE_PATHS} from "../../utils/appConst";
+import { CartContext } from "../../context/CartContext"; 
 
 const menuItems = [
     { icon: faHouse, label: "Trang chủ", href: "/" },
@@ -16,6 +18,7 @@ const menuItems = [
 export default function Header() {
   const [name, setName] = useState("VIP Login");
   const [isLogin, setIsLogin] = useState(false);
+  const { cartCount, setCartCount } = useContext(CartContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,8 +29,20 @@ export default function Header() {
         const parsedUser = JSON.parse(user);
         setName(parsedUser.fullName || "User");
         setIsLogin(true);
+
+        fetchCartCount(parsedUser.id);
     }
   }, []);
+
+  const fetchCartCount = async (userId) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/cart/list/${userId}/items`);
+      const cartItems = response.data || [];
+      setCartCount(cartItems.length);
+    } catch (error) {
+      console.error("Error fetching cart count:", error.response?.data || error.message);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('tokenJWT');
@@ -61,7 +76,7 @@ export default function Header() {
             </div>
             <button className={`${styles.cartButton} ${styles['col-1']}`} onClick={() => navigate('/cart')}>
                 🛒
-                <span className={styles.cartCount}>0</span>
+                <span className={styles.cartCount}>{cartCount ? cartCount : 0}</span>
             </button>
 
             <div className={styles['col-2']}>
