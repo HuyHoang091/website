@@ -1,0 +1,801 @@
+.inlineContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: white;
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out forwards;
+  position: relative;
+}
+
+.modalContainer {
+  position: absolute;
+  top: 70px;
+  right: 10px;
+  width: 400px;
+  max-width: 90%;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  max-height: calc(100vh - 150px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e1e1e1;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+
+.headerIcon {
+  margin-right: 8px;
+  color: #6c5ce7;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.tabButton {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #555;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.tabButton:hover {
+  background-color: rgba(108, 92, 231, 0.05);
+}
+
+.activeTab {
+  color: #6c5ce7;
+  font-weight: 600;
+}
+
+.activeTab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #6c5ce7;
+  animation: widthIn 0.3s ease forwards;
+}
+
+.contentWrapper {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.customerDetails, .ordersList, .createOrderForm {
+  padding: 16px;
+  overflow-y: auto;
+  flex-grow: 1;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.orderStatsBar {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  background-color: white;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  font-size: 13px;
+  position: relative;
+  transform: translateY(100%);
+  animation: slideUp 0.4s ease-out forwards;
+  animation-delay: 0.2s;
+  z-index: 10;
+}
+
+.statsItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
+  animation-delay: 0.4s;
+}
+
+.infoRow {
+  display: flex;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+
+.infoIcon {
+  width: 20px;
+  color: #6c5ce7;
+  margin-right: 12px;
+  margin-top: 3px;
+}
+
+.infoLabel {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.infoValue {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.ordersList {
+  padding: 16px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.orderItem {
+  background-color: #ffffff;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: none;
+  transform: translateY(10px);
+  opacity: 0;
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+.ordersList .orderItem:nth-child(1) { animation-delay: 0.05s; }
+.ordersList .orderItem:nth-child(2) { animation-delay: 0.10s; }
+.ordersList .orderItem:nth-child(3) { animation-delay: 0.15s; }
+.ordersList .orderItem:nth-child(4) { animation-delay: 0.20s; }
+.ordersList .orderItem:nth-child(5) { animation-delay: 0.25s; }
+
+.orderHeader {
+  padding: 12px 15px;
+  color: white;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.orderCreator {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.newOrderBadge {
+  background-color: rgba(255, 255, 255, 0.25);
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.orderContent {
+  padding: 0;
+}
+
+.orderMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.orderNumber {
+  font-weight: 600;
+  font-size: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.orderDate {
+  font-size: 12px;
+  color: #777;
+  font-weight: normal;
+  margin-top: 3px;
+}
+
+.orderStatusBadge {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  color: #495057;
+}
+
+.orderSummary {
+  padding: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.orderDetail {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.orderDetailLabel {
+  color: #777;
+  font-weight: 500;
+}
+
+.orderAmount {
+  font-weight: 600;
+  color: #e74c3c;
+}
+
+.orderNote {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed #eee;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+}
+
+.orderNoteLabel {
+  font-weight: 500;
+  color: #777;
+  margin-bottom: 4px;
+}
+
+.orderProducts {
+  padding: 15px;
+}
+
+.orderProductsHeader {
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.orderProduct {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.orderProduct:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.productImage {
+  width: 60px;
+  height: 60px;
+  min-width: 60px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 12px;
+  background-color: #f9f9f9;
+}
+
+.productImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.noImage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #999;
+}
+
+.productInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.productName {
+  font-weight: 500;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.productVariant {
+  display: flex;
+  gap: 10px;
+  color: #666;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.productMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.productQuantity {
+  color: #555;
+}
+
+.productPrice {
+  font-weight: 500;
+  color: #e74c3c;
+}
+
+.loadingSpinner {
+  margin: 30px auto;
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #6c5ce7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.errorMessage {
+  padding: 20px;
+  text-align: center;
+  color: #e74c3c;
+}
+
+.emptyState {
+  padding: 30px 0;
+  text-align: center;
+  color: #777;
+}
+
+.emptyIcon {
+  font-size: 30px;
+  color: #ccc;
+  margin-bottom: 10px;
+}
+
+/* Thêm vào cuối file CSS hiện tại */
+
+/* Form tạo đơn hàng mới */
+.createOrderForm {
+  padding: 16px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.formTitle {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 16px;
+  color: #333;
+}
+
+.formGroup {
+  margin-bottom: 16px;
+}
+
+.formRow {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.formRow .formGroup {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.formGroup label {
+  display: block;
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.formInput, .formTextarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  box-sizing: border-box;
+}
+
+.formInput:focus, .formTextarea:focus {
+  outline: none;
+  border-color: #6c5ce7;
+  background-color: #fff;
+}
+
+.formTextarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.addressDisplay {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #333;
+}
+
+.addressDisplay p {
+  margin: 5px 0;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.submitButton {
+  background-color: #6c5ce7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s;
+}
+
+.submitButton:hover {
+  background-color: #5d4fd6;
+}
+
+/* Thanh thống kê */
+
+.statsIconSuccess {
+  color: #27AE60;
+}
+
+.statsIconCancelled {
+  color: #E74C3C;
+}
+
+.statsIconTotal {
+  color: #3498DB;
+}
+
+/* Tìm kiếm sản phẩm */
+.searchContainer {
+  position: relative;
+}
+
+.searchInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  color: #666;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 10px 10px 35px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #f9f9f9;
+}
+
+.searchingSpinner {
+  position: absolute;
+  right: 10px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #6c5ce7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.searchResults {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.searchResultItem {
+  display: flex;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.searchResultItem:hover {
+  background-color: #f5f5f5;
+  transform: translateX(3px);
+}
+
+.searchResultItem:last-child {
+  border-bottom: none;
+}
+
+.resultImage {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 10px;
+}
+
+.resultImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.resultInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.resultName {
+  font-weight: 500;
+  margin-bottom: 2px;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resultMeta {
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Sản phẩm đã chọn */
+.selectedProduct {
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.selectedProductHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.selectedProductHeader h5 {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.clearButton {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.clearButton:hover {
+  text-decoration: underline;
+}
+
+.selectedProductContent {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.selectedProductImage {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 12px;
+}
+
+.selectedProductImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.selectedProductInfo {
+  flex: 1;
+}
+
+.selectedProductInfo h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+}
+
+.selectedProductInfo p {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.noProductSelected {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 0;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  color: #777;
+}
+
+.noProductSelected .emptyIcon {
+  font-size: 40px;
+  color: #ccc;
+  margin-bottom: 10px;
+}
+
+/* Form select cho size và màu */
+.formSelect {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  appearance: menulist; /* Hiển thị mũi tên dropdown mặc định */
+}
+
+.formSelect:focus {
+  outline: none;
+  border-color: #6c5ce7;
+  background-color: #fff;
+}
+
+.formSelect option {
+  padding: 10px;
+}
+
+/* Button states */
+.submitButton:disabled {
+  background-color: #b5b2e2;
+  cursor: not-allowed;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes widthIn {
+  from {
+    width: 0;
+    left: 50%;
+    right: 50%;
+  }
+  to {
+    width: 100%;
+    left: 0;
+    right: 0;
+  }
+}
+
+/* Animation cho các item trong order list */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Cải thiện transition cho các interactive elements */
+.searchInput, .formInput, .formSelect, .formTextarea, .submitButton {
+  transition: all 0.2s ease;
+}
+
+.statsIconSuccess, .statsIconCancelled, .statsIconTotal {
+  transition: transform 0.3s ease;
+}
+
+.statsItem:hover .statsIconSuccess,
+.statsItem:hover .statsIconCancelled,
+.statsItem:hover .statsIconTotal {
+  transform: scale(1.2);
+}
+
+/* Thêm animation cho customer info container trong ChatPage */
+/* filepath: c:\xampp\htdocs\hoanghuy\project\frontend\src\pages\Chat\ChatPage.module.css */
+.customerInfoContainer {
+  width: 0;
+  height: 100%;
+  overflow: hidden;
+  transition: width 0.3s ease-in-out;
+}
+
+.withSidebar .customerInfoContainer {
+  width: 350px;
+  border-left: 1px solid #e0e0e0;
+  background-color: white;
+}

@@ -16,6 +16,7 @@
   border-bottom: 1px solid #e5e7eb;
   background: #fff;
   flex-shrink: 0;
+  position: relative;
 }
 
 .header .avatar {
@@ -23,6 +24,26 @@
   height: 48px;
   border-radius: 50%;
   border: 2px solid #2d7fd2;
+}
+
+.customerInfoIcon {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  cursor: pointer;
+  font-size: 20px;
+  color: #6c5ce7;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.3s;
+}
+
+.customerInfoIcon:hover {
+  background-color: rgba(108, 92, 231, 0.1);
 }
 
 .header h2 {

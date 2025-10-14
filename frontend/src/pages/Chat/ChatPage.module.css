@@ -1,0 +1,90 @@
+.chatPage {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+.chatContainer {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+}
+
+.sidebarContainer {
+  border-right: 1px solid #ccc;
+  height: 100%;
+}
+
+.mainContainer {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  background-color: #f5f7fb;
+  transition: all 0.3s ease;
+}
+
+.chatWindowContainer {
+  flex: 1;
+  height: 100%;
+  transition: width 0.3s ease;
+  width: 100%;
+  background: aliceblue;
+  align-content: center;
+  justify-items: center;
+}
+
+.customerInfoContainer {
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: width 0.3s ease, opacity 0.3s ease;
+  background-color: white;
+  border-left: 1px solid transparent;
+}
+
+.show {
+  width: 350px;
+  opacity: 1;
+  border-left: 1px solid #e0e0e0;
+}
+
+.withSidebar .chatWindowContainer {
+  flex: 1;
+}
+
+.withSidebar .customerInfoContainer {
+  width: 350px;
+  border-left: 1px solid #e0e0e0;
+  background-color: white;
+}
+
+@media (max-width: 992px) {
+  .show {
+    width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainContainer {
+    flex-direction: column;
+  }
+
+  .chatWindowContainer {
+    height: 100%;
+  }
+
+  .customerInfoContainer {
+    width: 100% !important;
+    height: 0;
+    transition: height 0.3s ease, opacity 0.3s ease;
+  }
+
+  .show {
+    height: 40%;
+    width: 100% !important;
+    opacity: 1;
+    border-left: none;
+    border-top: 1px solid #e0e0e0;
+  }
+}

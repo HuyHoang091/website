@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import styles from "./ChatWindow.module.css";
 import MessageItem from "./MessageItem";
 import AvatarGenerator from "../Common/AvatarGenerator";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWindowRestore, faWindowClose } from "@fortawesome/free-solid-svg-icons";
 
 // Custom hooks
 import useChatConnection from "../../hooks/useChatConnection";
@@ -9,15 +11,16 @@ import useChatMessages from "../../hooks/useChatMessages";
 import useAiMode from "../../hooks/useAiMode";
 import useFileUpload from "../../hooks/useFileUpload";
 
-export default function ChatWindow({ chatId, chatName }) {
+export default function ChatWindow({ chatId, chatName, onToggleCustomerInfo, showCustomerInfo, isLoaded, markAsLoaded }) {
   const [newMessage, setNewMessage] = useState("");
-  // Create a unique key for each chat to ensure complete re-rendering
-  const chatInstanceKey = useRef(`chat-${chatId}-${Date.now()}`);
   
-  // Update the key when chatId changes
-  useEffect(() => {
-    chatInstanceKey.current = `chat-${chatId}-${Date.now()}`;
-  }, [chatId]);
+  // Create a unique key for each chat to ensure complete re-rendering
+  // const chatInstanceKey = useRef(`chat-${chatId}`);
+  
+  // // Update the key when chatId changes
+  // useEffect(() => {
+  //   chatInstanceKey.current = `chat-${chatId}`;
+  // }, [chatId]);
 
   // Kết nối WebSocket
   const { connected, sendMessage, subscribe } = useChatConnection(chatId);
@@ -55,6 +58,12 @@ export default function ChatWindow({ chatId, chatName }) {
     }
   }, [chatId, subscribe, handleNewMessage]);
 
+  useEffect(() => {
+    if (!isInitialLoading && chatId && !isLoaded) {
+      markAsLoaded(chatId); // Gọi hàm từ ChatPage để đánh dấu chat đã tải
+    }
+  }, [isInitialLoading, chatId, isLoaded, markAsLoaded]);
+
   // Gửi tin nhắn
   const handleSendMessage = () => {
     if (!newMessage.trim() || !chatId || aiMode) return;
@@ -86,7 +95,7 @@ export default function ChatWindow({ chatId, chatName }) {
   }
 
   return (
-    <div className={styles.container} key={chatInstanceKey.current}>
+    <div className={styles.container}>
       <div className={styles.header}>
         <AvatarGenerator name={chatName} userId={chatId} size={50} />
         <div className={styles.headerInfo}>
@@ -104,6 +113,11 @@ export default function ChatWindow({ chatId, chatName }) {
             </label>
             <span className={styles.aiStatus}>{aiMode ? '✓ Đang bật' : '✗ Tắt'}</span>
           </div>
+        </div>
+
+        {/* Icon cửa sổ để hiển thị thông tin khách hàng */}
+        <div className={styles.customerInfoIcon} onClick={onToggleCustomerInfo}>
+          <FontAwesomeIcon icon={showCustomerInfo ? faWindowClose : faWindowRestore} />
         </div>
       </div>
 

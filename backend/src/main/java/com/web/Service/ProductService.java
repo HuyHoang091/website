@@ -325,9 +325,10 @@ public class ProductService {
         product.setStatus(Product.STATUS.valueOf(req.getStatus().toLowerCase()));
         productRepository.save(product);
 
+        long sortOrder = 1;
+
         // ---- 3. Thêm ảnh chung của product ----
         if (req.getUrl() != null && !req.getUrl().isEmpty()) {
-            long sortOrder = 1;
             for (String url : req.getUrl()) {
                 ProductImage img = new ProductImage();
                 img.setProduct(product);
@@ -368,7 +369,7 @@ public class ProductService {
                     variantImg.setProduct(product);
                     variantImg.setProductVariant(variant);
                     variantImg.setUrl(variantDto.getUrl());
-                    variantImg.setSortOrder(1L); // Mỗi variant chỉ có một ảnh
+                    variantImg.setSortOrder(sortOrder++); // Mỗi variant chỉ có một ảnh
                     imageRepository.save(variantImg);
                 }
             }
@@ -435,8 +436,9 @@ public class ProductService {
                 }
             }
 
+            long sortOrder = 1;
+
             if (req.getUrl() != null && !req.getUrl().isEmpty()) {
-                long sortOrder = 1;
                 for (String url : req.getUrl()) {
                     if (url != null && !url.isBlank()) {
                         ProductImage img = new ProductImage();
@@ -521,7 +523,7 @@ public class ProductService {
                         variantImg.setProduct(product);
                         variantImg.setProductVariant(variant);
                         variantImg.setUrl(variantDto.getUrl());
-                        variantImg.setSortOrder(1L);
+                        variantImg.setSortOrder(sortOrder++); // Mỗi variant chỉ có một ảnh
                         imageRepository.save(variantImg);
                     }
                 }
