@@ -13,6 +13,7 @@ import ShoppingCart from "../components/ShoppingCart/ShoppingCart";
 import CheckoutPage from "../components/Order/CheckoutPage";
 import ShippingAddressPage from "../components/Address/ShippingAddressPage";
 import PayPalPaymentPage from "../components/Payment/PayPalPaymentPage";
+import {Dashboard} from "../pages/Dashboard/Dashboard";
 
 
 const LandingPage = React.lazy(() =>
@@ -46,7 +47,11 @@ const appRoutes = [
 	{
 		path: ROUTE_PATHS.SHOP,
 		element: <ShopPage />,
-	}
+	},
+	{
+		path: ROUTE_PATHS.DASHBOARD,
+		element: <Dashboard />,
+	},
 ];
 
 const AppRoutes = () => {
@@ -67,18 +72,6 @@ const AppRoutes = () => {
 			      }
 		      />
 	      ))}
-        {/*<Route*/}
-        {/*  path={ROUTE_PATHS.HOME}*/}
-        {/*  element={*/}
-        {/*    <Layout>*/}
-        {/*      <Suspense fallback={<Loading message="Đang tải..." />}>*/}
-        {/*        <motion.div {...pageTransition}>*/}
-        {/*          <LandingPage />*/}
-        {/*        </motion.div>*/}
-        {/*      </Suspense>*/}
-        {/*    </Layout>*/}
-        {/*  }*/}
-        {/*/>*/}
         <Route
           path="/login"
           element={

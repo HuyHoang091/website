@@ -3,7 +3,7 @@ import React, {useState, useEffect, useMemo} from "react";
 import {getColorCode} from "../helper";
 import Grid from "@mui/material/Grid";
 import PropTypes from "prop-types";
-import {getCategories, getProductVariantAggregation} from "../services";
+import {getCategories, getProductVariantAggregation} from "../../../services/shopServices";
 import {SimpleTreeView} from '@mui/x-tree-view/SimpleTreeView';
 import {TreeItem} from '@mui/x-tree-view/TreeItem';
 import {Checkbox} from "@mui/material";
