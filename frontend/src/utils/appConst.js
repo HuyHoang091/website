@@ -11,4 +11,5 @@ export const ROUTE_PATHS = {
 	CHAT_WITH_USER_ID: '/chat/:userId/:chatId',
 	SHOP: '/shop',
 	CART: '/cart',
+	DASHBOARD: '/dashboard',
 }
