@@ -1,12 +1,12 @@
 import React, {useState, useMemo, useEffect} from "react";
 import './shopPage.scss';
-import {checkPriceRange, filterProduct, formatPrice} from "./helper";
+import {checkPriceRange} from "./helper";
 import Grid from '@mui/material/Grid';
 import FilterSidebar from "./components/FilterSidebar";
 import {INITIAL_FILTERS, INITIAL_PRODUCT, SORT_OPTIONS} from "./consts";
 import ProductCard from "./components/ProductCard";
 import {Autocomplete, Divider, TextField} from '@mui/material';
-import {getListProduct, getProductVariantAggregation} from "./services";
+import {getListProduct} from "../../services/shopServices";
 
 
 // Main ShopPage Component

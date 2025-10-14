@@ -1,5 +1,5 @@
 import axios from "axios";
-import {BASE_API_URL} from "../../services/appServices";
+import {BASE_API_URL} from "./appServices";
 
 const API_PATH_CATEGORIES = '/api/categorys/';
 const API_PATH_PRODUCTS_INFO = '/api/products/info';

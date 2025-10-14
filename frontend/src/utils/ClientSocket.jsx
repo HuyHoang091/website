@@ -35,7 +35,6 @@ export default function ChatDemo() {
     });
 
     // === Sale socket ===
-    const uuidSale = uuidv4();
     const socketSale = new SockJS(`${SERVER_URL}?uuid="sale1"`);
     const clientSale = Stomp.over(socketSale);
     clientSale.connect({}, () => {
