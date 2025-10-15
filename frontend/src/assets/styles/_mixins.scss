@@ -20,62 +20,81 @@
 }
 
 @mixin spacing($prefix: "m", $spaces) {
-  $prefix-key: "margin";
-  $sub-prefix: "";
+  $prefix-key: "";
+  $fixed-prefix-key: "";
+  $fw-values: 100, 200, 300, 400, 500, 600, 700, 800, 900;
+
   @if ($prefix == "m") {
     $prefix-key: "margin";
   } @else if ($prefix == "p") {
     $prefix-key: "padding";
   } @else if ($prefix == "g") {
     $prefix-key: "gap";
+  } @else if ($prefix == "fz") {
+    $fixed-prefix-key: "font-size";
+  } @else if ($prefix == "fw") {
+    $fixed-prefix-key: "font-weight";
   }
 
   @each $name, $value in $spaces {
-    .#{$prefix}-#{$name} {
-      #{$prefix-key}: $value !important;
+    @if ($prefix == "fw") {
+      @if (index($fw-values, $value / 1px) != null) {
+        .#{$prefix}-#{$name} {
+          #{$fixed-prefix-key}: $value / 1px;
+        }
+      }
+    } @else if ($fixed-prefix-key != "") {
+      .#{$prefix}-#{$name} {
+        #{$fixed-prefix-key}: $value !important;
+      }
     }
-    .#{$prefix}-n#{$name} {
-      #{$prefix-key}: -$value !important;
-    }
-    .#{$prefix}t-#{$name} {
-      #{$prefix-key}-top: $value !important;
-    }
-    .#{$prefix}t-n#{$name} {
-      #{$prefix-key}-top: -$value !important;
-    }
-    .#{$prefix}r-#{$name} {
-      #{$prefix-key}-right: $value !important;
-    }
-    .#{$prefix}r-n#{$name} {
-      #{$prefix-key}-right: -$value !important;
-    }
-    .#{$prefix}b-#{$name} {
-      #{$prefix-key}-bottom: $value !important;
-    }
-    .#{$prefix}b-n#{$name} {
-      #{$prefix-key}-bottom: -$value !important;
-    }
-    .#{$prefix}l-#{$name} {
-      #{$prefix-key}-left: $value !important;
-    }
-    .#{$prefix}l-n#{$name} {
-      #{$prefix-key}-left: -$value !important;
-    }
-    .#{$prefix}x-#{$name} {
-      #{$prefix-key}-left: $value !important;
-      #{$prefix-key}-right: $value !important;
-    }
-    .#{$prefix}y-#{$name} {
-      #{$prefix-key}-top: $value !important;
-      #{$prefix-key}-bottom: $value !important;
-    }
-    .#{$prefix}x-n#{$name} {
-      #{$prefix-key}-left: -$value !important;
-      #{$prefix-key}-right: -$value !important;
-    }
-    .#{$prefix}y-n#{$name} {
-      #{$prefix-key}-top: -$value !important;
-      #{$prefix-key}-bottom: -$value !important;
+    @if ($prefix-key != "") {
+      .#{$prefix}-#{$name} {
+        #{$prefix-key}: $value !important;
+      }
+      .#{$prefix}-n#{$name} {
+        #{$prefix-key}: -$value !important;
+      }
+      .#{$prefix}t-#{$name} {
+        #{$prefix-key}-top: $value !important;
+      }
+      .#{$prefix}t-n#{$name} {
+        #{$prefix-key}-top: -$value !important;
+      }
+      .#{$prefix}r-#{$name} {
+        #{$prefix-key}-right: $value !important;
+      }
+      .#{$prefix}r-n#{$name} {
+        #{$prefix-key}-right: -$value !important;
+      }
+      .#{$prefix}b-#{$name} {
+        #{$prefix-key}-bottom: $value !important;
+      }
+      .#{$prefix}b-n#{$name} {
+        #{$prefix-key}-bottom: -$value !important;
+      }
+      .#{$prefix}l-#{$name} {
+        #{$prefix-key}-left: $value !important;
+      }
+      .#{$prefix}l-n#{$name} {
+        #{$prefix-key}-left: -$value !important;
+      }
+      .#{$prefix}x-#{$name} {
+        #{$prefix-key}-left: $value !important;
+        #{$prefix-key}-right: $value !important;
+      }
+      .#{$prefix}y-#{$name} {
+        #{$prefix-key}-top: $value !important;
+        #{$prefix-key}-bottom: $value !important;
+      }
+      .#{$prefix}x-n#{$name} {
+        #{$prefix-key}-left: -$value !important;
+        #{$prefix-key}-right: -$value !important;
+      }
+      .#{$prefix}y-n#{$name} {
+        #{$prefix-key}-top: -$value !important;
+        #{$prefix-key}-bottom: -$value !important;
+      }
     }
   }
 }

@@ -3,6 +3,7 @@ import styles from '../assets/styles/layouts/LoginPage.module.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import { setupLive2D, handleReload } from "../utils/Live2D";
+import {Link} from "react-router-dom";
 
 const AuthLayout = ({
   title,
@@ -17,7 +18,7 @@ const AuthLayout = ({
   handleCover,
   text,
   a,
-  herf,
+	href,
 }) => {
   React.useEffect(() => {
     setupLive2D(styles);
@@ -62,7 +63,7 @@ const AuthLayout = ({
               </button>
               <div className={styles.question}>
                 <span>{text}</span>
-                <a herf={herf}>{a}</a>
+                <Link to={href}>{a}</Link>
               </div>
             </form>
           </div>
