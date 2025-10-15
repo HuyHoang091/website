@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export async function login(username, password) {
     const res = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
         method: "POST",
@@ -30,24 +32,7 @@ export async function login(username, password) {
     return role;
 }
 
-async function register(username, email) {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/register`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ username, email })
-    });
-    let data = {};
-    const contentType = res.headers.get("content-type");
-    if (contentType && contentType.includes("application/json")) {
-        data = await res.json().catch(() => ({}));
-    } else {
-        data.message = await res.text();
-    }
 
-    if (!res.ok) {
-        throw new Error(data.message || "Đăng ký thất bại");
-    }
-    return data;
+export const register = (payload) => {
+	return axios.post(`${process.env.REACT_APP_API_URL}/api/auth/register`, payload)
 }
