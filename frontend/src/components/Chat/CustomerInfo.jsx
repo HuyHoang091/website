@@ -15,6 +15,10 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('info'); // 'info' or 'orders'
   const [orderStats, setOrderStats] = useState({ completed: 0, cancelled: 0 });
+
+  const [cartItems, setCartItems] = useState([]); // Lưu các sản phẩm trong giỏ hàng
+  const [productVariants, setProductVariants] = useState([]); // Lưu các biến thể sản phẩm
+  const [selectedVariant, setSelectedVariant] = useState(null); // Biến thể được chọn
   
   // Trạng thái cho tìm kiếm sản phẩm
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,6 +40,23 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
     note: '',
     imageUrl: ''
   });
+
+  // Thêm vào phần đầu component, sau các state hiện có
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [addresses, setAddresses] = useState([]);
+  const [newAddress, setNewAddress] = useState({
+    fullName: '',
+    phone: '',
+    city: '',
+    district: '',
+    detail: '',
+    priceShip: 30000
+  });
+  const [isAddingAddress, setIsAddingAddress] = useState(false);
+  const [lastAddedAddressId, setLastAddedAddressId] = useState(null); // Trạng thái lưu ID địa chỉ vừa thêm
+
+  // Thêm vào đầu component CustomerInfo, sau các state đã có
+  const [toasts, setToasts] = useState([]);
 
   useEffect(() => {
     const fetchCustomerData = async () => {
@@ -111,7 +132,7 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
     };
   }, [searchTerm]);
 
-  // Xử lý khi chọn sản phẩm từ kết quả tìm kiếm
+  // Cập nhật phương thức handleSelectProduct
   const handleSelectProduct = async (slug) => {
     try {
       setSearching(true);
@@ -119,22 +140,14 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
       const product = response.data;
       
       setSelectedProduct(product);
-      setAvailableSizes(product.size || []);
-      setAvailableColors(product.color || []);
-      
-      // Cập nhật form
-      setNewOrder({
-        ...newOrder,
-        productId: product.id,
-        productName: product.name,
-        price: product.price_now || product.price,
-        size: product.size && product.size.length > 0 ? product.size[0] : '',
-        color: product.color && product.color.length > 0 ? product.color[0].name : '',
-        imageUrl: product.url && product.url.length > 0 ? product.url[0] : ''
-      });
-      
       setSearchTerm(''); // Xóa từ khóa tìm kiếm
       setSearchResults([]); // Xóa kết quả tìm kiếm
+      
+      // Lấy danh sách biến thể sản phẩm từ API inventory
+      const inventoryResponse = await axios.get(`http://localhost:8080/api/products/inventory`);
+      const variants = inventoryResponse.data.filter(v => v.productId === product.id);
+      setProductVariants(variants);
+      
       setSearching(false);
     } catch (error) {
       console.error("Error fetching product details:", error);
@@ -156,6 +169,48 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
       color: '',
       imageUrl: ''
     });
+  };
+
+  // Thêm phương thức chọn biến thể sản phẩm
+  const handleSelectVariant = (variant) => {
+    setSelectedVariant(variant);
+  };
+
+  // Thêm phương thức thêm sản phẩm vào giỏ hàng
+  const handleAddToCart = () => {
+    if (!selectedVariant) return;
+    
+    // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+    const existingItemIndex = cartItems.findIndex(item => item.variantId === selectedVariant.variantId);
+    
+    if (existingItemIndex !== -1) {
+      // Nếu đã có, cập nhật số lượng
+      const updatedCart = [...cartItems];
+      updatedCart[existingItemIndex].quantity += 1;
+      setCartItems(updatedCart);
+    } else {
+      // Nếu chưa có, thêm mới
+      setCartItems([
+        ...cartItems,
+        {
+          variantId: selectedVariant.variantId,
+          productName: selectedVariant.name,
+          size: selectedVariant.size.split(',')[0].trim(),
+          color: selectedVariant.color.split(',')[0].trim(),
+          price: selectedVariant.price,
+          imageUrl: selectedVariant.imageUrl,
+          quantity: 1
+        }
+      ]);
+    }
+    
+    // Reset biến thể đã chọn
+    setSelectedVariant(null);
+  };
+
+  // Thêm phương thức xóa sản phẩm khỏi giỏ hàng
+  const handleRemoveFromCart = (variantId) => {
+    setCartItems(cartItems.filter(item => item.variantId !== variantId));
   };
 
   const getStatusColor = (status) => {
@@ -220,36 +275,41 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
     });
   };
 
+  // Cập nhật phương thức handleCreateOrder
   const handleCreateOrder = async (e) => {
     e.preventDefault();
     try {
-      if (!newOrder.productId || !newOrder.size || !newOrder.color) {
-        alert('Vui lòng chọn đầy đủ thông tin sản phẩm, kích thước và màu sắc');
+      if (cartItems.length === 0) {
+        showToast('Vui lòng thêm ít nhất một sản phẩm vào đơn hàng', 'warning');
         return;
       }
+
+      if (!customer || !customer.id) {
+        showToast('Vui lòng chọn hoặc thêm địa chỉ giao hàng', 'warning');
+        return;
+      }
+
+      const salerName = JSON.parse(localStorage.getItem('user')).fullName;
       
-      // Tạo payload cho API
+      // Tạo payload cho API sử dụng địa chỉ đã chọn
       const payload = {
         userId: userId,
-        addressId: customer?.id,
-        items: [
-          {
-            productId: newOrder.productId,
-            productName: newOrder.productName,
-            quantity: parseInt(newOrder.quantity),
-            price: parseFloat(newOrder.price),
-            size: newOrder.size,
-            color: newOrder.color,
-            imageUrl: newOrder.imageUrl
-          }
-        ],
-        note: newOrder.note
+        addressId: customer.id, // Sử dụng id của địa chỉ đã chọn
+        status: "pending",
+        createBy: salerName,
+        note: newOrder.note || "",
+        items: cartItems.map(item => ({
+          id: -1,
+          variantId: item.variantId.toString(),
+          quantity: item.quantity.toString()
+        }))
       };
 
       // Gọi API tạo đơn hàng
       await axios.post('http://localhost:8080/api/orders/create', payload);
       
-      // Reset form và tải lại đơn hàng
+      // Reset form và giỏ hàng
+      setCartItems([]);
       setNewOrder({
         productId: '',
         productName: '',
@@ -261,20 +321,20 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
         imageUrl: ''
       });
       setSelectedProduct(null);
-      setAvailableSizes([]);
-      setAvailableColors([]);
+      setSelectedVariant(null);
+      setProductVariants([]);
       
       // Tải lại danh sách đơn hàng
       const ordersResponse = await axios.get(`http://localhost:8080/api/orders/user/${userId}`);
-      setOrders(ordersResponse.data);
+      setOrders(ordersResponse.data.reverse());
       
       // Cập nhật thống kê
       const completedOrders = ordersResponse.data.filter(
-        order => order.status?.toLowerCase() === 'delivered' || order.status?.toLowerCase() === 'completed'
+        order => order.status?.toLowerCase() === 'delivered'
       ).length;
       
       const cancelledOrders = ordersResponse.data.filter(
-        order => order.status?.toLowerCase() === 'cancelled' || order.status?.toLowerCase() === 'returned'
+        order => order.status?.toLowerCase() === 'cancelled'
       ).length;
       
       setOrderStats({
@@ -282,11 +342,157 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
         cancelled: cancelledOrders
       });
       
-      alert('Đơn hàng đã được tạo thành công!');
+      // Chuyển tab sang đơn hàng
+      setActiveTab('orders');
+      
+      showToast('Đơn hàng đã được tạo thành công!', 'success');
     } catch (err) {
       console.error("Error creating order:", err);
-      alert('Không thể tạo đơn hàng. Vui lòng thử lại sau.');
+      showToast('Không thể tạo đơn hàng. Vui lòng thử lại sau.', 'error');
     }
+  };
+
+  // Thêm vào useEffect để lấy danh sách địa chỉ
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/api/addresses/user/${userId}`);
+        setAddresses(response.data);
+        // Set customer là địa chỉ đầu tiên (mặc định)
+        if (response.data.length > 0) {
+          setCustomer(response.data[0]);
+        }
+      } catch (error) {
+        console.error("Error fetching addresses:", error);
+      }
+    };
+
+    if (userId) {
+      fetchAddresses();
+    }
+  }, [userId]);
+
+  // Hàm xử lý thay đổi form địa chỉ
+  const handleAddressChange = (e) => {
+    const { name, value } = e.target;
+    setNewAddress(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Hàm hiển thị form thêm địa chỉ
+  const handleShowAddressForm = () => {
+    setShowAddressForm(true);
+    // Điền thông tin từ customer hiện tại vào form nếu có
+    if (customer) {
+      setNewAddress({
+        fullName: customer.fullName || '',
+        phone: customer.phone || '',
+        city: customer.city || '',
+        district: customer.district || '',
+        detail: customer.detail || '',
+        priceShip: customer.priceShip || 30000
+      });
+    } else {
+      setNewAddress({
+        fullName: '',
+        phone: '',
+        city: '',
+        district: '',
+        detail: '',
+        priceShip: 30000
+      });
+    }
+  };
+
+  // Hàm đóng form thêm địa chỉ
+  const handleCloseAddressForm = () => {
+    setShowAddressForm(false);
+  };
+
+  const handleSaveAddress = async (e) => {
+    e.preventDefault();
+    
+    if (!newAddress.fullName || !newAddress.phone || !newAddress.detail) {
+      showToast('Vui lòng điền đầy đủ thông tin bắt buộc', 'warning');
+      return;
+    }
+    
+    try {
+      setIsAddingAddress(true);
+      
+      const payload = {
+        user: {
+          id: userId
+        },
+        fullName: newAddress.fullName,
+        phone: newAddress.phone,
+        city: newAddress.city,
+        district: newAddress.district,
+        detail: newAddress.detail,
+        priceShip: newAddress.priceShip
+      };
+      
+      const response = await axios.post('http://localhost:8080/api/addresses/create', payload);
+      
+      const updatedAddresses = await axios.get(`http://localhost:8080/api/addresses/user/${userId}`);
+      setAddresses(updatedAddresses.data);
+      
+      setCustomer(response.data);
+      setLastAddedAddressId(response.data.id); // Lưu ID địa chỉ vừa thêm
+      
+      // Đóng form và hiển thị thông báo
+      setShowAddressForm(false);
+      setIsAddingAddress(false);
+
+      showToast('Địa chỉ mới đã được cập nhật thành công!', 'success');
+      
+      // Sau 3 giây, đặt lại lastAddedAddressId thành null
+      setTimeout(() => {
+        setLastAddedAddressId(null);
+      }, 3000);
+    } catch (error) {
+      console.error("Error adding address:", error);
+      setIsAddingAddress(false);
+      showToast('Không thể cập nhật địa chỉ mới. Vui lòng thử lại sau.', 'error');
+    }
+  };
+
+  // Hàm chọn địa chỉ
+  const handleSelectAddress = (address) => {
+    setCustomer(address);
+  };
+
+  // Hàm hiển thị toast
+  const showToast = (message, type = 'success') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+    
+    // Tự động ẩn toast sau 3 giây
+    setTimeout(() => {
+      setToasts(prev => prev.filter(toast => toast.id !== id));
+    }, 3000);
+  };
+
+  // Component Toast hiển thị từng thông báo
+  const Toast = ({ id, message, type }) => {
+    const handleClose = () => {
+      setToasts(prev => prev.filter(toast => toast.id !== id));
+    };
+    
+    return (
+      <div className={`${styles.toast} ${styles[type]}`}>
+        <div className={styles.toastIcon}>
+          {type === 'success' && '✓'}
+          {type === 'error' && '✗'}
+          {type === 'info' && 'ℹ'}
+          {type === 'warning' && '⚠'}
+        </div>
+        <div className={styles.toastMessage}>{message}</div>
+        <button className={styles.toastClose} onClick={handleClose}>×</button>
+      </div>
+    );
   };
 
   const containerClass = isInline ? styles.inlineContainer : styles.modalContainer;
@@ -315,6 +521,12 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
 
   return (
     <div className={containerClass}>
+      {/* Hiển thị các toast thông báo */}
+      <div className={styles.toastsContainer}>
+        {toasts.map(toast => (
+          <Toast key={toast.id} id={toast.id} message={toast.message} type={toast.type} />
+        ))}
+      </div>
       <div className={styles.header}>
         <h3>
           <FontAwesomeIcon icon={faUser} className={styles.headerIcon} />
@@ -346,6 +558,7 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
       <div className={styles.contentWrapper}>
         {activeTab === 'info' && customer && (
           <div className={styles.customerDetails}>
+            {/* Phần hiển thị thông tin khách hàng hiện có */}
             <div className={styles.infoRow}>
               <FontAwesomeIcon icon={faUser} className={styles.infoIcon} />
               <div>
@@ -378,22 +591,6 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
               </div>
             </div>
             
-            {/* <div className={styles.infoRow}>
-              <FontAwesomeIcon icon={faMapMarkerAlt} className={styles.infoIcon} />
-              <div>
-                <span className={styles.infoLabel}>Quận/Huyện:</span>
-                <span className={styles.infoValue}>{customer.district || 'Chưa cập nhật'}</span>
-              </div>
-            </div>
-            
-            <div className={styles.infoRow}>
-              <FontAwesomeIcon icon={faMapMarkerAlt} className={styles.infoIcon} />
-              <div>
-                <span className={styles.infoLabel}>Thành phố:</span>
-                <span className={styles.infoValue}>{customer.city || 'Chưa cập nhật'}</span>
-              </div>
-            </div> */}
-            
             <div className={styles.infoRow}>
               <div className={styles.infoIcon}>🛍️</div>
               <div>
@@ -411,6 +608,163 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
                 </span>
               </div>
             </div>
+            
+            {/* Phần địa chỉ */}
+            <div className={styles.addressSection}>
+              <h4 className={styles.addressSectionTitle}>
+                <FontAwesomeIcon icon={faMapMarkerAlt} /> Địa chỉ giao hàng
+                <button 
+                  type="button" 
+                  className={styles.addAddressBtn}
+                  onClick={handleShowAddressForm}
+                >
+                  <FontAwesomeIcon icon={faPlus} /> Thay đổi địa chỉ
+                </button>
+              </h4>
+              
+              {addresses.length > 0 ? (
+                <div className={styles.addressesList}>
+                  {addresses.map((address) => (
+                    <div 
+                      key={address.id} 
+                      className={`${styles.addressItem} 
+                        ${address.id === customer.id ? styles.selectedAddress : ''} 
+                        ${address.id === lastAddedAddressId ? styles.newlyAddedAddress : ''}`}
+                      onClick={() => handleSelectAddress(address)}
+                    >
+                      <div className={styles.addressHeader}>
+                        <div className={styles.addressName}>{address.fullName}</div>
+                        <div className={styles.addressPhone}>{address.phone}</div>
+                        {address.id === customer.id && (
+                          <div className={styles.defaultBadge}>Mặc định</div>
+                        )}
+                      </div>
+                      <div className={styles.addressDetail}>
+                        {address.detail}
+                      </div>
+                      <div className={styles.addressLocation}>
+                        {address.district}, {address.city}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={styles.noAddresses}>
+                  Khách hàng chưa có địa chỉ nào
+                </div>
+              )}
+            </div>
+            
+            {/* Form thêm địa chỉ mới */}
+            {showAddressForm && (
+              <div className={styles.addressFormOverlay}>
+                <div className={styles.addressForm}>
+                  <div className={styles.addressFormHeader}>
+                    <h4>Thêm địa chỉ mới</h4>
+                    <button 
+                      type="button" 
+                      className={styles.closeFormBtn}
+                      onClick={handleCloseAddressForm}
+                    >
+                      <FontAwesomeIcon icon={faTimes} />
+                    </button>
+                  </div>
+                  
+                  <form onSubmit={handleSaveAddress}>
+                    <div className={styles.formGroup}>
+                      <label htmlFor="fullName">Họ và tên <span className={styles.required}>*</span></label>
+                      <input
+                        type="text"
+                        id="fullName"
+                        name="fullName"
+                        value={newAddress.fullName}
+                        onChange={handleAddressChange}
+                        className={styles.formInput}
+                        required
+                      />
+                    </div>
+                    
+                    <div className={styles.formGroup}>
+                      <label htmlFor="phone">Số điện thoại <span className={styles.required}>*</span></label>
+                      <input
+                        type="text"
+                        id="phone"
+                        name="phone"
+                        value={newAddress.phone}
+                        onChange={handleAddressChange}
+                        className={styles.formInput}
+                        required
+                      />
+                    </div>
+                    
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label htmlFor="city">Thành phố/Tỉnh</label>
+                        <input
+                          type="text"
+                          id="city"
+                          name="city"
+                          value={newAddress.city}
+                          onChange={handleAddressChange}
+                          className={styles.formInput}
+                        />
+                      </div>
+                      
+                      <div className={styles.formGroup}>
+                        <label htmlFor="district">Quận/Huyện</label>
+                        <input
+                          type="text"
+                          id="district"
+                          name="district"
+                          value={newAddress.district}
+                          onChange={handleAddressChange}
+                          className={styles.formInput}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className={styles.formGroup}>
+                      <label htmlFor="detail">Địa chỉ chi tiết <span className={styles.required}>*</span></label>
+                      <textarea
+                        id="detail"
+                        name="detail"
+                        value={newAddress.detail}
+                        onChange={handleAddressChange}
+                        className={styles.formTextarea}
+                        rows="3"
+                        required
+                      ></textarea>
+                    </div>
+                    
+                    <div className={styles.formActions}>
+                      <button 
+                        type="button" 
+                        className={styles.cancelBtn}
+                        onClick={handleCloseAddressForm}
+                      >
+                        Hủy bỏ
+                      </button>
+                      <button 
+                        type="submit" 
+                        className={styles.submitButton}
+                        disabled={isAddingAddress}
+                      >
+                        {isAddingAddress ? (
+                          <>
+                            <div className={styles.buttonSpinner}></div>
+                            Đang lưu...
+                          </>
+                        ) : (
+                          <>
+                            <FontAwesomeIcon icon={faSave} /> Lưu địa chỉ
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -532,17 +886,16 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
                       onChange={(e) => setSearchTerm(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          e.preventDefault(); // Chặn hành động mặc định của phím Enter
+                          e.preventDefault();
                         }
                       }}
                       className={styles.searchInput}
                       placeholder="Tìm sản phẩm theo tên hoặc mã"
-                      disabled={selectedProduct !== null}
                     />
                     {searching && <div className={styles.searchingSpinner}></div>}
                   </div>
                   
-                  {searchResults.length > 0 && !selectedProduct && (
+                  {searchResults.length > 0 && (
                     <div className={styles.searchResults}>
                       {searchResults.map(product => (
                         <div 
@@ -556,9 +909,7 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
                           <div className={styles.resultInfo}>
                             <div className={styles.resultName}>{product.name}</div>
                             <div className={styles.resultMeta}>
-                              {formatCurrency(product.priceNow || product.price)} | 
-                              {product.sizes?.join(", ")} | 
-                              {product.colors?.map(c => c.name).join(", ")}
+                              {formatCurrency(product.priceNow || product.price)}
                             </div>
                           </div>
                         </div>
@@ -572,7 +923,7 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
               {selectedProduct && (
                 <div className={styles.selectedProduct}>
                   <div className={styles.selectedProductHeader}>
-                    <h5>Sản phẩm đã chọn:</h5>
+                    <h5>Sản phẩm: {selectedProduct.name}</h5>
                     <button 
                       type="button" 
                       className={styles.clearButton}
@@ -582,128 +933,120 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
                     </button>
                   </div>
                   
-                  <div className={styles.selectedProductContent}>
-                    <div className={styles.selectedProductImage}>
-                      {newOrder.imageUrl ? (
-                        <img src={newOrder.imageUrl} alt={newOrder.productName} />
-                      ) : (
-                        <div className={styles.noImage}>Không có hình</div>
-                      )}
-                    </div>
-                    <div className={styles.selectedProductInfo}>
-                      <h4>{newOrder.productName}</h4>
-                      <p>{selectedProduct.description}</p>
-                    </div>
-                  </div>
-                  
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup}>
-                      <label>Số lượng:</label>
-                      <input
-                        type="number"
-                        name="quantity"
-                        value={newOrder.quantity}
-                        onChange={handleNewOrderChange}
-                        required
-                        min="1"
-                        className={styles.formInput}
-                      />
-                    </div>
-                    
-                    <div className={styles.formGroup}>
-                      <label>Đơn giá:</label>
-                      <input
-                        type="number"
-                        name="price"
-                        value={newOrder.price}
-                        onChange={handleNewOrderChange}
-                        required
-                        min="0"
-                        className={styles.formInput}
-                        placeholder="VNĐ"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup}>
-                      <label>Kích thước:</label>
-                      <select
-                        name="size"
-                        value={newOrder.size}
-                        onChange={handleNewOrderChange}
-                        required
-                        className={styles.formSelect}
+                  {/* Danh sách biến thể */}
+                  <div className={styles.variantsList}>
+                    {productVariants.map(variant => (
+                      <div 
+                        key={variant.variantId}
+                        className={`${styles.variantItem} ${selectedVariant?.variantId === variant.variantId ? styles.selectedVariant : ''}`}
+                        onClick={() => handleSelectVariant(variant)}
                       >
-                        <option value="">Chọn size</option>
-                        {availableSizes.map(size => (
-                          <option key={size} value={size}>{size}</option>
-                        ))}
-                      </select>
-                    </div>
-                    
-                    <div className={styles.formGroup}>
-                      <label>Màu sắc:</label>
-                      <select
-                        name="color"
-                        value={newOrder.color}
-                        onChange={handleNewOrderChange}
-                        required
-                        className={styles.formSelect}
-                      >
-                        <option value="">Chọn màu</option>
-                        {availableColors.map(color => (
-                          <option key={color.name} value={color.name} style={{backgroundColor: color.code}}>
-                            {color.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                        <div className={styles.variantImage}>
+                          <img src={variant.imageUrl} alt={variant.name} />
+                        </div>
+                        <div className={styles.variantInfo}>
+                          <div className={styles.variantName}>{variant.name}</div>
+                          <div className={styles.variantDetails}>
+                            <span>Size: {variant.size.split(',')[0]}</span>
+                            <span>Màu: {variant.color.split(',')[0]}</span>
+                          </div>
+                          <div className={styles.variantPrice}>
+                            {formatCurrency(variant.price)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                   
-                  <div className={styles.formGroup}>
-                    <label>Ghi chú:</label>
-                    <textarea
-                      name="note"
-                      value={newOrder.note}
-                      onChange={handleNewOrderChange}
-                      className={styles.formTextarea}
-                      placeholder="Ghi chú đơn hàng"
-                      rows="3"
-                    ></textarea>
-                  </div>
-                </div>
-              )}
-              
-              {!selectedProduct && (
-                <div className={styles.noProductSelected}>
-                  <FontAwesomeIcon icon={faShoppingBag} className={styles.emptyIcon} />
-                  <p>Vui lòng tìm kiếm và chọn sản phẩm</p>
-                </div>
-              )}
-              
-              {selectedProduct && (
-                <>
-                  <div className={styles.formGroup}>
-                    <label>Địa chỉ giao hàng:</label>
-                    <div className={styles.addressDisplay}>
-                      <p><strong>{customer?.fullName}</strong> | {customer?.phone}</p>
-                      <p>{customer?.detail}</p>
-                      <p>{customer?.district}, {customer?.city}</p>
-                    </div>
-                  </div>
-                  
-                  <div className={styles.formActions}>
+                  {/* Nút thêm vào giỏ hàng */}
+                  {selectedVariant && (
                     <button 
-                      type="submit" 
-                      className={styles.submitButton}
-                      disabled={!selectedProduct || !newOrder.size || !newOrder.color}
+                      type="button"
+                      className={styles.addToCartBtn}
+                      onClick={handleAddToCart}
                     >
-                      <FontAwesomeIcon icon={faSave} /> Tạo đơn hàng
+                      + Thêm vào đơn hàng
                     </button>
-                  </div>
-                </>
+                  )}
+                </div>
               )}
+              
+              {/* Hiển thị giỏ hàng */}
+              <div className={styles.cartContainer}>
+                <h5 className={styles.cartTitle}>Đơn hàng ({cartItems.length})</h5>
+                
+                {cartItems.length === 0 ? (
+                  <div className={styles.emptyCart}>
+                    <FontAwesomeIcon icon={faShoppingBag} className={styles.emptyIcon} />
+                    <p>Chưa có sản phẩm nào trong đơn hàng</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className={styles.cartItems}>
+                      {cartItems.map(item => (
+                        <div key={item.variantId} className={styles.cartItem}>
+                          <div className={styles.cartItemImage}>
+                            <img src={item.imageUrl} alt={item.productName} />
+                          </div>
+                          <div className={styles.cartItemInfo}>
+                            <div className={styles.cartItemName}>{item.productName}</div>
+                            <div className={styles.cartItemVariant}>
+                              Size: {item.size} | Màu: {item.color}
+                            </div>
+                            <div className={styles.cartItemPrice}>
+                              {formatCurrency(item.price)} x {item.quantity} = {formatCurrency(item.price * item.quantity)}
+                            </div>
+                          </div>
+                          <button 
+                            type="button"
+                            className={styles.removeItemBtn}
+                            onClick={() => handleRemoveFromCart(item.variantId)}
+                          >
+                            <FontAwesomeIcon icon={faRemove} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className={styles.cartTotal}>
+                      <span>Tổng tiền:</span>
+                      <span className={styles.cartTotalAmount}>
+                        {formatCurrency(cartItems.reduce((total, item) => total + (item.price * item.quantity), 0))}
+                      </span>
+                    </div>
+                    
+                    <div className={styles.formGroup}>
+                      <label>Ghi chú đơn hàng:</label>
+                      <textarea
+                        name="note"
+                        value={newOrder.note}
+                        onChange={handleNewOrderChange}
+                        className={styles.formTextarea}
+                        placeholder="Ghi chú đơn hàng"
+                        rows="3"
+                      ></textarea>
+                    </div>
+                    
+                    <div className={styles.formGroup}>
+                      <label>Địa chỉ giao hàng:</label>
+                      <div className={styles.addressDisplay}>
+                        <p><strong>{customer?.fullName}</strong> | {customer?.phone}</p>
+                        <p>{customer?.detail}</p>
+                        <p>{customer?.district}, {customer?.city}</p>
+                      </div>
+                    </div>
+                    
+                    <div className={styles.formActions}>
+                      <button 
+                        type="submit" 
+                        className={styles.submitButton}
+                      >
+                        <FontAwesomeIcon icon={faSave} /> Tạo đơn hàng
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
             </form>
           </div>
         )}

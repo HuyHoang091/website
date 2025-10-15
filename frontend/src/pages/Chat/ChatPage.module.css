@@ -49,6 +49,15 @@
   border-left: 1px solid #e0e0e0;
 }
 
+@keyframes highlightNew {
+  0% { background-color: rgba(108, 92, 231, 0.2); }
+  100% { background-color: rgba(108, 92, 231, 0.05); }
+}
+
+.newlyAddedAddress {
+  animation: highlightNew 2s ease-out forwards;
+}
+
 .withSidebar .chatWindowContainer {
   flex: 1;
 }

@@ -107,6 +107,9 @@ public class OrderService {
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (OrderItemDto itemDto : orderDTO.getItems()) {
+            if (itemDto.getVariantId() == null) {
+                continue;
+            }
             ProductVariant variant = productVariantRepository.findById(itemDto.getVariantId()).orElse(null);
             if (variant == null) {
                 return "Product variant not found: ID = " + itemDto.getVariantId();
@@ -121,7 +124,9 @@ public class OrderService {
             item.setLineTotal(variant.getPrice().multiply(java.math.BigDecimal.valueOf(itemDto.getQuantity())));
 
             orderItemRepository.save(item);
-            cartItemRepository.deleteById(itemDto.getId());
+            if (cartItemRepository.existsById(itemDto.getId())) {
+                cartItemRepository.deleteById(itemDto.getId());
+            }
             totalAmount = totalAmount.add(item.getLineTotal());
         }
         newOrder.setTotalAmount(totalAmount);

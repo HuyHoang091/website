@@ -22,7 +22,7 @@ public class AddressController {
         if (create == null) {
             return ResponseEntity.badRequest().body("Invalid user ID");
         }
-        return ResponseEntity.ok("Thêm địa chỉ thành công");
+        return ResponseEntity.ok(create);
     }
 
     @GetMapping("/user/{userId}")
