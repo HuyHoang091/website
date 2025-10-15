@@ -14,12 +14,35 @@ const LoginPage = () => {
     const [focused, setFocused] = useState(false);
     const [displayText, setDisplayText] = useState("Đợi lát \n !...");
     const navigate = useNavigate();
+    const [toasts, setToasts] = useState([]);
 
     const handleCover = () => {
         const shutter = document.getElementById("shutter");
         if (!shutter) return;
         shutter.classList.toggle(styles.shutterCover);
         setFocused(!focused);
+    };
+
+    const showToast = (message, type = 'success') => {
+        const id = Date.now();
+        setToasts(prev => [...prev, { id, message, type }]);
+
+        setTimeout(() => {
+            setToasts(prev => prev.filter(toast => toast.id !== id));
+        }, 3000);
+    };
+
+    const Toast = ({ id, message, type }) => {
+        const handleClose = () => {
+            setToasts(prev => prev.filter(toast => toast.id !== id));
+        };
+        
+        return (
+            <div className={`${styles.toast} ${styles[type]}`}>
+                <div className={styles.toastMessage}>{message}</div>
+                <button className={styles.toastClose} onClick={handleClose}>×</button>
+            </div>
+        );
     };
 
     const handleLogin = async (e) => {
@@ -71,8 +94,17 @@ const LoginPage = () => {
                 onFocus={() => setFocused(true)}
                 onBlur={() => setFocused(false)}
             />
+            <div className={styles.toastContainer}>
+                {toasts.map(toast => (
+                    <Toast
+                        key={toast.id}
+                        id={toast.id}
+                        message={toast.message}
+                        type={toast.type}
+                    />
+                ))}
+            </div>
         </AuthLayout>
-
     );
 };
 

@@ -3,7 +3,7 @@ import styles from "./ChatWindow.module.css";
 import MessageItem from "./MessageItem";
 import AvatarGenerator from "../Common/AvatarGenerator";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faWindowRestore, faWindowClose } from "@fortawesome/free-solid-svg-icons";
+import { faWindowRestore, faWindowClose, faLightbulb } from "@fortawesome/free-solid-svg-icons";
 
 // Custom hooks
 import useChatConnection from "../../hooks/useChatConnection";
@@ -11,17 +11,42 @@ import useChatMessages from "../../hooks/useChatMessages";
 import useAiMode from "../../hooks/useAiMode";
 import useFileUpload from "../../hooks/useFileUpload";
 
+const messageSuggestions = [
+  {
+    key: '/xinchao',
+    label: 'Xin chào',
+    template: 'Xin chào {{fullName}}, mình là tư vấn viên của Luxe Fashion. Mình có thể giúp gì cho bạn ạ?'
+  },
+  {
+    key: '/camon',
+    label: 'Cảm ơn',
+    template: 'Cảm ơn {{fullName}} đã liên hệ với Luxe Fashion. Rất vui được hỗ trợ bạn!'
+  },
+  {
+    key: '/sanpham',
+    label: 'Giới thiệu sản phẩm',
+    template: 'Luxe Fashion hiện đang có nhiều mẫu mới và chương trình khuyến mãi hấp dẫn. {{fullName}} có thể cho mình biết bạn đang quan tâm đến sản phẩm nào không ạ?'
+  },
+  {
+    key: '/khuyenmai',
+    label: 'Thông tin khuyến mãi',
+    template: 'Hiện Luxe Fashion đang có chương trình giảm giá 20% cho tất cả các sản phẩm mới và freeship cho đơn hàng từ 500k. {{fullName}} có muốn tìm hiểu thêm không ạ?'
+  },
+  {
+    key: '/size',
+    label: 'Hướng dẫn chọn size',
+    template: 'Để chọn size phù hợp, {{fullName}} có thể cho mình biết chiều cao và cân nặng của bạn được không? Mình sẽ tư vấn size phù hợp nhất ạ.'
+  }
+];
+
 export default function ChatWindow({ chatId, chatName, onToggleCustomerInfo, showCustomerInfo, isLoaded, markAsLoaded }) {
   const [newMessage, setNewMessage] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const [suggestionInput, setSuggestionInput] = useState("");
+  const suggestionRef = useRef(null);
+  const inputRef = useRef(null);
   
-  // Create a unique key for each chat to ensure complete re-rendering
-  // const chatInstanceKey = useRef(`chat-${chatId}`);
-  
-  // // Update the key when chatId changes
-  // useEffect(() => {
-  //   chatInstanceKey.current = `chat-${chatId}`;
-  // }, [chatId]);
-
   // Kết nối WebSocket
   const { connected, sendMessage, subscribe } = useChatConnection(chatId);
   
@@ -51,7 +76,7 @@ export default function ChatWindow({ chatId, chatName, onToggleCustomerInfo, sho
   // Upload file
   const { handlePaste, handleFileChange } = useFileUpload(createMessage, addMessage, sendMessage);
 
-  // Đăng ký lắng nghe sự kiện WebSocket
+  // Đăng ký lắng nghe sự kiện WebSocket 
   useEffect(() => {
     if (chatId) {
       subscribe(handleNewMessage);
@@ -60,9 +85,79 @@ export default function ChatWindow({ chatId, chatName, onToggleCustomerInfo, sho
 
   useEffect(() => {
     if (!isInitialLoading && chatId && !isLoaded) {
-      markAsLoaded(chatId); // Gọi hàm từ ChatPage để đánh dấu chat đã tải
+      markAsLoaded(chatId);
     }
   }, [isInitialLoading, chatId, isLoaded, markAsLoaded]);
+
+  // Xử lý click ra ngoài để đóng gợi ý
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (suggestionRef.current && !suggestionRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    }
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Xử lý khi input thay đổi
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setNewMessage(value);
+    
+    // Kiểm tra xem có đang nhập lệnh / không
+    if (value.startsWith('/')) {
+      setSuggestionInput(value.slice(1).toLowerCase());
+      const filtered = messageSuggestions.filter(
+        suggestion => suggestion.key.slice(1).includes(value.slice(1).toLowerCase())
+      );
+      setFilteredSuggestions(filtered);
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+  
+  // Xử lý khi nhấn phím
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      if (showSuggestions && filteredSuggestions.length > 0) {
+        e.preventDefault();
+        handleSelectSuggestion(filteredSuggestions[0]);
+      } else {
+        handleSendMessage();
+      }
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+    } else if (e.key === '/') {
+      if (newMessage === '') {
+        // Hiển thị tất cả gợi ý khi nhập / ở đầu
+        setTimeout(() => {
+          setSuggestionInput('');
+          setFilteredSuggestions([...messageSuggestions]);
+          setShowSuggestions(true);
+        }, 50);
+      }
+    }
+  };
+  
+  // Xử lý khi người dùng chọn một gợi ý
+  const handleSelectSuggestion = (suggestion) => {
+    // Thay thế {{fullName}} bằng tên người dùng
+    const messageText = suggestion.template.replace('{{fullName}}', chatName);
+    setNewMessage(messageText);
+    setShowSuggestions(false);
+    
+    // Focus vào input và đặt con trỏ ở cuối
+    if (inputRef.current) {
+      inputRef.current.focus();
+      const length = messageText.length;
+      inputRef.current.setSelectionRange(length, length);
+    }
+  };
 
   // Gửi tin nhắn
   const handleSendMessage = () => {
@@ -190,11 +285,12 @@ export default function ChatWindow({ chatId, chatName, onToggleCustomerInfo, sho
 
         <div className={styles.inputWrapper}>
           <input
+            ref={inputRef}
             type="text"
-            placeholder={aiMode ? "AI đang tạo phản hồi..." : "Nhập tin nhắn..."}
+            placeholder={aiMode ? "AI đang tạo phản hồi..." : "Nhập / để xem gợi ý tin nhắn mẫu..."}
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
             onPaste={handlePaste}
             disabled={aiMode}
             className={aiMode ? styles.inputDisabled : ""}
@@ -204,6 +300,31 @@ export default function ChatWindow({ chatId, chatName, onToggleCustomerInfo, sho
               <span className={styles.dot}></span>
               <span className={styles.dot}></span>
               <span className={styles.dot}></span>
+            </div>
+          )}
+          
+          {/* Hiển thị gợi ý tin nhắn mẫu */}
+          {showSuggestions && !aiMode && (
+            <div className={styles.suggestionDropdown} ref={suggestionRef}>
+              <div className={styles.suggestionHeader}>
+                <FontAwesomeIcon icon={faLightbulb} /> Tin nhắn mẫu
+              </div>
+              {filteredSuggestions.length > 0 ? (
+                filteredSuggestions.map((suggestion) => (
+                  <div 
+                    key={suggestion.key} 
+                    className={styles.suggestionItem}
+                    onClick={() => handleSelectSuggestion(suggestion)}
+                  >
+                    <div className={styles.suggestionKey}>{suggestion.key}</div>
+                    <div className={styles.suggestionLabel}>{suggestion.label}</div>
+                  </div>
+                ))
+              ) : (
+                <div className={styles.noSuggestions}>
+                  Không tìm thấy mẫu tin nhắn phù hợp
+                </div>
+              )}
             </div>
           )}
         </div>

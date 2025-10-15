@@ -64,8 +64,19 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
       try {
         // Fetch customer info
         const customerResponse = await axios.get(`http://localhost:8080/api/addresses/user/${userId}`);
-        setCustomer(customerResponse.data[0]);
-        
+        if (customerResponse.data.length === 0) {
+          setCustomer({
+            fullName: userName || 'Khách hàng mới',
+            phone: '',
+            city: '',
+            district: '',
+            detail: '',
+            priceShip: 30000
+          });
+        } else {
+          setCustomer(customerResponse.data[0]);
+        }
+
         // Fetch customer orders
         const ordersResponse = await axios.get(`http://localhost:8080/api/orders/user/${userId}`);
         setOrders(ordersResponse.data.reverse());
