@@ -4,6 +4,7 @@ import { login } from "../../services/authService";
 import styles from '../../assets/styles/layouts/LoginPage.module.css';
 import AuthLayout from "../../layouts/AuthLayout";
 import { useNavigate } from 'react-router-dom';
+import {ROUTE_PATHS as ROUTES} from "../../utils/appConst";
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -52,6 +53,7 @@ const LoginPage = () => {
             handleCover={handleCover}
             text="Chưa có tài khoản? "
             a="Đăng ký"
+            href={ROUTES.REGISTER}
         >
             <Input
                 id="email"

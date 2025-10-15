@@ -14,6 +14,7 @@ import CheckoutPage from "../components/Order/CheckoutPage";
 import ShippingAddressPage from "../components/Address/ShippingAddressPage";
 import PayPalPaymentPage from "../components/Payment/PayPalPaymentPage";
 import {Dashboard} from "../pages/Dashboard/Dashboard";
+import RegisterPage from "../pages/Auth/RegisterPage";
 
 
 const LandingPage = React.lazy(() =>
@@ -51,6 +52,10 @@ const appRoutes = [
 	{
 		path: ROUTE_PATHS.DASHBOARD,
 		element: <Dashboard />,
+	},
+	{
+		path: ROUTE_PATHS.REGISTER,
+		element: <RegisterPage />,
 	},
 ];
 
