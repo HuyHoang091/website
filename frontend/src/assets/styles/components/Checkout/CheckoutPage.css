@@ -516,7 +516,7 @@
 }
 
 /* Modal content */
-.modal-content {
+.modal-content-checkout {
     background: #fff;
     padding: 20px;
     border-radius: 8px;
@@ -525,20 +525,20 @@
     width: 400px;
 }
 
-.modal-content h3 {
+.modal-content-checkout h3 {
     margin: 0 0 10px;
     font-size: 1.25rem;
     color: #333;
 }
 
-.modal-content p {
+.modal-content-checkout p {
     margin: 0 0 20px;
     font-size: 1rem;
     color: #555;
 }
 
 /* Modal actions */
-.modal-actions {
+.modal-actions-checkout {
     display: flex;
     justify-content: space-between;
 }

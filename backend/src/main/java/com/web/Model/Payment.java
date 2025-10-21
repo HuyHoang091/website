@@ -22,6 +22,8 @@ public class Payment {
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private Order order;
 
+    private String captureId;
+
     private String method;
 
     @Column(precision = 12, scale = 2, nullable = false)

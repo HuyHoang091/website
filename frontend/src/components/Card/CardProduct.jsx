@@ -46,7 +46,7 @@ export default function CardProduct({icon, lable, lable1, nameProduct, describe,
                 <div className="label ai-fit right">{lable1}</div>
                 <button className="favorite-button">💖</button>
             </div>
-            <div className="product-info">
+            <div className="product-info-featured">
                 <h3>{nameProduct}</h3>
                 <p>{describe}</p>
                 <div className="rating">

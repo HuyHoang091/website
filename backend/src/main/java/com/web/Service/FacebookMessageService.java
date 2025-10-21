@@ -10,7 +10,7 @@ import java.util.Map;
 @Service
 public class FacebookMessageService {
 
-    private final String PAGE_ACCESS_TOKEN = "EAAKYyZAgGETcBPhtRAKr3KzUGs4v4ZBLeogxUd5c21U5OtVRYOw6BrGeZBS0vLgWxyAjoPAGECAl3EwC8NM2cYpVuGmnusZAZAFg4aXEXjANQdvINmZAFx6hZATzmXAw52PJVy6ZC1dBedwxste1MfOpENuN7fmfNk6zBFFDe0UFO5cAQspjO8q6vZAk9obybOhkJ7tknyAZDZD";
+    private final String PAGE_ACCESS_TOKEN = "EAAKYyZAgGETcBPmAVdFN4sRM5l4JO3nhYqxoypCZCTMqyWvVnOayaGzDXNwHCSN28zhTO1UidTJrubT4Eg7Y6gbe8GCc5PijrdjktHRzXjZAgZAZBHFkVtKEkpO1iIo7XjQGMSwt2NQsVbY8rPU7FWdZC5jV4rm1rz0U5LpmZANTL5LrlEmpYnvpr1yav4lxUZCr0f8bsAZDZD";
 
     @Autowired
     private RestTemplate restTemplate;

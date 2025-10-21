@@ -20,10 +20,7 @@ public class OrderItem {
     @JsonIgnore
     private Order order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "variant_id", nullable = false)
-    @JsonIgnore
-    private ProductVariant productVariant;
+    private Long variantId;
     
     private String productName;
     private String sku;

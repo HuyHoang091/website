@@ -13,7 +13,7 @@ const InfoIcon = () => (
     </svg>
 );
 
-const ShippingForm = ({ selectedAddress, shippingInfo, onSubmit }) => {
+const ShippingForm = ({ selectedAddress, shippingInfo, onSubmit, styles }) => {
     const [formData, setFormData] = useState({
         fullName: '',
         phone: '',
@@ -43,21 +43,21 @@ const ShippingForm = ({ selectedAddress, shippingInfo, onSubmit }) => {
     };
 
     return (
-        <div className="form-section">
-            <div className="section-header" style={{ padding: '0 0 1rem 0', border: 'none' }}>
+        <div className={styles["form-section"]}>
+            <div className={styles["section-header"]} style={{ padding: '0 0 1rem 0', border: 'none' }}>
                 <UserIcon />
                 <h2>Thông tin người nhận</h2>
             </div>
 
             <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label className="form-label">
-                        Họ và tên<span className="required">*</span>
+                <div className={styles["form-group"]}>
+                    <label className={styles["form-label"]}>
+                        Họ và tên<span className={styles["required"]}>*</span>
                     </label>
                     <input
                         type="text"
                         name="fullName"
-                        className="form-input"
+                        className={styles["form-input"]}
                         placeholder="Nguyễn Văn A"
                         value={formData.fullName}
                         onChange={handleChange}
@@ -65,14 +65,14 @@ const ShippingForm = ({ selectedAddress, shippingInfo, onSubmit }) => {
                     />
                 </div>
 
-                <div className="form-group">
-                    <label className="form-label">
-                        Số điện thoại<span className="required">*</span>
+                <div className={styles["form-group"]}>
+                    <label className={styles["form-label"]}>
+                        Số điện thoại<span className={styles["required"]}>*</span>
                     </label>
                     <input
                         type="tel"
                         name="phone"
-                        className="form-input"
+                        className={styles["form-input"]}
                         placeholder="0123456789"
                         pattern="[0-9]{10,11}"
                         value={formData.phone}
@@ -81,13 +81,13 @@ const ShippingForm = ({ selectedAddress, shippingInfo, onSubmit }) => {
                     />
                 </div>
 
-                <div className="form-group">
-                    <label className="form-label">
-                        Địa chỉ chi tiết<span className="required">*</span>
+                <div className={styles["form-group"]}>
+                    <label className={styles["form-label"]}>
+                        Địa chỉ chi tiết<span className={styles["required"]}>*</span>
                     </label>
                     <textarea
                         name="detailAddress"
-                        className="form-textarea"
+                        className={styles["form-textarea"]}
                         placeholder="Số nhà, tên đường, khu vực..."
                         value={formData.detailAddress}
                         onChange={handleChange}
@@ -95,19 +95,19 @@ const ShippingForm = ({ selectedAddress, shippingInfo, onSubmit }) => {
                     />
                 </div>
 
-                <div className="info-box">
-                    <div className="info-box-header">
+                <div className={styles["info-box"]}>
+                    <div className={styles["info-box-header"]}>
                         <InfoIcon />
                         <h3>Gợi ý</h3>
                     </div>
-                    <div className="info-content">
+                    <div className={styles["info-content"]}>
                         Tìm kiếm địa chỉ trên bản đồ và kéo marker để điều chỉnh vị trí chính xác
                     </div>
                 </div>
 
-                <ShippingInfoBox shippingInfo={shippingInfo} />
+                <ShippingInfoBox shippingInfo={shippingInfo} styles={styles} />
 
-                <button type="submit" className="submit-btn">
+                <button type="submit" className={styles["submit-btn"]}>
                     Xác nhận địa chỉ giao hàng
                 </button>
             </form>

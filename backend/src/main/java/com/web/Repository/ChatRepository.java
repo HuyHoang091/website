@@ -1,6 +1,7 @@
 package com.web.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -77,4 +78,34 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
 
     @Query("SELECT c FROM Chat c WHERE c.fromUser = :userId AND c.toUser = 'saler' AND c.status = 'SENT'")
     List<Chat> findUnreadMessagesFromUser(@Param("userId") String userId);
+
+    @Query(value = """
+        WITH MonthlyCustomerCount AS (
+            SELECT
+                DATE_FORMAT(created_at, '%Y-%m') AS month,
+                COUNT(DISTINCT 
+                    CASE 
+                        WHEN from_user = 'saler' THEN to_user 
+                        ELSE from_user 
+                    END
+                ) AS customerCount
+            FROM chat
+            WHERE from_user = 'saler' OR to_user = 'saler'
+            GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+        ),
+        GrowthCalculation AS (
+            SELECT
+                month,
+                customerCount,
+                LAG(customerCount) OVER (ORDER BY month) AS previousMonthCount,
+                CASE 
+                    WHEN LAG(customerCount) OVER (ORDER BY month) IS NULL THEN 0
+                    ELSE ROUND(((customerCount - LAG(customerCount) OVER (ORDER BY month)) * 100.0) / LAG(customerCount) OVER (ORDER BY month), 2)
+                END AS growthPercentage
+            FROM MonthlyCustomerCount
+        )
+        SELECT * FROM GrowthCalculation
+        ORDER BY month DESC
+        """, nativeQuery = true)
+    List<Map<String, Object>> findCustomerGrowth();
 }

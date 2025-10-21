@@ -85,6 +85,7 @@ const LoginPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onFocus={() => setFocused(false)}
+                maxlength="100"
             />
             <Input
                 type='password'
@@ -93,6 +94,7 @@ const LoginPage = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 onFocus={() => setFocused(true)}
                 onBlur={() => setFocused(false)}
+                maxlength="100"
             />
             <div className={styles.toastContainer}>
                 {toasts.map(toast => (

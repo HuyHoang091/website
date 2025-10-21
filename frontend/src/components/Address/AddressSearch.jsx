@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 
-const SearchIcon = () => (
-    <svg className="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+const SearchIcon = ({ styles }) => (
+    <svg className={styles["search-icon"]} fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
     </svg>
 );
 
-const AddressSearch = ({ onAddressSelect, selectedAddress }) => {
+const AddressSearch = ({ onAddressSelect, selectedAddress, styles }) => {
     const [searchValue, setSearchValue] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -66,22 +66,22 @@ const AddressSearch = ({ onAddressSelect, selectedAddress }) => {
     };
 
     return (
-        <div className="search-wrapper">
-            <div className="search-container" ref={containerRef}>
-                <SearchIcon />
+        <div className={styles["search-wrapper"]}>
+            <div className={styles["search-container"]} ref={containerRef}>
+                <SearchIcon styles={styles} />
                 <input
                     type="text"
-                    className="search-input"
+                    className={styles["search-input"]}
                     placeholder="Tìm kiếm địa chỉ (VD: 123 Trần Hưng Đạo, Quận 1, TP.HCM)"
                     value={searchValue}
                     onChange={handleInputChange}
                 />
                 {showSuggestions && suggestions.length > 0 && (
-                    <ul className="suggestions-list">
+                    <ul className={styles["suggestions-list"]}>
                         {suggestions.map((item, index) => (
                             <li
                                 key={index}
-                                className="suggestion-item"
+                                className={styles["suggestion-item"]}
                                 onClick={() => handleSuggestionClick(item)}
                             >
                                 {item.display_name}

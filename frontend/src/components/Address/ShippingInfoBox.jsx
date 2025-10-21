@@ -5,7 +5,7 @@ const formatCurrency = (amount) => {
     }).format(amount);
 };
 
-const ShippingInfoBox = ({ shippingInfo }) => {
+const ShippingInfoBox = ({ shippingInfo, styles }) => {
     const hasInfo = shippingInfo && (shippingInfo.province || shippingInfo.district);
 
     if (!hasInfo) {
@@ -13,32 +13,32 @@ const ShippingInfoBox = ({ shippingInfo }) => {
     }
 
     return (
-        <div className="shipping-info active">
-            <div className="shipping-info-row">
-                <span className="shipping-info-label">Tỉnh/Thành phố:</span>
-                <span className="shipping-info-value">
+        <div className={styles["shipping-info"]}>
+            <div className={styles["shipping-info-row"]}>
+                <span className={styles["shipping-info-label"]}>Tỉnh/Thành phố:</span>
+                <span className={styles["shipping-info-value"]}>
                     {shippingInfo.province?.ProvinceName || '-'}
                 </span>
             </div>
-            
-            <div className="shipping-info-row">
-                <span className="shipping-info-label">Quận/Huyện:</span>
-                <span className="shipping-info-value">
+
+            <div className={styles["shipping-info-row"]}>
+                <span className={styles["shipping-info-label"]}>Quận/Huyện:</span>
+                <span className={styles["shipping-info-value"]}>
                     {shippingInfo.district?.DistrictName || '-'}
                 </span>
             </div>
-            
-            <div className="shipping-info-row">
-                <span className="shipping-info-label">Dịch vụ vận chuyển:</span>
-                <span className="shipping-info-value">
+
+            <div className={styles["shipping-info-row"]}>
+                <span className={styles["shipping-info-label"]}>Dịch vụ vận chuyển:</span>
+                <span className={styles["shipping-info-value"]}>
                     {shippingInfo.service?.short_name || '-'}
                 </span>
             </div>
-            
-            <div className="shipping-info-row">
-                <span className="shipping-info-label">🚚 Phí vận chuyển:</span>
+
+            <div className={styles["shipping-info-row"]}>
+                <span className={styles["shipping-info-label"]}>🚚 Phí vận chuyển:</span>
                 <span 
-                    className="shipping-info-value" 
+                    className={styles["shipping-info-value"]} 
                     style={{ color: '#dc2626', fontSize: '1.125rem' }}
                 >
                     {shippingInfo.fee ? formatCurrency(shippingInfo.fee) : '-'}

@@ -10,12 +10,24 @@ import CustomerChatWindow from "../components/Chat/CustomerChatWindow";
 import {ROUTE_PATHS} from "../utils/appConst";
 import {ShopPage} from "../pages/Shop/ShopPage";
 import ShoppingCart from "../components/ShoppingCart/ShoppingCart";
-import CheckoutPage from "../components/Order/CheckoutPage";
+import CheckoutPage from "../components/Checkout/CheckoutPage";
 import ShippingAddressPage from "../components/Address/ShippingAddressPage";
 import PayPalPaymentPage from "../components/Payment/PayPalPaymentPage";
 import {Dashboard} from "../pages/Dashboard/Dashboard";
 import RegisterPage from "../pages/Auth/RegisterPage";
-
+import ProductDetail from "../components/ProductDetail/ProductDetailPage";
+import OrdersPage from "../components/Order/OrdersPage";
+import AdminCancelRequests from "../components/Admin/Orders/AdminCancelRequests";
+import InventoryPage from "../components/Admin/Inventory/InventoryPage";
+import AdminLayout from "../layouts/AdminLayout/AdminLayout";
+import PromotionManager from "../pages/PromotionManager";
+import ContentGenerator from "../components/Admin/Content/ContentGenerator";
+import UserManagementPage from "../components/Admin/Users/UserManagementPage";
+// import BrandManager from "../components/Admin/Brands/BrandManager";
+// import CategoryManager from "../components/Admin/Categories/CategoryManager";
+// import ColorManager from "../components/Admin/Colors/ColorManager";
+import OrdersPageAdmin from "../components/Admin/Orders/OrdersPage";
+import RefundManagementPage from "../components/Admin/Refunds/RefundManagementPage";
 
 const LandingPage = React.lazy(() =>
   new Promise((resolve) => {
@@ -88,7 +100,99 @@ const AppRoutes = () => {
           }
         />
 
+        <Route
+          path="/product/:slug"
+          element={
+            <Layout>
+              <motion.div {...pageTransition}>
+                <ProductDetail />
+              </motion.div>
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/orders"
+          element={
+            <Layout>
+              <motion.div {...pageTransition}>
+                <OrdersPage />
+              </motion.div>
+            </Layout>
+          }
+        />
+
         {/* Các route không có Header */}
+        {/* Admin */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route
+              path="orders-cancel-requests"
+              element={
+                <motion.div {...pageTransition}>
+                  <AdminCancelRequests />
+                </motion.div>
+              }
+            />
+            <Route
+              path="inventory"
+              element={
+                <motion.div {...pageTransition}>
+                  <InventoryPage />
+                </motion.div>
+              }
+            />
+            <Route
+              path="dashboard"
+              element={
+                <motion.div {...pageTransition}>
+                  <Dashboard />
+                </motion.div>
+              }
+            />
+            <Route
+              path="promotions"
+              element={
+                <motion.div {...pageTransition}>
+                  <PromotionManager />
+                </motion.div>
+              }
+            />
+            <Route
+              path="contents"
+              element={
+                <motion.div {...pageTransition}>
+                  <ContentGenerator />
+                </motion.div>
+              }
+            />
+            <Route
+              path="users"
+              element={
+                <motion.div {...pageTransition}>
+                  <UserManagementPage />
+                </motion.div>
+              }
+            />
+            <Route
+              path="orders"
+              element={
+                <motion.div {...pageTransition}>
+                  <OrdersPageAdmin />
+                </motion.div>
+              }
+            />
+            <Route
+              path="refunds"
+              element={
+                <motion.div {...pageTransition}>
+                  <RefundManagementPage />
+                </motion.div>
+              }
+            />
+            {/* Thêm các route admin khác ở đây */}
+          </Route>
+        {/* END Admin */}
+
         <Route
           path="/payment"
           element={

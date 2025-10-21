@@ -23,12 +23,12 @@ public class CategoryService {
     }
 
     @CacheEvict(value = "categories", allEntries = true)
-    public Category createCategori(Category categori) {
-        return categoriRepository.save(categori);
+    public Category createCategory(Category category) {
+        return categoriRepository.save(category);
     }
 
     @CacheEvict(value = "categories", allEntries = true)
-    public boolean deleteCategori(Long id) {
+    public boolean deleteCategory(Long id) {
         if (!categoriRepository.existsById(id)) {
             return false;
         }
@@ -38,10 +38,14 @@ public class CategoryService {
 
     @Transactional
     @CacheEvict(value = "categories", allEntries = true)
-    public Category updateCategori(Long id, Category newCategori) {
-        Category oldCategori = categoriRepository.findById(id).orElse(null);
-        if (oldCategori == null) return null;
-        newCategori.setId(oldCategori.getId());
-        return categoriRepository.save(newCategori);
+    public Category updateCategory(Long id, Category newCategory) {
+        Category oldCategory = categoriRepository.findById(id).orElse(null);
+        if (oldCategory == null) return null;
+        newCategory.setId(oldCategory.getId());
+        return categoriRepository.save(newCategory);
+    }
+
+    public Category getCategoryById(Long id) {
+        return categoriRepository.findById(id).orElse(null);
     }
 }

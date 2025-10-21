@@ -131,6 +131,7 @@ const RegisterPage = () => {
 				onFocus={() => setError("")}
 				error={Boolean(errors.email)}
 				errorText={errors.email}
+				maxlength="100"
 			/>
 			<Input
 				type='text'
@@ -140,6 +141,7 @@ const RegisterPage = () => {
 				onFocus={() => setError("")}
 				error={Boolean(errors.phone)}
 				errorText={errors.phone}
+				maxlength="100"
 			/>
 			<div className={styles.toastContainer}>
 				{toasts.map(toast => (

@@ -44,4 +44,8 @@ public class BrandService {
         newBrand.setId(oldBrand.getId());
         return brandRepository.save(newBrand);
     }
+
+    public Brand getBrandById(Long id) {
+        return brandRepository.findById(id).orElse(null);
+    }
 }

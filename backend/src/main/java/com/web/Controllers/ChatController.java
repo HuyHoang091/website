@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.web.Dto.ChatMessageDto;
 import com.web.Dto.ChatSummary;
+import com.web.Repository.ChatRepository;
+import com.web.Repository.OrderRepository;
 import com.web.Service.ChatService;
 
 @RestController
@@ -23,6 +26,12 @@ public class ChatController {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private ChatRepository chatRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     // @PreAuthorize("hasRole('ADMIN') or hasRole('SALER')")
     @GetMapping("/list")
@@ -63,5 +72,64 @@ public class ChatController {
         messagingTemplate.convertAndSendToUser(userId, "/queue/user", ackForUser);
 
         return ResponseEntity.ok().body(Map.of("success", true));
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<List<Map<String, Object>>> getTest(Principal principal) {
+        List<Map<String, Object>> customerGrowth = chatRepository.findCustomerGrowth();
+        return ResponseEntity.ok(customerGrowth);
+    }
+
+    @GetMapping("/test1")
+    public ResponseEntity<List<Map<String, Object>>> getTest1(Principal principal) {
+        List<Map<String, Object>> MonthlyRevenue = orderRepository.findMonthlyStatsWithGrowthAndAverage();
+        return ResponseEntity.ok(MonthlyRevenue);
+    }
+
+    @GetMapping("/test2")
+    public ResponseEntity<List<Map<String, Object>>> getTest2(Principal principal) {
+        List<Map<String, Object>> revenueLast7Days = orderRepository.findRevenueLast7Days();
+        return ResponseEntity.ok(revenueLast7Days);
+    }
+
+    @GetMapping("/test3")
+    public ResponseEntity<List<Map<String, Object>>> getTest3(Principal principal) {
+        List<Map<String, Object>> revenueByCategory = orderRepository.findRevenueByCategoryExcludingParentCategories();
+        return ResponseEntity.ok(revenueByCategory);
+    }
+
+    @GetMapping("/test4")
+    public ResponseEntity<List<Map<String, Object>>> getTest4(Principal principal) {
+        List<Map<String, Object>> top6BestSellingProducts = orderRepository.findTop6BestSellingProducts();
+        return ResponseEntity.ok(top6BestSellingProducts);
+    }
+
+    @GetMapping("/test5")
+    public ResponseEntity<List<Map<String, Object>>> getTest5(Principal principal) {
+        List<Map<String, Object>> monthlyRevenueAndOrderCount = orderRepository.findMonthlyRevenueAndOrderCountForCurrentYear();
+        return ResponseEntity.ok(monthlyRevenueAndOrderCount);
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<Map<String, Object>> getDashboardData(Principal principal) {
+        // Lấy dữ liệu từ các repository
+        List<Map<String, Object>> customerGrowth = chatRepository.findCustomerGrowth();
+        List<Map<String, Object>> monthlyRevenue = orderRepository.findMonthlyStatsWithGrowthAndAverage();
+        List<Map<String, Object>> revenueLast7Days = orderRepository.findRevenueLast7Days();
+        List<Map<String, Object>> revenueByCategory = orderRepository.findRevenueByCategoryExcludingParentCategories();
+        List<Map<String, Object>> top6BestSellingProducts = orderRepository.findTop6BestSellingProducts();
+        List<Map<String, Object>> monthlyRevenueAndOrderCount = orderRepository.findMonthlyRevenueAndOrderCountForCurrentYear();
+
+        // Gom dữ liệu vào một Map
+        Map<String, Object> dashboardData = Map.of(
+            "customerGrowth", customerGrowth,
+            "monthlyRevenue", monthlyRevenue,
+            "revenueLast7Days", revenueLast7Days,
+            "revenueByCategory", revenueByCategory,
+            "top6BestSellingProducts", top6BestSellingProducts,
+            "monthlyRevenueAndOrderCount", monthlyRevenueAndOrderCount
+        );
+
+        return ResponseEntity.ok(dashboardData);
     }
 }

@@ -16,9 +16,7 @@ public class Discount {
 
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categories_id", nullable = false)
-    private Category category;
+    private Long categoriesId;
     
     private String description;
 

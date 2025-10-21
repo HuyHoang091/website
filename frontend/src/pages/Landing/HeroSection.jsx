@@ -29,9 +29,9 @@ export default function HeroBanner() {
                   </p>
                   <div class="hero-buttons">
 	                  <NavLink to={ROUTE_PATHS.SHOP}>
-                      <button class="btn-primary">🛍️ SHOP LUXURY</button>
+                      <button class="btn-primary-hero">🛍️ SHOP LUXURY</button>
 	                  </NavLink>
-                      <button class="btn-secondary">👑 VIP PREVIEW</button>
+                      <button class="btn-secondary-hero">👑 VIP PREVIEW</button>
                   </div>
               </div>
 
@@ -64,8 +64,8 @@ export default function HeroBanner() {
                       </div>
                       <div class="card-footer">
                           <div class="stat">
-                              <div class="stat-value">2,847</div>
-                              <div class="stat-label">VIP Members Active</div>
+                              <div class="stat-value-hero">2,847</div>
+                              <div class="stat-label-hero">VIP Members Active</div>
                           </div>
                       </div>
                   </div>

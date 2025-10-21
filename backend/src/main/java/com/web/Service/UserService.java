@@ -2,6 +2,7 @@ package com.web.Service;
 
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -44,7 +45,10 @@ public class UserService {
     }
 
     public List<User> getAllUser() {
-        return userRepository.findAll();
+        List<User> allUsers = userRepository.findAll();
+        return allUsers.stream()
+                .filter(user -> !"Deleted".equals(user.getStatus()))
+                .collect(Collectors.toList());
     }
 
     public User createUser(User character) {
@@ -60,12 +64,15 @@ public class UserService {
 
     public User updateUser(Long id, User newChar) {
         User oldUser = userRepository.findById(id).orElse(null);
-        if (oldUser == null) return null;
+        if (oldUser == null)
+            return null;
         newChar.setPasswordHash(oldUser.getPasswordHash());
+        newChar.setId(id);
+        newChar.setCreatedAt(oldUser.getCreatedAt());
 
         return userRepository.save(newChar);
     }
-    
+
     public boolean deleteUser(Long id) {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
@@ -96,17 +103,17 @@ public class UserService {
     @Transactional
     public boolean repass(String email, String token) {
         if (email == null && userRepository.findByEmail(email) == null) {
-             return false;
+            return false;
         }
 
         String resetLink = "http://localhost:8080/api/auth/reset-password?token=" + token;
 
         String subject = "Đổi mật khẩu tài khoản của bạn";
         String body = "Đây là link đổi mật khẩu của bạn (Lưu ý không tiết lộ link này ra ngoài!)\n\n"
-                    + "" + resetLink + "\n\n"
-                    + "Vui lòng thực hiện đặt mật khẩu sau 5 phút sẽ hết hiệu lực.\n\n"
-                    + "Trân trọng,\n"
-                    + "Đội ngũ phát triển.";
+                + "" + resetLink + "\n\n"
+                + "Vui lòng thực hiện đặt mật khẩu sau 5 phút sẽ hết hiệu lực.\n\n"
+                + "Trân trọng,\n"
+                + "Đội ngũ phát triển.";
         try {
             emailService.sendEmail(email, subject, body);
         } catch (Exception e) {
@@ -138,8 +145,8 @@ public class UserService {
             return null;
         }
         if (user.getEmail() != null && userRepository.findByEmail(user.getEmail()) != null) {
-             System.err.println("Registration failed: Email '" + user.getEmail() + "' đã tồn tại.");
-             return null;
+            System.err.println("Registration failed: Email '" + user.getEmail() + "' đã tồn tại.");
+            return null;
         }
 
         String generatedPassword = generateRandomPassword(10);
@@ -155,10 +162,10 @@ public class UserService {
         if (user.getEmail() != null && !user.getEmail().isEmpty()) {
             String subject = "Mật khẩu đăng ký tài khoản của bạn";
             String body = "Chào mừng bạn đến với Chapel Store, " + user.getFullName() + "!\n\n"
-                        + "Link thay đổi mật khẩu của bạn là: " + Link + "\n\n"
-                        + "Vui lòng thực hiện thay đổi mật khẩu trong vòng 24 giờ.\n\n"
-                        + "Trân trọng,\n"
-                        + "Đội ngũ phát triển Chapel Store.";
+                    + "Link thay đổi mật khẩu của bạn là: " + Link + "\n\n"
+                    + "Vui lòng thực hiện thay đổi mật khẩu trong vòng 24 giờ.\n\n"
+                    + "Trân trọng,\n"
+                    + "Đội ngũ phát triển Chapel Store.";
             try {
                 emailService.sendEmail(user.getEmail(), subject, body);
             } catch (Exception e) {
@@ -173,6 +180,7 @@ public class UserService {
 
     /**
      * Generates a random alphanumeric password.
+     * 
      * @param length The desired length of the password.
      * @return A randomly generated password.
      */
@@ -189,5 +197,22 @@ public class UserService {
             sb.append(PASSWORD_CHARS.charAt(randomIndex));
         }
         return sb.toString();
+    }
+
+    // Thêm phương thức softDeleteUser
+    public boolean softDeleteUser(Long id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return false;
+        }
+
+        // Kiểm tra nếu là ADMIN thì không cho xóa
+        if (user.getRole() == User.ROLE.ADMIN) {
+            return false;
+        }
+
+        user.setStatus("Deleted");
+        userRepository.save(user);
+        return true;
     }
 }

@@ -54,6 +54,7 @@ public class Order {
         processing,
         shipped,
         delivered,
-        cancelled
+        cancelled,
+        returned
     }
 }

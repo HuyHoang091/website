@@ -29,6 +29,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .cors()
+            .and()
             .csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
@@ -36,10 +38,10 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/api/auth/login", "/api/auth/register", 
                 "/api/auth/forgot-password", "/api/auth/reset-password", "/ws/**", 
-                "/images/**", "/fb/**", "/api/products/info", "/api/categorys/", 
-                "/api/brands/", "/api/products/variants/aggregation", "/api/products/slug/**", "/api/reviews/**",
+                "/images/**", "/fb/**", "/api/products/info", "/api/categorys/**", 
+                "/api/brands/**", "/api/products/variants/aggregation", "/api/products/slug/**", "/api/reviews/**",
                 "/api/reviews/**", "/api/cart/**", "/api/products/all", "/api/products/create",
-                "/api/products/update/**", "/api/products/**", "/api/orders/**", "/api/addresses/**", "/api/payment/**").permitAll()
+                "/api/products/update/**", "/api/products/**", "/api/orders/**", "/api/addresses/**", "/api/payment/**", "/api/discounts/**", "/api/colors/**", "/api/refunds/**", "/api/users/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/map/**")
                 .hasAnyRole("USER", "ADMIN")
                 .antMatchers("/api/chat/**").hasAnyRole("ADMIN", "SALER", "USER")

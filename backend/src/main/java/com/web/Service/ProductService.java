@@ -347,11 +347,12 @@ public class ProductService {
                 String size = variantDto.getSize() != null ? variantDto.getSize().trim().toUpperCase() : "";
                 String colorDb = variantDto.getColor() != null ? variantDto.getColor().trim() : "";
                 String colorSku = removeDiacritics(colorDb).replaceAll("\\s+", "").toUpperCase();
+                String colorSkuClean = colorSku.split(",")[0];
 
                 // Tạo SKU
                 long nextNumber = nextSkuNumber(prefix);
                 String seqStr = String.format("%03d", nextNumber);
-                String sku = String.format("%s%s-%s-%s", prefix, seqStr, size, colorSku);
+                String sku = String.format("%s%s-%s-%s", prefix, seqStr, size, colorSkuClean);
 
                 // Tạo variant
                 ProductVariant variant = new ProductVariant();
@@ -462,6 +463,7 @@ public class ProductService {
                     String size = variantDto.getSize() != null ? variantDto.getSize().trim().toUpperCase() : "";
                     String colorDb = variantDto.getColor() != null ? variantDto.getColor().trim() : "";
                     String colorSku = removeDiacritics(colorDb).replaceAll("\\s+", "").toUpperCase();
+                    String colorSkuClean = colorSku.split(",")[0];
 
                     if (variantDto.getId() != null && variantMap.containsKey(variantDto.getId())) {
                         // Cập nhật variant hiện có
@@ -479,10 +481,10 @@ public class ProductService {
                             if (skuParts.length >= 3 &&
                                     (!skuParts[1].equals(size)
                                             || !removeDiacritics(variant.getColor()).replaceAll("\\s+", "")
-                                                    .toUpperCase().equals(colorSku))) {
+                                                    .toUpperCase().equals(colorSkuClean))) {
                                 long nextNumber = nextSkuNumber(prefix);
                                 String seqStr = String.format("%03d", nextNumber);
-                                variant.setSku(String.format("%s%s-%s-%s", prefix, seqStr, size, colorSku));
+                                variant.setSku(String.format("%s%s-%s-%s", prefix, seqStr, size, colorSkuClean));
                             }
                         }
 

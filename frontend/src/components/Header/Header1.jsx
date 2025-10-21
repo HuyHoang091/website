@@ -36,7 +36,7 @@ export default function Header() {
 
   const fetchCartCount = async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/cart/list/${userId}/items`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/cart/list/${userId}/items`);
       const cartItems = response.data || [];
       setCartCount(cartItems.length);
     } catch (error) {

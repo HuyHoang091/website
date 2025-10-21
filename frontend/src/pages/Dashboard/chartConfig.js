@@ -9,7 +9,7 @@ export const commonLegendConfig = {
 	display: true,
 	position: 'top',
 	labels: {
-		color: '#fff',
+		color: '#000',
 		font: {
 			size: 12,
 			weight: '500'
@@ -19,7 +19,7 @@ export const commonLegendConfig = {
 
 export const commonAxisConfig = {
 	ticks: {
-		color: '#fff',
+		color: '#000',
 		callback: null,
 	},
 	grid: {

@@ -4,7 +4,7 @@ import MapSection from './MapSection';
 import ShippingForm from './ShippingForm';
 import { getShopInfo, matchAddressWithGHN } from './ghnService';
 import axios from 'axios';
-import './ShippingAddress.css';
+import styles from './ShippingAddress.module.css';
 import { ArrowLeftIcon } from '../ShoppingCart/Icons';
 
 const ShippingAddressPage = () => {
@@ -71,9 +71,9 @@ const ShippingAddressPage = () => {
     };
 
     return (
-        <div className="shipping-address-page">
-            <div className="shipping-address-container">
-                <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div className={styles["shipping-address-page"]}>
+            <div className={styles["shipping-address-container"]}>
+                <div className={styles["page-header"]} style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <p>
                         <h1>📍 Chọn địa chỉ giao hàng</h1>
                         <p>Tìm kiếm và chọn địa chỉ chính xác trên bản đồ</p>
@@ -84,17 +84,19 @@ const ShippingAddressPage = () => {
                     </button>
                 </div>
 
-                <div className="content-grid">
+                <div className={styles["content-grid"]}>
                     <MapSection 
                         onAddressSelect={handleAddressSelect}
                         markerPosition={markerPosition}
                         selectedAddress={selectedAddress}
+                        styles={styles}
                     />
                     
                     <ShippingForm 
                         selectedAddress={selectedAddress}
                         shippingInfo={currentShippingInfo}
                         onSubmit={handleFormSubmit}
+                        styles={styles}
                     />
                 </div>
             </div>

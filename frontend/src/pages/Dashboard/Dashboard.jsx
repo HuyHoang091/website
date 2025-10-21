@@ -36,7 +36,6 @@ import {
 import {getOrders} from "../../services/dashboardServices";
 import clsx from "clsx";
 
-
 // Đăng ký các components của Chart.js
 ChartJS.register(
 	CategoryScale,
@@ -51,6 +50,15 @@ ChartJS.register(
 	Filler,
 	zoomPlugin
 );
+
+const generateRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+};
 
 export const Dashboard = () => {
 	// Dữ liệu mẫu cho doanh thu theo tháng
@@ -72,7 +80,7 @@ export const Dashboard = () => {
 		tooltipCallback: createRevenueTooltip,
 		yAxisCallback: createMillionTickCallback,
 		xAxisCallback: (value) => revenueData.map(item => item.month)[value],
-		zoom: zoomOptions,
+		// zoom: zoomOptions,
 	});
 	
 	// Cấu hình biểu đồ doanh thu theo tuần
@@ -81,7 +89,7 @@ export const Dashboard = () => {
 		tooltipCallback: createRevenueTooltip,
 		yAxisCallback: createMillionTickCallback,
 		xAxisCallback: (v) => weeklyData.map(item => item.day)[v],
-		zoom: zoomOptions,
+		// zoom: zoomOptions,
 	});
 	
 	// Cấu hình biểu đồ sản phẩm bán chạy (Horizontal Bar)
@@ -90,7 +98,7 @@ export const Dashboard = () => {
 		legend: {display: false},
 		tooltipCallback: createSalesCountTooltip,
 		indexAxis: 'y',
-		zoom: zoomOptions,
+		// zoom: zoomOptions,
 	});
 	
 	// Cấu hình biểu đồ phân loại danh mục (Pie Chart)
@@ -108,21 +116,57 @@ export const Dashboard = () => {
 	const ordersChartData = createRevenueData({revenueData})
 	const ordersChartOptions = createChartOptions({
 		tooltipCallback: createOrdersTooltip,
-		zoom: zoomOptions,
+		// zoom: zoomOptions,
 	});
 	
 	useEffect(() => {
-		handleGetOrders().then(r => r);
+		handleGetOrders();
 	}, []);
 	
 	const handleGetOrders = async () => {
-		try {
-			const response = await getOrders();
-			
-		} catch (error) {
-			console.error('Error fetching orders:', error);
-		}
-	}
+    try {
+        const data = await getOrders();
+
+        // Cập nhật dữ liệu từ API vào state
+        setRevenueData(data.monthlyRevenueAndOrderCount.map(item => ({
+            month: item.month,
+            revenue: item.revenue,
+            orders: item.orderCount
+        })));
+
+        setTopProductsData(data.top6BestSellingProducts.map(item => ({
+            name: item.productName,
+            sales: item.totalSold
+        })));
+
+        setCategoryData(data.revenueByCategory.map(item => ({
+            name: item.categoryName,
+            value: item.revenue,
+            color: generateRandomColor() // Tạo màu ngẫu nhiên cho biểu đồ
+        })));
+
+        setWeeklyData(data.revenueLast7Days.map(item => ({
+            day: item.date,
+            revenue: item.revenue
+        })));
+
+        const totalRevenue = data.monthlyRevenue.reduce((sum, item) => sum + item.revenue, 0);
+        const totalOrders = data.monthlyRevenue.reduce((sum, item) => sum + item.orderCount, 0);
+        const avgOrderValue = totalRevenue / totalOrders;
+
+        // Định dạng giá trị
+        const formatter = new Intl.NumberFormat('vi-VN');
+
+        setStats({
+            totalRevenue: formatter.format(totalRevenue), // Định dạng doanh thu
+            totalOrders: totalOrders, // Số lượng đơn hàng không cần định dạng
+            totalCustomers: data.customerGrowth.reduce((sum, item) => sum + item.customerCount, 0),
+            avgOrderValue: formatter.format(avgOrderValue.toFixed(2)) // Định dạng giá trị trung bình
+        });
+    } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+    }
+};
 	
 	const renderSummaryCard = ({title, summaryValue, subtitle, icon, subtitleType = "positive"}) => {
 		return (

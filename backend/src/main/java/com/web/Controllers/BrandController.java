@@ -18,4 +18,24 @@ public class BrandController {
     public List<Brand> getAllBrands() {
         return brandService.getAllBrands();
     }
+
+    @PostMapping("/create")
+    public Brand createBrand(@RequestBody Brand brand) {
+        return brandService.createBrand(brand);
+    }
+
+    @GetMapping("/{id}")
+    public Brand getBrandById(@PathVariable Long id) {
+        return brandService.getBrandById(id);
+    }
+
+    @PutMapping("/{id}/update")
+    public Brand updateBrand(@PathVariable Long id, @RequestBody Brand brand) {
+        return brandService.updateBrand(id, brand);
+    }
+
+    @DeleteMapping("/{id}/delete")
+    public void deleteBrand(@PathVariable Long id) {
+        brandService.deleteBrand(id);
+    }
 }

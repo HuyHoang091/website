@@ -63,7 +63,7 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
       setLoading(true);
       try {
         // Fetch customer info
-        const customerResponse = await axios.get(`http://localhost:8080/api/addresses/user/${userId}`);
+        const customerResponse = await axios.get(`${process.env.REACT_APP_API_URL}/api/addresses/user/${userId}`);
         if (customerResponse.data.length === 0) {
           setCustomer({
             fullName: userName || 'Khách hàng mới',
@@ -78,7 +78,7 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
         }
 
         // Fetch customer orders
-        const ordersResponse = await axios.get(`http://localhost:8080/api/orders/user/${userId}`);
+        const ordersResponse = await axios.get(`${process.env.REACT_APP_API_URL}/api/orders/user/${userId}`);
         setOrders(ordersResponse.data.reverse());
         
         // Tính toán số đơn hoàn thành và hủy
@@ -118,7 +118,7 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
       setSearching(true);
       searchTimeout.current = setTimeout(async () => {
         try {
-          const response = await axios.get(`http://localhost:8080/api/products/info`);
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/products/info`);
           // Lọc các sản phẩm có slug chứa từ khóa tìm kiếm
           const filteredResults = response.data.filter(product => 
             product.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -147,7 +147,7 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
   const handleSelectProduct = async (slug) => {
     try {
       setSearching(true);
-      const response = await axios.get(`http://localhost:8080/api/products/slug/${slug}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/products/slug/${slug}`);
       const product = response.data;
       
       setSelectedProduct(product);
@@ -155,7 +155,7 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
       setSearchResults([]); // Xóa kết quả tìm kiếm
       
       // Lấy danh sách biến thể sản phẩm từ API inventory
-      const inventoryResponse = await axios.get(`http://localhost:8080/api/products/inventory`);
+      const inventoryResponse = await axios.get(`${process.env.REACT_APP_API_URL}/api/products/inventory`);
       const variants = inventoryResponse.data.filter(v => v.productId === product.id);
       setProductVariants(variants);
       
@@ -241,7 +241,7 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
     switch (status?.toLowerCase()) {
       case 'pending': return 'Chờ xử lý';
       case 'processing': return 'Đang xử lý';
-      case 'shipped': return 'Đã gửi';
+      case 'shipped': return 'Đang vận chuyển';
       case 'delivered': return 'Đã giao';
       case 'paid': return 'Đã thanh toán';
       case 'cancelled': return 'Đã hủy';
@@ -317,7 +317,7 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
       };
 
       // Gọi API tạo đơn hàng
-      await axios.post('http://localhost:8080/api/orders/create', payload);
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/orders/create`, payload);
       
       // Reset form và giỏ hàng
       setCartItems([]);
@@ -336,7 +336,7 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
       setProductVariants([]);
       
       // Tải lại danh sách đơn hàng
-      const ordersResponse = await axios.get(`http://localhost:8080/api/orders/user/${userId}`);
+      const ordersResponse = await axios.get(`${process.env.REACT_APP_API_URL}/api/orders/user/${userId}`);
       setOrders(ordersResponse.data.reverse());
       
       // Cập nhật thống kê
@@ -367,7 +367,7 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/addresses/user/${userId}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/addresses/user/${userId}`);
         setAddresses(response.data);
         // Set customer là địa chỉ đầu tiên (mặc định)
         if (response.data.length > 0) {
@@ -445,9 +445,9 @@ const CustomerInfo = ({ userId, userName, isInline = false }) => {
         priceShip: newAddress.priceShip
       };
       
-      const response = await axios.post('http://localhost:8080/api/addresses/create', payload);
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/addresses/create`, payload);
       
-      const updatedAddresses = await axios.get(`http://localhost:8080/api/addresses/user/${userId}`);
+      const updatedAddresses = await axios.get(`${process.env.REACT_APP_API_URL}/api/addresses/user/${userId}`);
       setAddresses(updatedAddresses.data);
       
       setCustomer(response.data);

@@ -4,7 +4,7 @@ import "../../assets/styles/components/QuickCategories/QuickCategories.css"
 const QuickCategories = () => {
   return (
     <section class="quick-categories">
-        <div class="container">
+        <div class="container-quick-categories">
             <div class="category-grid">
                 <div class="category-card">
                     <div class="category-icon pink">👚</div>

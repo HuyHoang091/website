@@ -7,7 +7,7 @@ import ShippingMethod from './ShippingMethod';
 import PaymentMethod from './PaymentMethod';
 import OrderSummary from './OrderSummary';
 import axios from 'axios';
-import '../../assets/styles/components/Order/CheckoutPage.css';
+import '../../assets/styles/components/Checkout/CheckoutPage.css';
 
 const CheckoutPage = () => {
     const location = useLocation();
@@ -234,10 +234,10 @@ const CheckoutPage = () => {
             {/* Bảng xác nhận */}
             {showConfirmation && (
                 <div className="confirmation-modal">
-                    <div className="modal-content">
+                    <div className="modal-content-checkout">
                         <h3>Xác nhận đặt hàng</h3>
                         <p>Bạn có chắc chắn muốn đặt hàng với tổng số tiền là {total.toLocaleString('vi-VN')} VND không?</p>
-                        <div className="modal-actions">
+                        <div className="modal-actions-checkout">
                             <button onClick={confirmOrder} className="confirm-btn">Xác nhận</button>
                             <button onClick={cancelOrder} className="cancel-btn">Hủy</button>
                         </div>

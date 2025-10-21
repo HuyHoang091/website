@@ -24,9 +24,11 @@ public class User {
     private String passwordHash;
     private String fullName;
     private String phone;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ROLE role = ROLE.USER;
+
     private LocalDateTime createdAt;
     private String status;
 
@@ -38,6 +40,6 @@ public class User {
     }
     public enum ROLE {
         USER, SALER,
-        ADMIN
+        ADMIN, MANAGER
     }
 }

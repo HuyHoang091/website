@@ -162,7 +162,7 @@ h1 {
     }
 }
 
-.btn-primary {
+.btn-primary-hero {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
     color: white;
     padding: 16px 40px;
@@ -175,7 +175,7 @@ h1 {
     box-shadow: 0 0 20px rgba(102, 126, 234, 0.5), 0 0 40px rgba(118, 75, 162, 0.3);
 }
 
-.btn-secondary {
+.btn-secondary-hero {
     background: rgba(255, 255, 255, 0.1);
     color: white;
     padding: 16px 40px;
@@ -188,7 +188,7 @@ h1 {
     transition: transform 0.3s;
 }
 
-.btn-primary:hover, .btn-secondary:hover {
+.btn-primary-hero:hover, .btn-secondary-hero:hover {
     transform: scale(1.05);
 }
 
@@ -253,12 +253,12 @@ h1 {
     text-align: center;
 }
 
-.stat-value {
+.stat-value-hero {
     font-size: 28px;
     font-weight: bold;
 }
 
-.stat-label {
+.stat-label-hero {
     font-size: 14px;
     opacity: 0.9;
 }
@@ -297,7 +297,7 @@ h1 {
     flex-direction: column;
     gap: 10px;
   }
-  .btn-primary, .btn-secondary {
+  .btn-primary-hero, .btn-secondary-hero {
     font-size: 15px;
     padding: 12px 0;
     width: 100%;

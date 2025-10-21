@@ -17,7 +17,7 @@ const MapIcon = () => (
     </svg>
 );
 
-const MapSection = ({ onAddressSelect, markerPosition, selectedAddress }) => {
+const MapSection = ({ onAddressSelect, markerPosition, selectedAddress, styles }) => {
     const mapRef = useRef(null);
     const mapInstanceRef = useRef(null);
     const searchMarkerRef = useRef(null);
@@ -110,15 +110,15 @@ const MapSection = ({ onAddressSelect, markerPosition, selectedAddress }) => {
     };
 
     return (
-        <div className="map-section">
-            <div className="section-header">
+        <div className={styles["map-section"]}>
+            <div className={styles["section-header"]}>
                 <MapIcon />
                 <h2>Bản đồ</h2>
             </div>
 
-            <AddressSearch onAddressSelect={handleAddressSelected} selectedAddress={selectedAddress} />
+            <AddressSearch onAddressSelect={handleAddressSelected} selectedAddress={selectedAddress} styles={styles} />
 
-            <div ref={mapRef} className="map-container" />
+            <div ref={mapRef} className={styles["map-container"]} />
         </div>
     );
 };

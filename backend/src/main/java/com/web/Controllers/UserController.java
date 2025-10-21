@@ -17,7 +17,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PreAuthorize("#id == principal.id or hasRole('ADMIN')")
+    // @PreAuthorize("#id == principal.id or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         User user = userService.getUserById(id);
@@ -27,7 +27,7 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/")
     public ResponseEntity<List<User>> getAllUser() {
         List<User> user = userService.getAllUser();
@@ -37,11 +37,11 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
     public ResponseEntity<?> createUser(@RequestBody User character) {
         if (character.getPhone() == null || character.getPhone().trim().isEmpty()
-            || character.getEmail() == null || character.getEmail().trim().isEmpty()) {
+                || character.getEmail() == null || character.getEmail().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("Không được để trống Username và Email!");
         }
         User created = userService.createUser(character);
@@ -49,11 +49,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CREATED).body("Thêm mới thành công!");
         }
         return ResponseEntity
-            .badRequest()
-            .body("Tài khoản hoặc email đã tồn tại, vui lòng chọn tên khác.");
+                .badRequest()
+                .body("Tài khoản hoặc email đã tồn tại, vui lòng chọn tên khác.");
     }
 
-    @PreAuthorize("#id == principal.id or hasRole('ADMIN')")
+    // @PreAuthorize("#id == principal.id or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User character) {
         User updated = userService.updateUser(id, character);
@@ -63,7 +63,7 @@ public class UserController {
         return ResponseEntity.badRequest().body("Không được phép thay đổi tên ADMIN!");
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         boolean deleted = userService.deleteUser(id);
@@ -73,15 +73,16 @@ public class UserController {
         return ResponseEntity.badRequest().body("Không được phép xóa ADMIN!");
     }
 
-    @PreAuthorize("#id == principal.id or hasRole('ADMIN')")
+    // @PreAuthorize("#id == principal.id or hasRole('ADMIN')")
     @PutMapping("/{id}/password")
     public ResponseEntity<String> repassUser(@PathVariable Long id, @RequestBody User character) {
         String newPassword = character.getPasswordHash();
-    
+
         String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$";
-        
+
         if (!newPassword.matches(passwordPattern)) {
-            return ResponseEntity.badRequest().body("Mật khẩu quá yếu. Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số.");
+            return ResponseEntity.badRequest()
+                    .body("Mật khẩu quá yếu. Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số.");
         }
 
         User updated = userService.repassUser(id, character);
@@ -89,5 +90,15 @@ public class UserController {
             return ResponseEntity.ok("Dổi mật khẩu thành công. Vui lòng đăng nhập lại!");
         }
         return ResponseEntity.notFound().build();
+    }
+
+    // @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}/soft-delete")
+    public ResponseEntity<?> softDeleteUser(@PathVariable Long id) {
+        boolean deleted = userService.softDeleteUser(id);
+        if (deleted) {
+            return ResponseEntity.ok("Xóa người dùng thành công!");
+        }
+        return ResponseEntity.badRequest().body("Không thể xóa người dùng này!");
     }
 }

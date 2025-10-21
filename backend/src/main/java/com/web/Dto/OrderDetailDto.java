@@ -7,26 +7,34 @@ import com.web.Model.Order;
 
 public class OrderDetailDto {
     private long id;
+    private long userId;
+    private long addressId;
     private String fullName;
+    private String phone;
     private String fullAddress;
     private String orderNumber;
     private Order.STATUS status;
     private String source;
     private BigDecimal totalAmount;
     private String createBy;
+    private String note;
     private LocalDateTime createdAt;
 
     // Constructor matching JPQL constructor expression types
-    public OrderDetailDto(long id, String fullName, String fullAddress, String orderNumber, String source,
-            Order.STATUS status, BigDecimal totalAmount, String createBy, LocalDateTime createdAt) {
+    public OrderDetailDto(long id, long userId, long addressId, String fullName, String phone, String fullAddress, String orderNumber, String source,
+            Order.STATUS status, BigDecimal totalAmount, String createBy, String note, LocalDateTime createdAt) {
         this.id = id;
+        this.userId = userId;
+        this.addressId = addressId;
         this.fullName = fullName;
+        this.phone = phone;
         this.fullAddress = fullAddress;
         this.orderNumber = orderNumber;
         this.source = source;
         this.status = status;
         this.totalAmount = totalAmount;
         this.createBy = createBy;
+        this.note = note;
         this.createdAt = createdAt;
     }
 
@@ -35,8 +43,20 @@ public class OrderDetailDto {
         return id;
     }
 
+    public long getUserId() {
+        return userId;
+    }
+
+    public long getAddressId() {
+        return addressId;
+    }
+
     public String getFullName() {
         return fullName;
+    }
+
+    public String getPhone() {
+        return phone;
     }
 
     public String getFullAddress() {
@@ -61,6 +81,10 @@ public class OrderDetailDto {
 
     public String getCreateBy() {
         return createBy;
+    }
+
+    public String getNote() {
+        return note;
     }
 
     public LocalDateTime getCreatedAt() {

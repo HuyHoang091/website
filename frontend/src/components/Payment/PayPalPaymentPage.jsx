@@ -55,6 +55,9 @@ const PayPalPaymentPage = () => {
             const userId = JSON.parse(localStorage.getItem("user")).id;
             const name = JSON.parse(localStorage.getItem("user")).fullName;
             const addressId = shippingAddress.id;
+
+            const captureId = details.purchase_units[0].payments.captures[0].id;
+            console.log('Payment capture ID:', captureId);
             // Tạo đơn hàng
             const orderResponse = await axios.post(`${process.env.REACT_APP_API_URL}/api/orders/create`, {
                 userId: userId,
@@ -77,7 +80,8 @@ const PayPalPaymentPage = () => {
                 order: { id: orderId },
                 method: paymentMethod,
                 amount: vndAmount,
-                status: 'success'
+                status: 'success',
+                captureId: captureId
             });
 
             console.log('Payment created successfully:', paymentResponse.data);

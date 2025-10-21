@@ -44,4 +44,8 @@ public class DiscountService {
         newDiscount.setDiscountId(oldDiscount.getDiscountId());
         return discountRepository.save(newDiscount);
     }
+
+    public Discount getDiscountById(Long id) {
+        return discountRepository.findById(id).orElse(null);
+    }
 }
