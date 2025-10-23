@@ -36,3 +36,7 @@ export async function login(username, password) {
 export const register = (payload) => {
 	return axios.post(`${process.env.REACT_APP_API_URL}/api/auth/register`, payload)
 }
+
+export const forgotPassword = (payload) => {
+    return axios.post(`${process.env.REACT_APP_API_URL}/api/auth/forgot-password`, payload)
+}

@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import Loading from "../components/Loading/Loading";
 import Layout from "../layouts/Layout";
 import LoginPage from "../pages/Auth/LoginPage";
-import ClientSocket from "../utils/ClientSocket";
 import ImageSearch from "../pages/ImageSearch";
 import CustomerChatWindow from "../components/Chat/CustomerChatWindow";
 import {ROUTE_PATHS} from "../utils/appConst";
@@ -23,11 +22,16 @@ import AdminLayout from "../layouts/AdminLayout/AdminLayout";
 import PromotionManager from "../pages/PromotionManager";
 import ContentGenerator from "../components/Admin/Content/ContentGenerator";
 import UserManagementPage from "../components/Admin/Users/UserManagementPage";
-// import BrandManager from "../components/Admin/Brands/BrandManager";
-// import CategoryManager from "../components/Admin/Categories/CategoryManager";
-// import ColorManager from "../components/Admin/Colors/ColorManager";
 import OrdersPageAdmin from "../components/Admin/Orders/OrdersPage";
 import RefundManagementPage from "../components/Admin/Refunds/RefundManagementPage";
+import RAGManager from "../components/Admin/RAG/RAGManager";
+import OrderStatistics from "../components/Admin/OrderStatistics/OrderStatistics";
+import CustomerStats from "../components/Admin/CustomerStats/CustomerStats";
+import SalerLayout from "../layouts/SalerLayout/SalerLayout";
+import ForgotPage from "../pages/Auth/ForgotPage";
+import ConfigManager from "../pages/Admin/ConfigManager";
+
+import ChatPage from "../pages/Chat/ChatPage";
 
 const LandingPage = React.lazy(() =>
   new Promise((resolve) => {
@@ -35,11 +39,11 @@ const LandingPage = React.lazy(() =>
   })
 );
 
-const ChatPage = React.lazy(() =>
-  new Promise((resolve) => {
-    setTimeout(() => resolve(import("../pages/Chat/ChatPage")), 2000);
-  })
-);
+// const ChatPage = React.lazy(() =>
+//   new Promise((resolve) => {
+//     setTimeout(() => resolve(import("../pages/Chat/ChatPage")), 2000);
+//   })
+// );
 
 const pageTransition = {
   initial: { opacity: 0, y: 20 },
@@ -69,6 +73,10 @@ const appRoutes = [
 		path: ROUTE_PATHS.REGISTER,
 		element: <RegisterPage />,
 	},
+  {
+		path: ROUTE_PATHS.FORGOT_PASSWORD,
+		element: <ForgotPage />,
+	}
 ];
 
 const AppRoutes = () => {
@@ -117,6 +125,17 @@ const AppRoutes = () => {
             <Layout>
               <motion.div {...pageTransition}>
                 <OrdersPage />
+              </motion.div>
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/shop/:routeType"
+          element={
+            <Layout>
+              <motion.div {...pageTransition}>
+                <ShopPage />
               </motion.div>
             </Layout>
           }
@@ -189,9 +208,86 @@ const AppRoutes = () => {
                 </motion.div>
               }
             />
+            <Route
+              path="rag"
+              element={
+                <motion.div {...pageTransition}>
+                  <RAGManager />
+                </motion.div>
+              }
+            />
+            <Route
+              path="order-statistics"
+              element={
+                <motion.div {...pageTransition}>
+                  <OrderStatistics />
+                </motion.div>
+              }
+            />
+            <Route
+              path="customer-stats"
+              element={
+                <motion.div {...pageTransition}>
+                  <CustomerStats />
+                </motion.div>
+              }
+            />
+            <Route
+              path="config"
+              element={
+                <motion.div {...pageTransition}>
+                  <ConfigManager />
+                </motion.div>
+              }
+            />
             {/* Thêm các route admin khác ở đây */}
           </Route>
         {/* END Admin */}
+
+        {/* Saler */}
+          <Route path="/saler" element={<SalerLayout />}>
+            <Route
+              path="chat"
+              element={
+                <motion.div {...pageTransition}>
+                  <ChatPage />
+                </motion.div>
+              }
+            />
+            <Route
+              path="dashboard"
+              element={
+                <motion.div {...pageTransition}>
+                  <Dashboard />
+                </motion.div>
+              }
+            />
+            <Route
+              path="search"
+              element={
+                <motion.div {...pageTransition}>
+                  <ImageSearch />
+                </motion.div>
+              }
+            />
+            <Route
+              path="order-statistics"
+              element={
+                <motion.div {...pageTransition}>
+                  <OrderStatistics />
+                </motion.div>
+              }
+            />
+            <Route
+              path="customer-stats"
+              element={
+                <motion.div {...pageTransition}>
+                  <CustomerStats />
+                </motion.div>
+              }
+            />
+          </Route>
+        {/* END Saler */}
 
         <Route
           path="/payment"
@@ -228,15 +324,7 @@ const AppRoutes = () => {
             </motion.div>
           }
         />
-
-        <Route
-          path="/chat"
-          element={
-            <motion.div {...pageTransition}>
-              <ClientSocket />
-            </motion.div>
-          }
-        />
+        
         <Route
           path="/chatuser"
           element={
@@ -248,15 +336,13 @@ const AppRoutes = () => {
         <Route
           path="/search"
           element={
-            <Layout>
-                <motion.div {...pageTransition}>
-                    <ImageSearch />
-                </motion.div>
-            </Layout>
+            <motion.div {...pageTransition}>
+                <ImageSearch />
+            </motion.div>
           }
         />
         <Route
-          path="/test"
+          path="/chatsale"
           element={
             <Suspense fallback={<Loading message="Đang tải cuộc trò chuyện..." />}>
                 <motion.div {...pageTransition}>

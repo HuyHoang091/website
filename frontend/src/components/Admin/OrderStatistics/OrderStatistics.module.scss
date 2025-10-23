@@ -1,0 +1,87 @@
+.order-statistics-container {
+  .dashboard-header {
+    margin-bottom: 24px;
+
+    display: none;
+    
+    .dashboard-title {
+      font-size: 24px;
+      color: #333;
+      margin: 0;
+    }
+    
+    .dashboard-subtitle {
+      color: #666;
+      margin-top: 4px;
+    }
+  }
+  
+  .filter-paper {
+    padding: 24px;
+    margin-bottom: 24px;
+    
+    .date-picker {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+  }
+  
+  .stat-card {
+    padding: 24px;
+    height: 100%;
+    
+    .stat-content {
+      .stat-label {
+        color: #666;
+        margin-bottom: 8px;
+      }
+      
+      .stat-value {
+        font-weight: 600;
+        color: #333;
+      }
+    }
+  }
+  
+  .chart-card {
+    padding: 24px;
+    margin-bottom: 24px;
+    
+    .chart-title {
+      margin-bottom: 16px;
+      font-size: 18px;
+      font-weight: 500;
+    }
+    
+    .chart-wrapper {
+      height: 400px;
+      position: relative;
+    }
+  }
+
+  .chart-card canvas {
+    width: 100% !important;
+  }
+  
+  .table-paper {
+    padding: 24px;
+    margin-top: 24px;
+
+    .positive-change {
+      color: green;
+      font-weight: bold;
+    }
+
+    .negative-change {
+      color: red;
+      font-weight: bold;
+    }
+
+    .neutral-change {
+      color: black;
+    }
+  }
+}

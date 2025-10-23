@@ -2,3 +2,43 @@
 # applications.properties
 # # Except this file
 # !.gitignore
+
+spring.cloud.config.enabled=false
+
+spring.datasource.url=jdbc:mysql://localhost:3306/test1
+spring.datasource.username=root
+spring.datasource.password=
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+# Email Configuration (for Gmail SMTP example)
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=clechannd0917834505@gmail.com
+spring.mail.password=femk cplq ltlr lerk
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.starttls.required=true
+
+# PayPal Configuration
+paypal.client-id=Af37P1fTOc_4eTMaNyALE4LHuTGgPA093G-V6gwAryBTVN_EvswbY0Mlz513LA-L92SYXtcvyH_iU5V-
+paypal.secret=EG64__9IbxzoJlz4Ihek40JfMSctmXayIhn2ObHjs1PVKbhYiCw71hYb36auo6Fr9oXAJBFl97BGzqpg
+paypal.base-url=https://api-m.sandbox.paypal.com
+
+#Security
+jwt.secret=1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p
+app.code=gamecuaHoang
+app.part1=game
+app.repass=12ajdkajwhjkjkahd
+admin.secret=2bnjsdfkll1234klooSSoof
+hash.code=g0rt6x2XM1/3VLgzlGvQJVoPP0wJkpwe5MqgKOmRSXo=
+
+key.secret=asdjooiqwdskajkdjwijakdkljsa1543
+
+logging.file.name=logs/app.log
+logging.level.root=WARN
+
+server.address=0.0.0.0
+
+# Expose refresh endpoint
+management.endpoints.web.exposure.include=refresh

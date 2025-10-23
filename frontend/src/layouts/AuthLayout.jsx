@@ -3,7 +3,7 @@ import styles from '../assets/styles/layouts/LoginPage.module.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import { setupLive2D, handleReload } from "../utils/Live2D";
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 
 const AuthLayout = ({
   title,
@@ -20,6 +20,8 @@ const AuthLayout = ({
   a,
 	href,
 }) => {
+  const location = useLocation();
+
   React.useEffect(() => {
     setupLive2D(styles);
   }, []);
@@ -64,6 +66,9 @@ const AuthLayout = ({
               <div className={styles.question}>
                 <span>{text}</span>
                 <Link to={href}>{a}</Link>
+              </div>
+              <div className={styles.question} style={{ display: location.pathname === '/forgot-password' || location.pathname === '/register' ? 'none' : 'block' }}>
+                <Link to="/forgot-password">Quên mật khẩu?</Link>
               </div>
             </form>
           </div>

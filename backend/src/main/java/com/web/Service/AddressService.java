@@ -24,6 +24,10 @@ public class AddressService {
 
     @Cacheable(value = "addresses", key = "#userId")
     public List<Address> getAddressByUserId(Long userId, Boolean isDefault) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            return addressRepository.findByCustomerIdAndIsDefault(userId, isDefault);
+        }
         return addressRepository.findByUser_IdAndIsDefault(userId, isDefault);
     }
     
@@ -45,6 +49,14 @@ public class AddressService {
         if (user == null) {
             address.setCustomerId(userId);
             address.setUser(null);
+
+            List<Address> list = addressRepository.findByCustomerIdAndIsDefault(userId, true);
+            for (Address addr : list) {
+                if (Boolean.TRUE.equals(addr.getIsDefault())) {
+                    addr.setIsDefault(false);
+                }
+            }
+            addressRepository.saveAll(list);
         } else {
             address.setUser(user);
 

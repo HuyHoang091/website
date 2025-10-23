@@ -557,12 +557,16 @@ function PromotionManager() {
                           className={
                             styles["card-status"] +
                             " " +
-                            (promotion.status === "active"
+                            (new Date(promotion.endDate) < new Date()
+                              ? styles["card-status-expired"]
+                              : promotion.status === "active"
                               ? styles["card-status-active"]
                               : styles["card-status-inactive"])
                           }
                         >
-                          {promotion.status === "active"
+                          {new Date(promotion.endDate) < new Date()
+                            ? "❌ Đã kết thúc"
+                            : promotion.status === "active"
                             ? "✅ Hoạt động"
                             : "❌ Tạm dừng"}
                         </span>

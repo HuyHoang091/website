@@ -1,4 +1,5 @@
 import React, { useEffect, useState }  from "react";
+import { useNavigate } from 'react-router-dom';
 import styles from "../assets/styles/layouts/SaleLayout.module.css"
 
 export default function SaleLayout({children, endTime}) {
@@ -7,6 +8,7 @@ export default function SaleLayout({children, endTime}) {
         hours: 12,
         minutes: 34,
     });
+    const navigate = useNavigate();
 
     useEffect(() => {
         const targetDate = endTime ? new Date(endTime) : new Date(Date.now() + 24 * 60 * 60 * 1000);
@@ -55,7 +57,7 @@ export default function SaleLayout({children, endTime}) {
             <div className={styles.product}>
                 {children}
             </div>
-            <button>Xem thêm >></button>
+            <button onClick={() => navigate('/shop/sale')}>Xem thêm >></button>
         </section>
     );
 }

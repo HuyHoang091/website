@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.web.Model.Order;
+import com.web.Model.User;
+import com.web.Repository.OrderRepository;
+import com.web.Repository.UserRepository;
 import com.web.Service.OrderService;
 import com.web.Service.OrderCancelRequestService;
 import com.web.Service.OrderItemService;
@@ -24,13 +27,23 @@ public class OrderController {
     private OrderService orderService;
 
     @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
     private OrderItemService orderItemService;
 
     @Autowired
     private OrderCancelRequestService cancelRequestService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @GetMapping("user/{userId}")
     public List<Order> getOrdersByUserId(@PathVariable Long userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            return orderRepository.findByCustomerFB(userId);
+        }
         return orderService.getOrdersByUserId(userId);
     }
 
@@ -72,6 +85,17 @@ public class OrderController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(updatedOrder);
+    }
+
+    @GetMapping("/stats/daily")
+    public ResponseEntity<?> getOrderStatsByDate() {
+        try {
+            List<Map<String, Object>> stats = orderRepository.findOrderStatsByDate();
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving order stats: " + e.getMessage());
+        }
     }
 
     /**

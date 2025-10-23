@@ -172,9 +172,11 @@ class HaystackRAGService:
             final_docs = run_result.get("reranker", {}).get("documents", [])
             prompt = run_result.get("qa_prompt", {}).get("prompt", "")
             
+            filtered_docs = [doc for doc in final_docs if (doc.meta or {}).get("_enabled", True)]
+
             # Format document results
-            documents = self._format_documents(final_docs)
-            
+            documents = self._format_documents(filtered_docs)
+
             return {
                 "reformulated_query": reformulated,
                 "documents": documents,

@@ -104,10 +104,22 @@ public class ChatController {
         return ResponseEntity.ok(top6BestSellingProducts);
     }
 
+    @GetMapping("/test6/{fb_id}")
+    public ResponseEntity<List<com.web.Model.Order>> getTest6(@PathVariable Long fb_id, Principal principal) {
+        List<com.web.Model.Order> orders = orderRepository.findByCustomerFB(fb_id);
+        return ResponseEntity.ok(orders);
+    }
+
     @GetMapping("/test5")
     public ResponseEntity<List<Map<String, Object>>> getTest5(Principal principal) {
         List<Map<String, Object>> monthlyRevenueAndOrderCount = orderRepository.findMonthlyRevenueAndOrderCountForCurrentYear();
         return ResponseEntity.ok(monthlyRevenueAndOrderCount);
+    }
+
+    @GetMapping("/customer-stats")
+    public ResponseEntity<List<Map<String, Object>>> getCustomerStats(Principal principal) {
+        List<Map<String, Object>> dailyCustomerStats = chatRepository.findDailyCustomerStats();
+        return ResponseEntity.ok(dailyCustomerStats);
     }
 
     @GetMapping("/dashboard")

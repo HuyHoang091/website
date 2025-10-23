@@ -1,0 +1,374 @@
+.container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.pageTitle {
+    margin-bottom: 2rem;
+    display: none;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+.titleIcon {
+    margin-right: 1rem;
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.tabContainer {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+    background: white;
+    transition: box-shadow 0.3s ease;
+}
+
+.tabContainer:hover {
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+}
+
+.tabs {
+    background: linear-gradient(to right, #f8f9fa 0%, #ffffff 100%);
+    border-bottom: 2px solid #e9ecef;
+    position: relative;
+}
+
+.tabs::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.tabs:hover::after {
+    transform: scaleX(1);
+}
+
+.tab {
+    min-height: 72px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.tab:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+}
+
+.tab.Mui-selected {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.tabContent {
+    padding: 2rem;
+    background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
+}
+
+.sectionTitle {
+    margin-bottom: 1.5rem;
+    color: #2d3748;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.75rem;
+    font-weight: 600;
+    font-size: 1.25rem;
+    position: relative;
+}
+
+.sectionTitle::before {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 2px;
+}
+
+.textField {
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.textField:hover {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.textField.Mui-focused {
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.15);
+}
+
+.switchControl {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 0.75rem;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.switchControl:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.actionButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.refreshButton {
+    border: 2px solid #667eea;
+    color: #667eea;
+    font-weight: 500;
+    padding: 0.625rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    text-transform: none;
+}
+
+.refreshButton:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+.saveButton {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 500;
+    padding: 0.625rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+    transition: all 0.3s ease;
+    text-transform: none;
+}
+
+.saveButton:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b3fa0 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.35);
+}
+
+.saveButton:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+}
+
+.loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.2s ease-in;
+}
+
+.loadingOverlay .MuiCircularProgress-root {
+    color: #667eea;
+}
+
+/* Card-like sections */
+.formSection {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.formSection:hover {
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .pageTitle {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .titleIcon {
+        font-size: 2rem;
+        margin-right: 0.75rem;
+    }
+    
+    .tabContent {
+        padding: 1rem;
+    }
+    
+    .actionButtons {
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+    }
+    
+    .refreshButton,
+    .saveButton {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 0.75rem;
+    }
+    
+    .tabContainer {
+        border-radius: 0.75rem;
+    }
+    
+    .tab {
+        min-height: 60px;
+        font-size: 0.875rem;
+    }
+    
+    .sectionTitle {
+        font-size: 1.125rem;
+    }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+    .tabContainer {
+        background: #1a202c;
+    }
+    
+    .tabs {
+        background: linear-gradient(to right, #2d3748 0%, #1a202c 100%);
+        border-bottom-color: #4a5568;
+    }
+    
+    .tabContent {
+        background: linear-gradient(to bottom, #1a202c 0%, #2d3748 100%);
+    }
+    
+    .sectionTitle {
+        color: #e2e8f0;
+        border-bottom-color: #4a5568;
+    }
+    
+    .textField {
+        background-color: #2d3748;
+    }
+    
+    .switchControl {
+        background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        border-color: #4a5568;
+    }
+    
+    .formSection {
+        background: #2d3748;
+    }
+}
+
+.infoBox {
+    background-color: #f5f9ff;
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 4px solid #1976d2;
+    margin-top: 8px;
+}
+
+.infoBox a {
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.infoBox a:hover {
+    text-decoration: underline;
+}
+
+/* Thêm style nếu chưa có */
+
+.actionButtons {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.actionButton {
+    margin-left: 8px;
+}
+
+.statusIcon {
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+.infoBox {
+    background-color: #f5f9ff;
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 4px solid #1976d2;
+    margin-top: 8px;
+}
+
+.infoBox a {
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.infoBox a:hover {
+    text-decoration: underline;
+}

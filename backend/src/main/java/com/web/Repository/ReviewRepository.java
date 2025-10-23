@@ -20,4 +20,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
            "SUM(CASE WHEN r.rating = 1 THEN 1 ELSE 0 END) as rating1 " +
            "FROM Review r WHERE r.product.slug = :slug")
     RatingDto getReviewStatisticsByProductSlug(@Param("slug") String slug);
+
+    List<Review> findByUser_IdAndProduct_Id(Long userId, Long productId);
 }

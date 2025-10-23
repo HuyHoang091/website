@@ -72,24 +72,97 @@ export const getColorCode = (color) => {
 	return COLOR_CODES[color] || '#cccccc';
 };
 
-export const checkPriceRange = ({filters, product}) => {
-	let matchesPrice = false;
-	filters.priceRanges.forEach(range => {
-		switch (range) {
-			case 'under-300':
-				if (product.price < 300000) matchesPrice = true;
-				break;
-			case '300-500':
-				if (product.price >= 300000 && product.price <= 500000) matchesPrice = true;
-				break;
-			case '500-1000':
-				if (product.price >= 500000 && product.price <= 1000000) matchesPrice = true;
-				break;
-			case 'over-1000':
-				if (product.price > 1000000) matchesPrice = true;
-				break;
-		}
-	});
-	
-	if (!matchesPrice) return false;
-}
+// Hàm lấy tất cả ID danh mục con (bao gồm cả danh mục cha)
+export const getAllChildCategoryIds = (categories, parentId) => {
+    if (!categories || !parentId) return [parentId];
+    
+    // Thêm danh mục cha vào danh sách
+    const result = [parentId];
+    
+    // Tìm tất cả danh mục con trực tiếp
+    const directChildren = categories.filter(cat => cat.parentId === parentId);
+    
+    // Đệ quy để lấy tất cả danh mục con của mỗi danh mục con trực tiếp
+    directChildren.forEach(child => {
+        const childIds = getAllChildCategoryIds(categories, child.id);
+        result.push(...childIds);
+    });
+    
+    return [...new Set(result)]; // Loại bỏ các ID trùng lặp
+};
+
+// Kiểm tra xem sản phẩm có phải là sản phẩm mới hay không (trong vòng 30 ngày)
+export const isNewProduct = (createAtStr) => {
+    if (!createAtStr) return false;
+    
+    const createAt = new Date(createAtStr);
+    const now = new Date();
+    
+    // Tính số ngày giữa hai ngày
+    const diffTime = Math.abs(now - createAt);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Sản phẩm được coi là mới nếu được tạo trong vòng 30 ngày
+    return diffDays <= 30;
+};
+
+// Hàm kiểm tra giá sản phẩm có nằm trong khoảng giá hay không
+export const checkPriceRange = (product, priceRange) => {
+    // Lấy giá hiện tại (ưu tiên giá giảm nếu có)
+    const currentPrice = product.priceNow || product.price;
+    
+    // Parse khoảng giá "min-max" hoặc "min-" (không giới hạn trên)
+    const [min, max] = priceRange.split('-').map(val => val === '' ? Infinity : Number(val));
+    
+    // Kiểm tra giá có nằm trong khoảng
+    return currentPrice >= min && currentPrice <= (max || Infinity);
+};
+
+// Hàm tính số sản phẩm trong mỗi khoảng giá
+export const countProductsByPriceRange = (products, priceRanges) => {
+    if (!products || !Array.isArray(products) || !priceRanges) return {};
+    
+    const countMap = {};
+    
+    priceRanges.forEach(range => {
+        countMap[range.value] = products.filter(product => 
+            checkPriceRange(product, range.value)
+        ).length;
+    });
+    
+    return countMap;
+};
+
+// Hàm tính số sản phẩm trong mỗi danh mục
+export const countProductsByCategory = (products, categories) => {
+    if (!products || !Array.isArray(products) || !categories) return {};
+    
+    const countMap = {};
+    
+    categories.forEach(category => {
+        // Lấy tất cả ID danh mục con
+        const categoryIds = getAllChildCategoryIds(categories, category.id);
+        
+        // Đếm số sản phẩm thuộc danh mục này hoặc các danh mục con
+        countMap[category.id] = products.filter(product => 
+            categoryIds.includes(product.categoriesId)
+        ).length;
+    });
+    
+    return countMap;
+};
+
+// Hàm đếm số sản phẩm theo thương hiệu
+export const countProductsByBrand = (products, brands) => {
+    if (!products || !Array.isArray(products) || !brands) return {};
+    
+    const countMap = {};
+    
+    brands.forEach(brand => {
+        countMap[brand.name] = products.filter(product => 
+            product.brand === brand.name
+        ).length;
+    });
+    
+    return countMap;
+};

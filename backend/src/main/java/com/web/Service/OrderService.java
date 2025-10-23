@@ -71,6 +71,10 @@ public class OrderService {
         return orderRepository.findByUser_Id(userId);
     }
 
+    public List<Order> getOrdersByFBId(Long fbId) {
+        return orderRepository.findByCustomerFB(fbId);
+    }
+
     @CacheEvict(value = "orders", key = "#userId")
     public boolean deleteOrder(Long id, Long userId) {
         Order order = orderRepository.findById(id).orElse(null);
@@ -104,7 +108,7 @@ public class OrderService {
     public String createOrder(OrderDTO orderDTO) {
         User user = userRepository.findById(orderDTO.getUserId()).orElse(null);
         if (user == null) {
-            return "User not found";
+            user = userRepository.findById(1L).orElse(null);
         }
         Address address = addressRepository.findById(orderDTO.getAddressId()).orElse(null);
         if (address == null) {

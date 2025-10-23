@@ -3,7 +3,7 @@
     min-height: 100vh;
     background: linear-gradient(135deg, #f8f4ff 0%, #ffffff 50%, #f0f4ff 100%);
     font-family: 'Inter', sans-serif;
-    padding: 2rem 1rem;
+    padding: 3.5rem 1rem;
 }
 
 .orders-page .orders-container {
@@ -1194,4 +1194,204 @@ button:disabled {
 
 .cancel-pending-badge span {
     line-height: 1.5;
+}
+
+/* Thêm vào file CSS cho component OrderCard */
+
+.products-review-section {
+    margin-top: 16px;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 12px;
+}
+
+.products-review-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #4b5563;
+}
+
+.products-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.product-review-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #f9fafb;
+    border-radius: 6px;
+}
+
+.product-review-name {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.btn-review {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background-color: #f59e0b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-review:hover {
+    background-color: #d97706;
+}
+
+.already-reviewed {
+    font-size: 13px;
+    color: #10b981;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.already-reviewed::before {
+    content: "✓";
+    font-weight: bold;
+}
+
+/* Modal đánh giá */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.review-modal {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.review-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.review-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #1f2937;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6b7280;
+}
+
+.review-modal-body {
+    padding: 16px;
+}
+
+.product-info h4 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    color: #111827;
+}
+
+.rating-container {
+    margin-bottom: 16px;
+}
+
+.star-rating {
+    display: flex;
+    gap: 8px;
+    font-size: 24px;
+    margin-top: 8px;
+}
+
+.star {
+    cursor: pointer;
+    color: #d1d5db;
+}
+
+.star.filled {
+    color: #fbbf24;
+}
+
+.comment-container label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #4b5563;
+}
+
+.comment-container textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.review-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.cancel-btn {
+    padding: 8px 16px;
+    border: 1px solid #d1d5db;
+    background-color: white;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.submit-review-btn {
+    padding: 8px 16px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submit-review-btn:hover {
+    background-color: #2563eb;
+}
+
+.submit-review-btn:disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+}
+
+.loading-indicator {
+    text-align: center;
+    padding: 12px;
+    color: #6b7280;
+    font-style: italic;
 }

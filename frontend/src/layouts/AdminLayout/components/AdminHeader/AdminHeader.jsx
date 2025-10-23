@@ -7,6 +7,8 @@ const AdminHeader = ({ toggleSidebar }) => {
     const location = useLocation();
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
+
+    const user = JSON.parse(localStorage.getItem('user')) || {};
     
     // Breadcrumb mapping - map routes to readable names
     const pathMappings = {
@@ -49,8 +51,8 @@ const AdminHeader = ({ toggleSidebar }) => {
     
     const handleLogout = () => {
         // Xóa token khỏi localStorage
-        localStorage.removeItem('token');
-        localStorage.removeItem('userData');
+        localStorage.removeItem('tokenJWT');
+        localStorage.removeItem('user');
         // Chuyển hướng về trang login
         navigate('/login');
     };
@@ -149,7 +151,7 @@ const AdminHeader = ({ toggleSidebar }) => {
                             <div className="user-avatar">
                                 <img src="/logo192.png" alt="User Avatar" />
                             </div>
-                            <span className="user-name">Admin</span>
+                            <span className="user-name">{user.fullName || 'Admin'}</span>
                             <i className={`fas fa-chevron-${showUserMenu ? 'up' : 'down'}`}></i>
                         </button>
                         

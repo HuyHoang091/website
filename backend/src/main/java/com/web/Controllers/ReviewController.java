@@ -3,7 +3,10 @@ package com.web.Controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.web.Dto.ReviewDTO;
+import com.web.Model.ProductVariant;
 import com.web.Model.Review;
+import com.web.Repository.ProductVariantRepository;
 import com.web.Service.ReviewService;
 
 import java.util.List;
@@ -14,9 +17,21 @@ public class ReviewController {
     @Autowired
     private ReviewService reviewService;
 
+    @Autowired
+    private ProductVariantRepository productVariantRepository;
+
     @PostMapping
-    public Review createReview(@RequestBody Review review) {
+    public Review createReview(@RequestBody ReviewDTO review) {
         return reviewService.createReview(review);
+    }
+
+    @GetMapping("/{userId}/variant/{variantId}")
+    public List<Review> getReviewByUserAndProduct(@PathVariable Long userId, @PathVariable Long variantId) {
+        ProductVariant productVariant = productVariantRepository.findById(variantId).orElse(null);
+        if (productVariant == null) {
+            return null;
+        }
+        return reviewService.getReviewByUserAndProduct(userId, productVariant.getProduct().getId());
     }
 
     @DeleteMapping("/{id}/{productId}")

@@ -13,6 +13,14 @@ import com.web.Dto.OrderDetailDto;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUser_Id(Long userId);
 
+    @Query(value = """
+        SELECT o
+        FROM Order o
+        JOIN o.address a
+        WHERE a.customerId = :fbId
+    """)
+    List<Order> findByCustomerFB(Long fbId);
+
     @Query("SELECT new com.web.Dto.OrderDetailDto(o.id, o.user.id, o.address.id, o.address.fullName, o.address.phone, o.address.detail, o.orderNumber, CASE \r\n" + //
                 "    WHEN o.address.user.id IS NULL THEN 'Facebook'\r\n" + //
                 "    ELSE 'Web'\r\n" + //
@@ -119,4 +127,16 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         ORDER BY DATE_FORMAT(created_at, '%Y-%m') ASC
         """, nativeQuery = true)
     List<Map<String, Object>> findMonthlyRevenueAndOrderCountForCurrentYear();
+
+    @Query(value = """
+        SELECT
+            DATE(o.created_at) AS date,
+            COUNT(CASE WHEN o.status NOT IN ('returned', 'cancelled') THEN 1 END) AS confirmedOrders,
+            COUNT(CASE WHEN o.status IN ('returned', 'cancelled') THEN 1 END) AS returnedOrders,
+            SUM(CASE WHEN o.status NOT IN ('returned', 'cancelled') THEN o.total_amount ELSE 0 END) AS revenue
+        FROM orders o
+        GROUP BY DATE(o.created_at)
+        ORDER BY DATE(o.created_at) DESC
+        """, nativeQuery = true)
+    List<Map<String, Object>> findOrderStatsByDate();
 }

@@ -16,8 +16,8 @@ const ProductCard = ({product, addToCart, isInCart}) => {
         setProductUrl(product.url);
     }, [product]);
 
-    const discountPercent = product.originalPrice
-        ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+    const discountPercent = product.priceNow < product.price
+        ? Math.round(((product.price - product.priceNow) / product.price) * 100)
         : 0;
 
     const handleAddToCart = async () => {
@@ -82,13 +82,16 @@ const ProductCard = ({product, addToCart, isInCart}) => {
                 <h3 className={styles.productName}>{product.name}</h3>
                 <p className={styles.productDescription}>{product.description}</p>
                 <div className={styles.productPrice}>
-                    <span className={styles.currentPrice}>{formatPrice(product.price)}</span>
-                    {product.originalPrice && (
+                    {/* <span className={styles.currentPrice}>{formatPrice(product.price)}</span> */}
+                    {product.priceNow < product.price ? (
                         <>
-                            <span className={styles.originalPrice}>{formatPrice(product.originalPrice)}</span>
+                            <span className={styles.currentPrice}>{formatPrice(product.priceNow)}</span>
+                            <span className={styles.originalPrice}>{formatPrice(product.price)}</span>
                             <span className={styles.discountPercent}>-{discountPercent}%</span>
                         </>
-                    )}
+                    ) : 
+                        <span className={styles.currentPrice}>{formatPrice(product.price)}</span>
+                    }
                 </div>
                 <div className={styles.productRating}>
                     <span className={styles.stars}>{generateStars(product.rating)}</span>

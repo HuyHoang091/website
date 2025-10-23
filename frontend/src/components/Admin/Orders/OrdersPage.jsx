@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import OrdersTable from './OrdersTable';
 import OrderEditModal from './OrderEditModal';
 import Pagination from '../Users/Pagination';
-import { getAllOrders, getOrderDetails } from '../../../services/orderService';
+import { getAllOrders, getOrderDetails, updateOrder } from '../../../services/orderService';
 import styles from './OrdersPage.module.css';
 
 const OrdersPage = () => {
@@ -105,6 +105,40 @@ const OrdersPage = () => {
         handleCloseEditModal();
     };
 
+    const handleConfirm = async (order) => {
+        try {
+            setLoading(true);
+
+            // Lấy chi tiết đơn hàng hiện tại
+            const currentOrder = await getOrderDetails(order.id);
+
+            // Tạo payload đầy đủ
+            const payload = {
+                userId: order.userId,
+                createBy: order.createBy || 'Unknown',
+                status: 'processing', // Cập nhật trạng thái thành "processing"
+                note: order.note || '',
+                addressId: order.addressId,
+                items: currentOrder.orderItems.map(item => ({
+                    id: item.id,
+                    variantId: item.variantId,
+                    quantity: item.quantity
+                }))
+            };
+
+            // Gọi API cập nhật đơn hàng
+            await updateOrder(order.id, payload);
+
+            // Tải lại danh sách đơn hàng
+            loadOrders();
+        } catch (err) {
+            setError('Không thể xác nhận đơn hàng');
+            console.error('Error updating order:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className={styles.ordersPage}>
             <h2 className={styles.pageTitle}>Quản lý đơn hàng</h2>
@@ -176,6 +210,7 @@ const OrdersPage = () => {
                 orders={currentOrders}
                 loading={loading}
                 onEdit={handleEdit}
+                onConfirm={handleConfirm}
                 styles={styles}
             />
 

@@ -5,11 +5,19 @@ import AdminHeader from './components/AdminHeader/AdminHeader';
 import './adminLayout.css';
 
 const AdminLayout = () => {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    // Khởi tạo sidebarOpen từ localStorage hoặc mặc định là true
+    const [sidebarOpen, setSidebarOpen] = useState(() => {
+        const savedState = localStorage.getItem('adminSidebarOpen');
+        return savedState !== null ? JSON.parse(savedState) : true;
+    });
+    
     const location = useLocation();
 
     const toggleSidebar = () => {
-        setSidebarOpen(!sidebarOpen);
+        const newState = !sidebarOpen;
+        setSidebarOpen(newState);
+        // Lưu trạng thái mới vào localStorage
+        localStorage.setItem('adminSidebarOpen', JSON.stringify(newState));
     };
     
     // Đóng sidebar tự động trên màn hình nhỏ
@@ -17,6 +25,7 @@ const AdminLayout = () => {
         const handleResize = () => {
             if (window.innerWidth < 768) {
                 setSidebarOpen(false);
+                localStorage.setItem('adminSidebarOpen', 'false');
             }
         };
         
@@ -27,6 +36,12 @@ const AdminLayout = () => {
             window.removeEventListener('resize', handleResize);
         };
     }, []);
+
+    // Theo dõi thay đổi đường dẫn nhưng KHÔNG thay đổi trạng thái sidebar
+    useEffect(() => {
+        // Không thực hiện hành động nào khi đường dẫn thay đổi
+        // để giữ nguyên trạng thái sidebar
+    }, [location.pathname]);
 
     return (
         <div className={`admin-layout ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>

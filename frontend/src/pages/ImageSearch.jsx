@@ -1,5 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import "../assets/styles/ImageSearch.css";
+import { Link } from "react-router-dom";
+import styles from "../assets/styles/ImageSearch.module.css";
+import Menu from "../components/Menu/Menu";
+import { faHouse, faCartShopping, faFontAwesome, faBook, faQuestion, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function ImageSearch() {
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -7,6 +11,16 @@ export default function ImageSearch() {
   const [loading, setLoading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef(null);
+  const [enlargedImage, setEnlargedImage] = useState(null);
+
+  // Menu items matching ChatPage
+  const menuItems = [
+    { icon: faHouse, label: "Trang chủ", href: "/" },
+    { icon: faCartShopping, label: "Tìm kiếm hình ảnh", href: "/search" },
+    { icon: faFontAwesome, label: "Giới thiệu" },
+    { icon: faBook, label: "Blog" },
+    { icon: faQuestion, label: "Câu hỏi thường gặp" },
+  ];
 
   const handleFileSelect = (file) => {
     if (file && file.type.startsWith("image/")) {
@@ -74,76 +88,117 @@ export default function ImageSearch() {
     }
   };
 
+  const handleEnlargeImage = (imageUrl) => {
+    setEnlargedImage(imageUrl);
+  };
+
   useEffect(() => {
     document.addEventListener("paste", handlePaste);
     return () => document.removeEventListener("paste", handlePaste);
   }, []);
 
   return (
-    <div className="page-container">
-      <div className="loadingBackground">
-          <div className="floatingShapes">
-              <div className="shape shape1"></div>
-              <div className="shape shape2"></div>
-              <div className="shape shape3"></div>
-              <div className="shape shape4"></div>
-          </div>
-      </div>
-    <div className="search-container">
-      <h1 className="title">🔍 Tìm kiếm sản phẩm bằng hình ảnh</h1>
+    <div className={styles.appContainer}>
+      <Menu items={menuItems} />
+      <div className={styles.searchPageLayout}>
+        {/* Main Content */}
+        <div className={styles.searchMainContent}>
+          <div className={styles.searchContainer}>
+            <h1 className={styles.title}>🔍 Tìm kiếm sản phẩm bằng hình ảnh</h1>
 
-      <div
-        className={`dropzone ${isDragOver ? "drag-over" : ""}`}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
-        {uploadedImage ? (
-          <div className="preview">
-            <img src={uploadedImage} alt="Uploaded" />
-            <button onClick={handleClear}>❌ Xóa</button>
-          </div>
-        ) : (
-          <div style={{ display: "flex" }}>
-            <p className="hint">Kéo thả ảnh, dán (Ctrl+V) hoặc chọn file</p>
-            <button
-              className="upload-btn"
-              onClick={() => fileInputRef.current.click()}
+            <div
+              className={`${styles.dropzone} ${isDragOver ? styles.dragOver : ""}`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
             >
-              📁 Chọn File
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleFileSelect(e.target.files[0])}
-              style={{ display: "none" }}
-            />
+              {uploadedImage ? (
+                <div className={styles.preview}>
+                  <img src={uploadedImage} alt="Uploaded" />
+                  <button onClick={handleClear}>❌ Xóa</button>
+                </div>
+              ) : (
+                <div className={styles.dropzoneContent}>
+                  <p className={styles.hint}>Kéo thả ảnh, dán (Ctrl+V) hoặc chọn file</p>
+                  <button
+                    className={styles.uploadBtn}
+                    onClick={() => fileInputRef.current.click()}
+                  >
+                    📁 Chọn File
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileSelect(e.target.files[0])}
+                    style={{ display: "none" }}
+                  />
+                </div>
+              )}
+            </div>
+
+            {loading && (
+              <div className={styles.loadingContainer}>
+                <div className={styles.loadingSpinner}></div>
+                <p className={styles.loading}>Đang tìm kiếm...</p>
+              </div>
+            )}
+
+            {results.length > 0 && (
+              <>
+                <h2 className={styles.resultsTitle}>Kết quả tìm kiếm</h2>
+                <div className={styles.resultsGrid}>
+                  {results.map((item, idx) => (
+                    <div className={styles.resultCard} key={idx}>
+                      <div 
+                        className={styles.resultImage}
+                        onClick={() => handleEnlargeImage(`http://localhost:8000${item.images[0]}`)}
+                      >
+                        <img
+                          src={`http://localhost:8000${item.images[0]}`}
+                          alt={`Product ${item.product_id}`}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "/logo192.png";
+                          }}
+                        />
+                      </div>
+                      <div className={styles.cardInfo}>
+                        <p className={styles.productId}>Mã: {item.product_id}</p>
+                        <div className={styles.accuracyBar}>
+                          <div 
+                            className={styles.accuracyFill} 
+                            style={{ width: `${Math.round(item.score * 100)}%` }}
+                          ></div>
+                        </div>
+                        <p className={styles.accuracyText}>Độ trùng khớp: {Math.round(item.score * 100)}%</p>
+                        {item.notes && item.notes.length > 0 && (
+                          <p className={styles.productNote}>{item.notes[0]}</p>
+                        )}
+                      </div>
+                      <Link to={`/product/${item.product_id}`} className={styles.viewProductBtn}>
+                        Xem sản phẩm
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
-      {loading && <p className="loading">⏳ Đang tìm kiếm...</p>}
-
-      {results.length > 0 && (
-        <div className="results-row">
-          {results.map((item, idx) => (
-            <div key={idx} className="result-card">
-              <img
-                src={`${process.env.REACT_APP_API_URL}/images/logo192.png`}
-                alt={`Product ${item.product_id}`}
-              />
-              <div className="card-info">
-                <p className="pid">📦 Mã: {item.product_id}</p>
-              </div>
-              <div className="card-info">
-                <p className="pid1">Độ chính xác: {item.score.toFixed(2)}</p>
-              </div>
-            </div>
-          ))}
+      {/* Modal xem ảnh phóng to */}
+      {enlargedImage && (
+        <div className={styles.imageModal} onClick={() => setEnlargedImage(null)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.closeModal} onClick={() => setEnlargedImage(null)}>
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+            <img src={enlargedImage} alt="Enlarged view" className={styles.enlargedImage} />
+          </div>
         </div>
       )}
-    </div>
     </div>
   );
 }

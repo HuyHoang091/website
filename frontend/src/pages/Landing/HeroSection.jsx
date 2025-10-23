@@ -31,7 +31,7 @@ export default function HeroBanner() {
 	                  <NavLink to={ROUTE_PATHS.SHOP}>
                       <button class="btn-primary-hero">🛍️ SHOP LUXURY</button>
 	                  </NavLink>
-                      <button class="btn-secondary-hero">👑 VIP PREVIEW</button>
+                      <button class="btn-secondary-hero">👑 VITON PREVIEW</button>
                   </div>
               </div>
 

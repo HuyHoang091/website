@@ -1,10 +1,10 @@
 // Categories
 export const CATEGORIES = [
-	{"id": 1, "name": "Thời trang", "parentId": null,},
-	{"id": 2, "name": "Nam", "parentId": 1,},
-	{"id": 3, "name": "Nữ", "parentId": 1,},
-	{"id": 4, "name": "Quần", "parentId": 2,},
-	{"id": 5, "name": "Áo", "parentId": 2,}
+	// {"id": 1, "name": "Thời trang", "parentId": null,},
+	// {"id": 2, "name": "Nam", "parentId": 1,},
+	// {"id": 3, "name": "Nữ", "parentId": 1,},
+	// {"id": 4, "name": "Quần", "parentId": 2,},
+	// {"id": 5, "name": "Áo", "parentId": 2,}
 ];
 
 // Brands
@@ -80,11 +80,13 @@ export const INIT_FILTERS = {
 	colors: []
 };
 
+// Đảm bảo PRICE_RANGES có định dạng chính xác
 export const PRICE_RANGES = [
-	{value: 'under-300', label: 'Dưới 300k', count: 1},
-	{value: '300-500', label: '300k - 500k', count: 4},
-	{value: '500-1000', label: '500k - 1tr', count: 5},
-	{value: 'over-1000', label: 'Trên 1tr', count: 2}
+    { value: '0-100000', label: 'Dưới 100.000đ', count: 0 },
+    { value: '100000-300000', label: '100.000đ - 300.000đ', count: 0 },
+    { value: '300000-500000', label: '300.000đ - 500.000đ', count: 0 },
+    { value: '500000-1000000', label: '500.000đ - 1.000.000đ', count: 0 },
+    { value: '1000000-', label: 'Trên 1.000.000đ', count: 0 }
 ];
 
 export const INITIAL_PRODUCT = [

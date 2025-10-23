@@ -4,12 +4,21 @@ import CustomerInfo from "../../components/Chat/CustomerInfo";
 import ListChat from "../../components/Chat/ListChat";
 import Menu from "../../components/Menu/Menu";
 import styles from "./ChatPage.module.css";
+import { faHouse, faCartShopping, faFontAwesome, faBook, faQuestion } from "@fortawesome/free-solid-svg-icons";
 
 export default function ChatPage() {
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [selectedName, setSelectedName] = useState(null);
   const [showCustomerInfo, setShowCustomerInfo] = useState(false);
   const [loadedChats, setLoadedChats] = useState({});
+
+  const menuItems = [
+      { icon: faHouse, label: "Trang chủ", href: "/chatsale" },
+      { icon: faCartShopping, label: "Tìm kiếm hình ảnh", href: "/search" },
+      { icon: faFontAwesome, label: "Giới thiệu" },
+      { icon: faBook, label: "Blog" },
+      { icon: faQuestion, label: "Câu hỏi thường gặp" },
+  ];
 
   const handleSelectChat = (id, name) => { 
     setSelectedName(name);
@@ -29,7 +38,7 @@ export default function ChatPage() {
 
   return (
     <div className={styles.chatPage}>
-      <Menu />
+      <Menu items={menuItems} />
       <div className={styles.chatContainer}>
         <div className={styles.sidebarContainer}>
           <ListChat onSelectChat={handleSelectChat} selectedChatId={selectedChatId} />

@@ -5,11 +5,11 @@ import { faHouse, faCartShopping, faFontAwesome, faBook, faQuestion } from "@for
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {ROUTE_PATHS} from "../../utils/appConst";
-import { CartContext } from "../../context/CartContext"; 
+import { CartContext } from "../../context/CartContext";
 
 const menuItems = [
     { icon: faHouse, label: "Trang chủ", href: "/" },
-    { icon: faCartShopping, label: "Cửa hàng" },
+    { icon: faCartShopping, label: "Đơn hàng của tôi", href: "/orders" },
     { icon: faFontAwesome, label: "Giới thiệu" },
     { icon: faBook, label: "Blog" },
     { icon: faQuestion, label: "Câu hỏi thường gặp" },
@@ -64,10 +64,10 @@ export default function Header() {
             </div>
 
             <div className={`${styles.navLinks} ${styles['col-4']}`}>
-                <a href="#new" className={styles.navLink}>Hàng Mới</a>
-                <a href="#women" className={styles.navLink}>Nữ</a>
-                <a href="#men" className={styles.navLink}>Nam</a>
-                <a href="#sale" className={styles.vipSale}>💎 VIP SALE</a>
+                <a onClick={() => navigate('/shop/new')} className={styles.navLink}>Hàng Mới</a>
+                <a onClick={() => navigate('/shop/nu')} className={styles.navLink}>Nữ</a>
+                <a onClick={() => navigate('/shop/nam')} className={styles.navLink}>Nam</a>
+                <a onClick={() => navigate('/shop/sale')} className={styles.vipSale}>💎 VIP SALE</a>
             </div>
 
             <div className={`${styles.search} ${styles['col-2']}`}>

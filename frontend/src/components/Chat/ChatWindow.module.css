@@ -3,6 +3,26 @@
   width: -webkit-fill-available;
   flex-direction: column;
   background: #f9fafb;
+  height: calc(100vh - 70px);
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+}
+
+.containerUserFrame {
+  display: flex;
+  width: -webkit-fill-available;
+  flex-direction: column;
+  background: #f9fafb;
+  height: 550px;
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+}
+
+.containerUser {
+  display: flex;
+  width: -webkit-fill-available;
+  flex-direction: column;
+  background: #f9fafb;
   height: 100vh;
   border-left: 1px solid #e5e7eb;
   border-right: 1px solid #e5e7eb;

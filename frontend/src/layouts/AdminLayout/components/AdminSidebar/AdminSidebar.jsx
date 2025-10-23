@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './adminSidebar.css';
 
 const AdminSidebar = ({ isOpen }) => {
     const location = useLocation();
+    const navigate = useNavigate();
     const [activeSection, setActiveSection] = useState(null);
+
+    const user = JSON.parse(localStorage.getItem('user')) || {};
     
-    const toggleSection = (section) => {
+    const toggleSection = (section, defaultPath = null) => {
+        // Nếu sidebar đang đóng và có defaultPath, thì điều hướng đến path đó
+        if (!isOpen && defaultPath) {
+            navigate(defaultPath);
+            return;
+        }
+        
+        // Xử lý bình thường khi sidebar mở
         if (activeSection === section) {
             setActiveSection(null);
         } else {
@@ -52,7 +62,7 @@ const AdminSidebar = ({ isOpen }) => {
         },
         {
             id: 'customers',
-            title: 'Khách hàng',
+            title: 'Người dùng',
             icon: 'fas fa-users',
             path: '/admin/users'
         },
@@ -77,16 +87,12 @@ const AdminSidebar = ({ isOpen }) => {
             icon: 'fas fa-chart-bar',
             children: [
                 {
-                    title: 'Doanh số',
-                    path: '/admin/reports/sales'
-                },
-                {
-                    title: 'Sản phẩm bán chạy',
-                    path: '/admin/reports/top-products'
+                    title: 'Doanh thu',
+                    path: '/admin/order-statistics'
                 },
                 {
                     title: 'Khách hàng',
-                    path: '/admin/reports/customers'
+                    path: '/admin/customer-stats'
                 }
             ]
         },
@@ -94,7 +100,16 @@ const AdminSidebar = ({ isOpen }) => {
             id: 'settings',
             title: 'Cài đặt',
             icon: 'fas fa-cog',
-            path: '/admin/settings'
+            children: [
+                {
+                    title: 'Trợ lý tri thức',
+                    path: '/admin/rag'
+                },
+                {
+                    title: 'Cấu hình hệ thống',
+                    path: '/admin/config'
+                }
+            ]
         }
     ];
     
@@ -116,7 +131,7 @@ const AdminSidebar = ({ isOpen }) => {
                                     <>
                                         <div 
                                             className={`menu-link has-children ${item.children.some(child => isActive(child.path)) ? 'active' : ''}`}
-                                            onClick={() => toggleSection(item.id)}
+                                            onClick={() => toggleSection(item.id, item.children[0]?.path)} // Truyền path của child đầu tiên
                                         >
                                             <i className={`menu-icon ${item.icon}`}></i>
                                             {isOpen && (
@@ -159,8 +174,8 @@ const AdminSidebar = ({ isOpen }) => {
                             <img src="/logo192.png" alt="Admin" />
                         </div>
                         <div className="admin-details">
-                            <p className="admin-name">Admin User</p>
-                            <p className="admin-role">Administrator</p>
+                            <p className="admin-name">{user.fullName || 'Admin'}</p>
+                            <p className="admin-role">{user.role || 'ADMIN'}</p>
                         </div>
                     </div>
                 ) : (

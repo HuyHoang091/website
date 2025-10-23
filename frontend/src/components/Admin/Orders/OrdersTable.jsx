@@ -1,10 +1,10 @@
 import React from 'react';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
 
-const OrdersTable = ({ orders, loading, onEdit, styles }) => {
+const OrdersTable = ({ orders, loading, onEdit, onConfirm, styles }) => {
     const getStatusBadge = (status) => {
         const statusMap = {
-            'pending': { label: 'Chờ xử lý', className: styles.statusPending },
+            'pending': { label: 'Chờ xác nhận', className: styles.statusPending },
             'processing': { label: 'Đang xử lý', className: styles.statusProcessing },
             'shipped': { label: 'Đang vận chuyển', className: styles.statusShipped },
             'paid': { label: 'Đã thanh toán', className: styles.statusPaid },
@@ -47,7 +47,7 @@ const OrdersTable = ({ orders, loading, onEdit, styles }) => {
                     <tr>
                         <th>Mã đơn</th>
                         <th>Khách hàng</th>
-                        <th>Liên hệ</th>
+                        {/* <th>Liên hệ</th> */}
                         <th>Ngày tạo</th>
                         <th>Trạng thái</th>
                         <th>Tổng tiền</th>
@@ -60,10 +60,10 @@ const OrdersTable = ({ orders, loading, onEdit, styles }) => {
                         <tr key={order.id}>
                             <td>{order.orderNumber}</td>
                             <td>{order.fullName}</td>
-                            <td>
+                            {/* <td>
                                 <div>{order.phone}</div>
                                 <div className={styles.addressPreview}>{order.fullAddress}</div>
-                            </td>
+                            </td> */}
                             <td>{formatDate(order.createdAt)}</td>
                             <td>{getStatusBadge(order.status)}</td>
                             <td className={styles.priceColumn}>{formatCurrency(order.totalAmount)}</td>
@@ -76,6 +76,15 @@ const OrdersTable = ({ orders, loading, onEdit, styles }) => {
                                 >
                                     <i className="fas fa-edit"></i>
                                 </button>
+                                {['pending', 'paid'].includes(order.status) && (
+                                    <button
+                                        className={`${styles.btnIcon} ${styles.btnConfirm}`}
+                                        onClick={() => onConfirm(order)}
+                                        title="Xác nhận đơn hàng"
+                                    >
+                                        <i className="fas fa-check"></i>
+                                    </button>
+                                )}
                             </td>
                         </tr>
                     ))}

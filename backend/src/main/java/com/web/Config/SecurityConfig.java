@@ -44,8 +44,8 @@ public class SecurityConfig {
                 "/api/products/update/**", "/api/products/**", "/api/orders/**", "/api/addresses/**", "/api/payment/**", "/api/discounts/**", "/api/colors/**", "/api/refunds/**", "/api/users/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/map/**")
                 .hasAnyRole("USER", "ADMIN")
-                .antMatchers("/api/chat/**").hasAnyRole("ADMIN", "SALER", "USER")
-                .antMatchers("/api/upload/**").hasAnyRole("ADMIN", "USER", "SALER")
+                .antMatchers("/api/chat/**").hasAnyRole("ADMIN", "SALER", "USER", "MANAGER")
+                .antMatchers("/api/upload/**").hasAnyRole("ADMIN", "USER", "SALER", "MANAGER")
                 .anyRequest().authenticated()
             .and()
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

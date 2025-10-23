@@ -9,11 +9,12 @@ const OrderFilters = ({ activeFilter, onFilterChange, orders }) => {
     const filters = [
         { key: 'all', label: 'Tất cả đơn hàng', icon: '📋' },
         { key: 'pending', label: 'Chờ xác nhận', icon: '⏳' },
-        { key: 'confirmed', label: 'Đã xác nhận', icon: '✅' },
+        { key: 'processing', label: 'Đang xử lý', icon: '✅' },
         { key: 'shipping', label: 'Đang giao hàng', icon: '🚚' },
         { key: 'delivered', label: 'Đã giao hàng', icon: '📦' },
         { key: 'cancel_requested', label: 'Đang chờ hủy', icon: '🔄' }, // Thêm filter cho trạng thái đang chờ hủy
         { key: 'cancelled', label: 'Đã hủy', icon: '❌' },
+        { key: 'returned', label: 'Đã trả hàng', icon: '↩️' }
     ];
 
     return (

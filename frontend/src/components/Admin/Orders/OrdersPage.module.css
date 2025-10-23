@@ -833,3 +833,21 @@ input {
         width: 100%;
     }
 }
+
+.btnConfirm {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btnConfirm:hover {
+  background-color: #45a049;
+}
+
+.btnConfirm i {
+  margin-right: 4px;
+}

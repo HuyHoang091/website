@@ -52,9 +52,13 @@ const LoginPage = () => {
         try {
             const role = await login(email, password);
             if (role === 'SALER') {
-                navigate("/test");
-            } else {
+                navigate("/saler/dashboard");
+            } else if (role === 'USER') {
                 navigate("/");
+            } else if (role === 'MANAGER') {
+                navigate("/admin/dashboard")
+            } else if (role === 'ADMIN') {
+                navigate("/admin/dashboard")
             }
         } catch (err) {
             setError(err.message);

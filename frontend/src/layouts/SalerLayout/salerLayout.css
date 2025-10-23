@@ -1,0 +1,7 @@
+/* === ADMIN LAYOUT STYLES === */
+
+.saler-content {
+    flex: 1;
+    padding: 0px;
+    overflow-y: auto;
+}

@@ -5,7 +5,7 @@ import MessageItem from "./MessageItem";
 import { v4 as uuidv4 } from 'uuid';
 import { getStompClient, onStompConnect } from "../../hooks/stompClient";
 
-export default function CustomerChatWindow({ userStr = localStorage.getItem("user") }) {
+export default function CustomerChatWindow({ userStr = localStorage.getItem("user"), frameBool = false }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [aiMode, setAiMode] = useState(false);
@@ -288,7 +288,7 @@ export default function CustomerChatWindow({ userStr = localStorage.getItem("use
   }, [user.id]);
 
   return (
-    <div className={styles.container}>
+    <div className={frameBool ? styles.containerUserFrame : styles.containerUser}>
       <div className={styles.header}>
         <img src={`${process.env.REACT_APP_API_URL}/images/logo192.png`} alt="avatar" className={styles.avatar} />
         <div className={styles.headerInfo}>
